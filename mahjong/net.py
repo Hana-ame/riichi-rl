@@ -67,10 +67,13 @@ class MahjongNet(nn.Module):
     obs (B, OBS_DIM) -> 拆成 (B, N_PLANES, 34) + 标量 -> Conv trunk -> 动作 logits
     """
 
-    def __init__(self, channels=160, n_blocks=6, n_actions=54):
+    def __init__(self, channels=160, n_blocks=6, n_actions=54,
+                 touch_dim=0, extra_scalar=0):
         super().__init__()
         self.n_planes = N_PLANES
         self.scalar_dim = OBS.SCALAR_DIM
+        self.touch_dim = touch_dim
+        self.in_scalar = self.scalar_dim + touch_dim + extra_scalar
 
         self.embed = nn.Conv1d(N_PLANES, channels, kernel_size=1)
         self.blocks = nn.Sequential(*[ResBlock(channels) for _ in range(n_blocks)])
@@ -79,7 +82,7 @@ class MahjongNet(nn.Module):
         self.head_conv = nn.Conv1d(channels, channels, 3, padding=1)
         self.segpool = nn.AdaptiveAvgPool1d(4)
         self.head_fc = nn.Sequential(
-            nn.Linear(channels * 5 + self.scalar_dim, 512),
+            nn.Linear(channels * 5 + self.in_scalar, 512),
             nn.ReLU(inplace=True),
             nn.Linear(512, 256),
             nn.ReLU(inplace=True),
@@ -87,10 +90,24 @@ class MahjongNet(nn.Module):
         self.policy = nn.Linear(256, n_actions)
         self.value = nn.Linear(256, 1)
 
-    def forward(self, obs):
+    def forward(self, obs, touch=None):
+        """obs (B, DIM) -> (policy_logits, value)
+
+        touch: 可选的「上一手形状摘要」附加到标量段。
+
+        动机：RL 若只从「输赢」学，需要几百万局才摸到手牌结构。
+        把**自己手牌的形状统计**（听牌数、向听、面子/搭子计数）作为
+        标量特征喂进网络，是把「局面是什么」显式化，不是牌效表——
+        这些量对每个手牌都能算，不含任何「该打哪张」的知识。
+
+        形状：touch_dim 维 float，与 obs 拼接后再进 head_fc。
+        """
         B = obs.shape[0]
         planes = obs[:, : self.n_planes * PLANE_SIZE].view(B, self.n_planes, PLANE_SIZE)
         scalars = obs[:, self.n_planes * PLANE_SIZE:]
+
+        if touch is not None and self.touch_dim > 0:
+            scalars = torch.cat([scalars, touch], dim=1)
 
         h = self.embed(planes)
         h = self.blocks(h)

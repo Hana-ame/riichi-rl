@@ -39,6 +39,7 @@ from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import refengine as REF
 from mahjong import scenarios as SC
+from mahjong import touch as TOUCH
 from mahjong.hanchan import HanchanState
 from mahjong.net import MahjongNet, count_params
 
@@ -60,12 +61,20 @@ def hand_shanten(env, p_idx):
 
 
 def encode(env, encoder, hstate, p_idx):
-    """观测 = 牌面平面 + 标量 + 局势特征。"""
+    """观测 = 牌面平面 + 标量 + 局势特征；另给手牌形状特征（touch）。"""
     planes, scalar = encoder.encode(env, p_idx)
     sh = hand_shanten(env, p_idx)
     sit_vec, sit, give_up = SC.situation_features(env, hstate, p_idx, sh)
     vec = np.concatenate([planes.ravel(), scalar, sit_vec]).astype(np.float32)
-    return vec, sh, sit, give_up
+    c = env.players[p_idx].full_counts()
+    melds = len(env.players[p_idx].melds)
+    waits = 0
+    if sh == 0:
+        for t in range(34):
+            if REF.can_win_with(c, t, melds):
+                waits += 1
+    tf = TOUCH.shape_features(c, melds, sh, waits)
+    return vec, sh, sit, give_up, tf
 
 
 def play_one_deal(model, hstate, seed, device, temperature, encoder,
@@ -83,7 +92,7 @@ def play_one_deal(model, hstate, seed, device, temperature, encoder,
         guard += 1
         actions = {}
         for p in env.pending_players():
-            vec, sh, sit, give_up = encode(env, encoder, hstate, p)
+            vec, sh, sit, give_up, tf = encode(env, encoder, hstate, p)
             legal = env.legal_actions(p)
             if not legal:
                 actions[p] = E.PASS_ACTION
@@ -101,7 +110,8 @@ def play_one_deal(model, hstate, seed, device, temperature, encoder,
                     sa = hand_shanten(env, p)
                     pl.hand.append(act.tile)
                     pl.hand.sort()
-            info.append((vec, slots, pick, sh, sa, p, sit.label, give_up))
+            info.append((vec, slots, pick, sh, sa, p, sit.label,
+                          give_up, tf))
         result = env.step(actions)
     return env, result, info
 
@@ -122,6 +132,7 @@ def main():
     ap.add_argument("--log-every", type=int, default=10)
     ap.add_argument("--out", default="checkpoints/hanchan_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
+    ap.add_argument("--save-every", type=int, default=5)
     args = ap.parse_args()
 
     device = "cpu"
@@ -129,7 +140,7 @@ def main():
     random.seed(args.seed0)
     np.random.seed(args.seed0)
 
-    model = MahjongNet(channels=args.channels, n_blocks=args.blocks).to(device)
+    model = MahjongNet(channels=args.channels, n_blocks=args.blocks, touch_dim=TOUCH.TOUCH_DIM).to(device)
     # 观测维度增加了 12 维局势特征
     base = O2.OBS_TENSOR_DIM
     model.head_fc[0] = torch.nn.Linear(
@@ -145,7 +156,7 @@ def main():
 
     for it in range(args.iters):
         opt.zero_grad()
-        vecs, slots, rets = [], [], []
+        vecs, slots, rets, touches = [], [], [], []
 
         for hc in range(args.hanchans):
             hstate = HanchanState(
@@ -164,7 +175,8 @@ def main():
                 if result.result_type != "ryuukyoku":
                     tot_wins += 1
                 # 统计场景
-                for (_, _, _, _, _, _, label, gu) in info:
+                for rec in info:
+                    label, gu = rec[6], rec[7]
                     if label == "defense":
                         defense_seen += 1
                     if label == "last_chance":
@@ -184,13 +196,14 @@ def main():
                         hstate, give_up_flag=lst[-1][7],
                         w_deal=args.deal_weight,
                         w_survive=args.survive_weight)
-                    for k, (vec, legal_slots, pick, sb, sa, _, label, gu) \
+                    for k, (vec, legal_slots, pick, sb, sa, _, label, gu, tf) \
                             in enumerate(lst):
                         disc = args.gamma ** (n - 1 - k)
                         r = r_term * disc
                         if args.shanten_weight > 0 and sb < 8 and sa < 8:
                             r += args.shanten_weight * (sa - sb) * disc
                         vecs.append(vec)
+                        touches.append(tf)
                         slots.append((pick, legal_slots))
                         rets.append(r)
                 hstate.advance(result)
@@ -198,33 +211,67 @@ def main():
         if not rets:
             continue
         rt = torch.tensor(rets, dtype=torch.float32)
-        adv = rt - rt.mean()
+        # 优势 = 回报 - **价值基线**（不是 batch 均值）。
+        # 纯 REINFORCE 用 batch 均值做基线时，一个半庄里所有决策点
+        # 共享同一个终局回报，优势几乎全为 0 -> 学不动。
+        # 用 critic 估计每个状态的 V(s) 才能把稀疏奖励摊到每一步。
         CH = 2048
+        _pol_acc = _v_acc = _ent_acc = 0.0
+        _nb = 0
         for start in range(0, len(vecs), CH):
             sl = slots[start:start + CH]
-            adv_chunk = adv[start:start + CH]
             x = torch.from_numpy(np.stack(vecs[start:start + CH]))
-            logits, _ = model(x)
-            chosen_l, ent_l = [], []
+            tx = torch.from_numpy(np.stack(touches[start:start + CH]))
+            rt_chunk = rt[start:start + CH]
+            # 向量化掩码：不再逐样本建 (N_ACTIONS,) 的 mask（那是主要开销）
+            bsz = len(sl)
+            mrow = torch.full((bsz, N_ACTIONS), -1e9)
             for i, (pick, legal_slots) in enumerate(sl):
-                mask = torch.full((N_ACTIONS,), -1e9)
-                mask[legal_slots] = 0.0
-                lp = F.log_softmax(logits[i] + mask, dim=-1)
-                chosen_l.append(lp[pick])
-                ent_l.append(-(lp.exp() * lp).sum())
-            pol = -(torch.stack(chosen_l) * adv_chunk).mean()
-            ent = torch.stack(ent_l).mean()
-            (pol - args.entropy * ent).backward()
+                for s in legal_slots:
+                    mrow[i, s] = 0.0
+            pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long)
+            logits, values = model(x, tx)
+            masked = logits + mrow
+            logp_all = F.log_softmax(masked, dim=-1)
+            logp_pick = logp_all.gather(1, pick_t.unsqueeze(1)).squeeze(1)
+            ent = -(logp_all.exp() * logp_all).sum(-1).mean()
+            adv_chunk = rt_chunk - values.detach()
+            pol = -(logp_pick * adv_chunk).mean()
+            vloss = F.mse_loss(values, rt_chunk)
+            (pol + vloss - args.entropy * ent).backward()
+            _pol_acc += pol.item()
+            _v_acc += vloss.item()
+            _ent_acc += ent.item()
+            _nb += 1
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
 
+        # 每轮存一次 checkpoint，避免长跑时一颗都产不出
+        if args.save_every and (it + 1) % args.save_every == 0:
+            os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+            torch.save({
+                "arch": "hanchan_a2c",
+                "state_dict": model.state_dict(),
+                "channels": args.channels,
+                "blocks": args.blocks,
+                "touch_dim": TOUCH.TOUCH_DIM,
+                "sit_dim": SIT_DIM,
+                "iter": it + 1,
+                "deals": tot_deals,
+                "win_rate": 100.0 * tot_wins / max(1, tot_deals),
+            }, args.out.replace(".pt", "_it%d.pt" % (it + 1)))
         if it % args.log_every == 0 or it == args.iters - 1:
             dt = time.time() - t0
             wr = 100.0 * tot_wins / max(1, tot_deals)
+            nb = max(1, _nb)
             print(f"iter {it:4d} deals={tot_deals:5d} win={wr:5.2f}% "
-                  f"R={rt.mean().item():+.3f} ent? "
+                  f"R={rt.mean().item():+.3f} "
+                  f"pol={_pol_acc / nb:+.4f} vloss={_v_acc / nb:.4f} "
+                  f"ent={_ent_acc / nb:.3f} "
                   f"giveup={give_up_seen} defend={defense_seen} "
                   f"last={lastchance_seen} {dt:.0f}s", flush=True)
+            _pol_acc = _v_acc = _ent_acc = 0.0
+            _nb = 0
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     torch.save({

@@ -1,0 +1,2 @@
+*.log
+vendor/**/__pycache__/
