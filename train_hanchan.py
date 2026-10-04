@@ -43,16 +43,56 @@ from mahjong import touch as TOUCH
 from mahjong.hanchan import HanchanState
 from mahjong.net import MahjongNet, count_params
 
-N_ACTIONS = 54
+N_ACTIONS = 47   # 34 打牌 + 13 特殊（含吃的 3 槽）
 VALID_SIZES = (1, 2, 4, 5, 7, 8, 10, 11, 13, 14)
 SIT_DIM = 12
+
+
+#: 特殊动作的固定槽位（2026-10-04 重写）
+SLOT_TSUMO = 34
+SLOT_RON = 35
+SLOT_RIICHI = 36
+SLOT_RYUUKYOKU = 37
+SLOT_NAGASHI = 38
+SLOT_PON = 39
+SLOT_MINKAN = 40
+SLOT_ADD_KAN = 41
+SLOT_ANKAN = 42
+SLOT_PASS = 43
+SLOT_CHI_BASE = 44          # 吃占 44..46（三种起手）
+
+SLOTS = {
+    E.ACT_TSUMO: SLOT_TSUMO,
+    E.ACT_RON: SLOT_RON,
+    E.ACT_RIICHI: SLOT_RIICHI,
+    E.ACT_RYUUKYOKU: SLOT_RYUUKYOKU,
+    E.ACT_NAGASHI: SLOT_NAGASHI,
+    E.ACT_PON: SLOT_PON,
+    E.ACT_MINKAN: SLOT_MINKAN,
+    E.ACT_ADD_KAN: SLOT_ADD_KAN,
+    E.ACT_ANKAN: SLOT_ANKAN,
+    E.ACT_PASS: SLOT_PASS,
+}
+
+SLOT_HINT = (
+    "此前的 slot_of 用 34 + (type*7+tile) % 20 哈希，把 11 种动作类型",
+    "折叠进 20 个槽——实测 20 个槽**全部冲突**。实测策略 96% 的动作",
+    "落在 slot 50（PASS 的槽），因为 PASS 在响应阶段总是合法、",
+    "是唯一零成本动作，早期策略必然倾向选它 -> 永不推进 -> 和了率 0%。",
+    "改为显式分配：每种动作类型一个固定槽，吃占 3 个（三种起手）。",
+)
 
 
 def slot_of(action):
     t = action.type
     if t == E.ACT_DISCARD and 0 <= action.tile < 34:
         return action.tile
-    return 34 + ((t * 7 + action.tile) % 20)
+    if t == E.ACT_CHI:
+        return SLOT_CHI_BASE + (action.tile % 3)
+    # 立直 / 暗杠 / 加杠 / 明杠 都是「带 tile 参数」的动作，
+    # 但同帧内只可能出现其中一个（响应阶段互斥），
+    # 所以可以共用固定槽；只有同帧可能出现多个变体的才需要分开。
+    return SLOTS.get(t, SLOT_PASS)
 
 
 def hand_shanten(env, p_idx):
@@ -77,6 +117,42 @@ def encode(env, encoder, hstate, p_idx):
     return vec, sh, sit, give_up, tf
 
 
+# 对照实验开关（2026-10-04）
+FORCE_WIN = False
+BEHAVIOUR = "random"
+
+
+def _pick_behaviour(env_, p, legal, slots):
+    """按 BEHAVIOUR 选动作，返回 (slot, action)。"""
+    if FORCE_WIN:
+        ws = [s for s, a in zip(slots, legal)
+              if a.type in (E.ACT_TSUMO, E.ACT_RON)]
+        if ws:
+            return ws[0], legal[slots.index(ws[0])]
+    if BEHAVIOUR == "shanten" and env_.phase == E.Phase.DISCARD:
+        ts = [a for a in legal
+              if a.type in (E.ACT_TSUMO, E.ACT_RYUUKYOKU)]
+        if ts:
+            return slot_of(ts[0]), ts[0]
+        disc = [(s, a) for s, a in zip(slots, legal)
+                if a.type == E.ACT_DISCARD]
+        if disc:
+            pl = env_.players[p]
+            best, bv = disc[0][0], -99
+            for s, a in disc:
+                if a.tile in pl.hand:
+                    pl.hand.remove(a.tile)
+                pl.hand.sort()
+                v = -hand_shanten(env_, p)
+                pl.hand.append(a.tile)
+                pl.hand.sort()
+                if v > bv:
+                    bv, best = v, s
+            return best, legal[slots.index(best)]
+    pick = random.choice(slots)
+    return pick, legal[slots.index(pick)]
+
+
 def play_one_deal(model, hstate, seed, device, temperature, encoder,
                   shanten_weight):
     """跑一局（一个 deal）。采样与前向解耦以省 CPU。
@@ -98,8 +174,7 @@ def play_one_deal(model, hstate, seed, device, temperature, encoder,
                 actions[p] = E.PASS_ACTION
                 continue
             slots = [slot_of(a) for a in legal]
-            pick = random.choice(slots)
-            act = legal[slots.index(pick)]
+            pick, act = _pick_behaviour(env, p, legal, slots)
             actions[p] = act
             sa = 8
             if env.phase == E.Phase.DISCARD:
@@ -133,14 +208,22 @@ def main():
     ap.add_argument("--out", default="checkpoints/hanchan_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
     ap.add_argument("--save-every", type=int, default=5)
+    ap.add_argument("--force-win", action="store_true")
+    ap.add_argument("--behaviour", default="random",
+                    choices=["random", "shanten"])
     args = ap.parse_args()
 
+    global FORCE_WIN, BEHAVIOUR
+    FORCE_WIN = args.force_win
+    BEHAVIOUR = args.behaviour
     device = "cpu"
     torch.manual_seed(args.seed0)
     random.seed(args.seed0)
     np.random.seed(args.seed0)
 
-    model = MahjongNet(channels=args.channels, n_blocks=args.blocks, touch_dim=TOUCH.TOUCH_DIM).to(device)
+    model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
+                      n_actions=N_ACTIONS,
+                      touch_dim=TOUCH.TOUCH_DIM).to(device)
     # 观测维度增加了 12 维局势特征
     base = O2.OBS_TENSOR_DIM
     model.head_fc[0] = torch.nn.Linear(
