@@ -11,6 +11,7 @@ from . import ruleset as RS
 from . import hand as H
 from . import scoring as S
 from . import tiles as T
+from . import refengine as REF
 from .tiles import NUM_TILES, NUM_TOTAL_TILES
 
 N_PLAYERS = 4
@@ -338,8 +339,13 @@ class MahjongEnv:
             acts.append(Action(ACT_TSUMO))
 
         # 立直：门前 + 巡目 >= 4 + 点棒 >= 1000 + 打后听牌
+        # 每一张「打出后能听牌」的牌各生成一个 RIICHI(t) 动作——
+        # 立直与打牌是同一个动作（宣告后立刻打出那张牌），
+        # 原实现不传 tile，导致动作里没有「打哪张」的信息。
         if self._can_riichi(p_idx):
-            acts.append(Action(ACT_RIICHI))
+            for t in sorted(seen):
+                if self._is_tenpai(p_idx, extra=t):
+                    acts.append(Action(ACT_RIICHI, t))
 
         # 宣言流局：听牌
         if self._is_tenpai(p_idx):
@@ -361,23 +367,26 @@ class MahjongEnv:
         return acts
 
     def _can_tsumo(self, p_idx):
-        """能否自摸和了：牌型成立 + 非振听 + 有役。"""
+        """能否自摸和了：牌型成立 + 非振听 + 有役。
+
+        算分与役判定改用**开源引擎**（refengine），
+        自研的 hand.py/yaku.py 在使用中暴露过多个真 bug。
+        """
         p = self.players[p_idx]
         c = p.full_counts()
         if sum(c) != 14:
             return False
-        meld_count = len(p.melds)
-        is_menzen = p.is_menzen()
-
-        ok_shape = H.is_standard_complete(c, meld_count) or \
-            H.is_chiitoitsu(c, meld_count) or \
-            H.is_kokushi(c, meld_count)
-        if not ok_shape:
-            return False
         if p.furiten:
             return False
-        # 至少要有一个役（无役不能和）
-        return self._has_any_yaku(p_idx, c, meld_count)
+        # 和了牌 = 手牌里最后摸进来的那张（本实现用最大 id 近似，
+        # 因为引擎没记录「哪张是刚摸的」；对判定影响仅限于役的构成）
+        win_tile = max((t for t in range(34) if c[t] > 0), default=None)
+        if win_tile is None:
+            return False
+        # c 是打牌前的 14 张，最后那张即「刚摸的」，所以要剔除一张
+        c2 = list(c)
+        c2[win_tile] -= 1
+        return REF.can_win_with(c2, win_tile, len(p.melds))
 
     def _can_riichi(self, p_idx):
         """能否立直：门前 + 第 4 巡后 + 点棒 >= 1000 + 存在「打后听牌」的牌。"""
@@ -421,17 +430,8 @@ class MahjongEnv:
             total = 13
         if total != 13:
             return False
-        for t in range(NUM_TILES):
-            if c[t] >= 4:
-                continue
-            c[t] += 1
-            ok = (H.is_standard_complete(c, meld_count)
-                  or H.is_chiitoitsu(c, meld_count)
-                  or H.is_kokushi(c, meld_count))
-            c[t] -= 1
-            if ok:
-                return True
-        return False
+        # 用开源向听数判定：0 = 听牌，-1 = 已和了
+        return REF.ref_shanten(c) <= 0
 
     def _has_any_yaku(self, p_idx, counts, meld_count, is_tsumo=True,
                        winning_tile=None):
@@ -612,8 +612,26 @@ class MahjongEnv:
 
         return acts
 
-    def _can_ron(self, p_idx):
-        """能否和这张弃牌。振听只禁自摸，不禁放铳和了。"""
+    def _is_furiten_for_tile(self, p_idx, tile):
+        """振听判定：对指定牌是否振听（舍张振听）。
+
+        规则（RULES.md §11）：自己牌河里出现过的牌，若它能让手牌和了，
+        则处于振听状态。
+
+        返回 True 表示「这张牌一来就振听」。
+        """
+        p = self.players[p_idx]
+        if tile not in p.river:
+            return False
+        return REF.can_win_with(p.full_counts(), tile, len(p.melds))
+
+    def _can_ron(self, p_idx, from_chankan=False):
+        """能否和这张弃牌。
+
+        振听规则（RULES.md §11、§12.2）：
+        - **普通放铳**：振听**可以**和（振听只禁自摸）
+        - **抢杠**：振听**不可以**和（chankan furiten）
+        """
         p = self.players[p_idx]
         tile = self.last_discard
         if tile is None:
@@ -621,15 +639,10 @@ class MahjongEnv:
         c = p.full_counts()
         if c[tile] >= 4:
             return False
-        c[tile] += 1
         meld_count = len(p.melds)
-        ok = (H.is_standard_complete(c, meld_count)
-              or H.is_chiitoitsu(c, meld_count)
-              or H.is_kokushi(c, meld_count))
-        if not ok:
-            return False
-        return self._has_any_yaku(p_idx, c, meld_count, is_tsumo=False,
-                                  winning_tile=tile)
+        if from_chankan and p.furiten:
+            return False          # 抢杠振听：不可和
+        return REF.can_win_with(c, tile, meld_count)
     # ------------------------------------------------------------------
     # 推进对局
     # ------------------------------------------------------------------
@@ -665,16 +678,9 @@ class MahjongEnv:
         if not river:
             p.furiten = False
             return
-        # 尝试每张「已打出的牌」能否和了
+        # 尝试每张「已打出的牌」能否和了（用开源引擎判定）
         for t in river:
-            if c[t] >= 4:
-                continue
-            c2 = list(c)
-            c2[t] += 1
-            ok = (H.is_standard_complete(c2, meld_count)
-                  or H.is_chiitoitsu(c2, meld_count)
-                  or H.is_kokushi(c2, meld_count))
-            if ok:
+            if REF.can_win_with(c, t, meld_count):
                 p.furiten = True
                 return
         p.furiten = False

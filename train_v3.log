@@ -1,0 +1,11 @@
+device=cuda params=1,652,967 games/iter=4 shanten_w=0.3
+iter     0 games=     4 win=    0 ( 0.00%) draw=     4 pol=-0.1342 ent=2.944 R=-0.017 10s (0.4 g/s)
+iter     5 games=    24 win=    0 ( 0.00%) draw=    24 pol=-0.1409 ent=3.007 R=-0.018 70s (0.3 g/s)
+iter    10 games=    44 win=    0 ( 0.00%) draw=    44 pol=-0.1488 ent=2.847 R=-0.018 119s (0.4 g/s)
+iter    15 games=    64 win=    0 ( 0.00%) draw=    64 pol=-0.3018 ent=2.572 R=-0.015 172s (0.4 g/s)
+iter    20 games=    84 win=    0 ( 0.00%) draw=    84 pol=-0.0557 ent=1.541 R=-0.010 227s (0.4 g/s)
+iter    25 games=   104 win=    0 ( 0.00%) draw=   104 pol=-0.0654 ent=1.161 R=-0.015 283s (0.4 g/s)
+iter    30 games=   124 win=    0 ( 0.00%) draw=   124 pol=-0.0358 ent=0.984 R=-0.011 333s (0.4 g/s)
+iter    35 games=   144 win=    0 ( 0.00%) draw=   144 pol=-0.0511 ent=1.021 R=-0.012 383s (0.4 g/s)
+iter    40 games=   164 win=    0 ( 0.00%) draw=   164 pol=-0.0395 ent=1.095 R=-0.012 437s (0.4 g/s)
+iter    45 games=   184 win=    0 ( 0.00%) draw=   184 pol=-0.0714 ent=1.025 R=-0.012 491s (0.4 g/s)

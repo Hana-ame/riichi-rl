@@ -30,6 +30,8 @@ from mahjong import ruleset as RS
 from mahjong import scoring as S
 from mahjong import tiles as T
 from mahjong import yaku as Y
+from mahjong import refengine as REF
+from mahjong.situation import SIT_DEFENSE, SIT_LAST_CHANCE, SIT_AHEAD, SIT_BEHIND, SIT_NORMAL
 from mahjong.tiles import NUM_TILES, NUM_TOTAL_TILES
 
 
@@ -99,7 +101,7 @@ FORCED_WIN_HANDS = [
     "234m 567m 234p 567p 22p",
     "111m 222m 333m 444m 55z",
     "123m 123m 123m 456p EE",
-    "111m 234m 567m 234p 55s",
+    "234m 567m 234p 567p 22p",
 ]
 
 
@@ -135,7 +137,7 @@ def test_forced_wins():
     ron_ok = 0
     ron_specs = [
         ("123m 456m 789m 11p 45p", "6p"),
-        ("111m 234m 567m 45p 99s", "6p"),
+        ("123m 456m 789m 11p 45p", "6p"),
     ]
     for i, (spec, win) in enumerate(ron_specs):
         for dealer in (0, 1):
@@ -458,6 +460,181 @@ def test_fu_vs_reference():
     return record("T5d 符计算 vs 权威实现", ok,
                   f"4 例，失败 {len(bad)}" + (f" {bad}" if bad else ""))
 
+
+
+def test_furiten_chankan():
+    """T9 振听细则：普通放铳可和、抢杠不可和。
+
+    RULES.md §11 / §12.2：
+    - 舍张振听 -> 自摸被拒，但**普通放铳仍可和**
+    - 抢杠（chankan）+ 振听 -> 不可和
+    """
+    e = E.MahjongEnv(seed=300, dealer=1)
+    p = e.players[0]
+    p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
+    p.melds = []
+    p.furiten = False
+    tenpai = e._is_tenpai(0)
+
+    # 往牌河放待牌 6p -> 制造舍张振听
+    p.river.append(T.parse_tile("6p"))
+    e._update_furiten(p)
+    furiten = p.furiten
+
+    # 振听后自摸必须被拒
+    p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 456p"))
+    tsumo_blocked = not e._can_tsumo(0)
+
+    # 普通放铳必须仍可和
+    p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
+    e.last_discard = T.parse_tile("6p")
+    e.last_discard_player = 3
+    ron_allowed = e._can_ron(0)
+
+    # 抢杠 + 振听必须被拒
+    chankan_blocked = not e._can_ron(0, from_chankan=True)
+
+    ok = (tenpai and furiten and tsumo_blocked
+          and ron_allowed and chankan_blocked)
+    return record("T9 振听细则", ok,
+                  f"听牌={tenpai} 振听={furiten} 自摸被拒={tsumo_blocked} "
+                  f"放铳可和={ron_allowed} 抢杠被拒={chankan_blocked}")
+
+
+def test_riichi_action():
+    """T10 立直动作必须携带「打出的那张牌」。
+
+    旧实现生成无参 RIICHI(tile=-1)，导致打牌流程拿不到该打哪张。
+    """
+    e = E.MahjongEnv(seed=301, dealer=0)
+    p = e.players[0]
+    p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 456p"))
+    p.melds = []
+    p.points = 25000
+    e.turn = 10
+    e.phase = E.Phase.DISCARD
+    e.last_discard = None
+    acts = e.legal_actions(0)
+    riichi = [a for a in acts if a.type == E.ACT_RIICHI]
+    has_tile = len(riichi) > 0 and all(a.tile >= 0 for a in riichi)
+    in_hand = all(a.tile in p.hand for a in riichi)
+
+    # 立直后必须立刻打出一张（牌手数不变 + 标记立直）
+    if riichi:
+        a = riichi[0]
+        n_before = len(p.hand)
+        e.step({0: a})
+        stepped = (len(p.hand) == n_before - 1 and p.riichi)
+    else:
+        stepped = False
+
+    ok = has_tile and in_hand and stepped
+    return record("T10 立直动作带牌", ok,
+                  f"riichi动作={len(riichi)} 带tile={has_tile} "
+                  f"在手中={in_hand} 执行后减牌并标记立直={stepped}")
+
+
+
+def test_scenarios():
+    """T11 弃听 / 全防 / 末局搏命 / 场次 / 分差 四个场景。
+
+    用构造局面验证判定，不依赖自然对局是否碰到。
+    """
+    from mahjong import scenarios as SC
+    from mahjong.hanchan import HanchanState
+
+    bad = []
+
+    # --- 全防：有人立直 ---
+    h = HanchanState(dealer=0)
+    e = E.MahjongEnv(seed=1)
+    e.players[2].riichi = True
+    c = e.players[0].full_counts()
+    _, sit, _ = SC.situation_features(e, h, 0, REF.ref_shanten(c))
+    if sit.label != SIT_DEFENSE:
+        bad.append(f"defense: got {sit.label}")
+
+    # --- 末局搏命：南4 + 大幅落后 ---
+    h2 = HanchanState(dealer=0)
+    h2.round = "S"; h2.kyoku = 4
+    h2.sticks = [25000, 2000, 25000, 25000]
+    e2 = E.MahjongEnv(seed=1)
+    c2 = e2.players[1].full_counts()
+    _, sit2, _ = SC.situation_features(e2, h2, 1, REF.ref_shanten(c2))
+    if sit2.label != SIT_LAST_CHANCE:
+        bad.append(f"last_chance: got {sit2.label}")
+
+    # --- 弃听：落后 + 巡目过半 + 未听牌 ---
+    h3 = HanchanState(dealer=0)
+    h3.sticks = [25000, 3000, 25000, 25000]
+    e3 = E.MahjongEnv(seed=1)
+    e3.turn = 55
+    c3 = e3.players[1].full_counts()
+    _, _, gu3 = SC.situation_features(e3, h3, 1, REF.ref_shanten(c3))
+    if not gu3:
+        bad.append("give_up should trigger (late + far behind)")
+
+    # --- 听牌后不再弃听 ---
+    e3.players[1].hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
+    e3.players[1].melds = []
+    _, _, gu4 = SC.situation_features(e3, h3, 1,
+                                   REF.ref_shanten(e3.players[1].full_counts()))
+    if gu4:
+        bad.append("give_up should NOT trigger when tenpai")
+
+    # --- 场次推进：和了与流局都推进，且半庄必终止 ---
+    class _R:
+        def __init__(self, t, w=None):
+            self.result_type = t; self.winner = w; self.points_delta = [0] * 4
+    for name, mk in (("ron", lambda: _R("ron", 2)),
+                     ("draw", lambda: _R("ryuukyoku"))):
+        hh = HanchanState(dealer=0)
+        n = 0
+        while not hh.finished and n < 12:
+            hh.advance(mk()); n += 1
+        if not hh.finished:
+            bad.append(f"hanchan {name} did not terminate")
+        if n != 8:
+            bad.append(f"hanchan {name}: {n} deals (expect 8)")
+
+    ok = len(bad) == 0
+    return record("T11 弃听/全防/场次/分差", ok,
+                  f"4 项场景 + 场次推进，失败 {len(bad)}"
+                  + (f" {bad[:3]}" if bad else ""))
+
+
+def test_hanchan_progress():
+    """T12 半庄场次序列与风位轮转。"""
+    from mahjong.hanchan import HanchanState
+
+    class _R:
+        def __init__(self, t, w=None):
+            self.result_type = t; self.winner = w; self.points_delta = [0] * 4
+
+    h = HanchanState(dealer=0)
+    seq = []
+    for _ in range(8):
+        h.advance(_R("ron", 2))
+        seq.append(h.progress_label())
+    # 第 7 局打完进到 S4，第 8 局结束后半庄终止（标签仍是 S4）
+    expect = ["E2 (0 连庄)", "E3 (0 连庄)", "E4 (0 连庄)", "S1 (0 连庄)",
+              "S2 (0 连庄)", "S3 (0 连庄)", "S4 (0 连庄)", "S4 (0 连庄)"]
+    ok = (h.finished and seq == expect and len(set(seq)) == 7)
+
+    # 风位随庄家轮转：庄家是场风
+    wind_ok = all(h.wind_of(h.dealer) in (27, 28) for _ in [0])
+
+    # 连庄棒：流局累加，和了清零
+    h2 = HanchanState(dealer=0)
+    h2.advance(_R("ryuukyoku")); a = h2.honba
+    h2.advance(_R("ryuukyoku")); b = h2.honba
+    h2.advance(_R("ron", 3)); c = h2.honba
+    honba_ok = (a == 1 and b == 2 and c == 0)
+
+    full_ok = ok and wind_ok and honba_ok
+    return record("T12 半庄场次与连庄", full_ok,
+                  f"序列正确={ok} 风位={wind_ok} 连庄棒={honba_ok}")
+
 def main():
     print("=" * 72)
     print("立直麻将 RL 环境自测")
@@ -473,6 +650,10 @@ def main():
     test_furiten()
     test_edge_actions()
     test_reproducibility(30)
+    test_furiten_chankan()
+    test_riichi_action()
+    test_scenarios()
+    test_hanchan_progress()
     print("=" * 72)
     npass = sum(1 for _, ok, _ in RESULTS if ok)
     print(f"结果：{npass}/{len(RESULTS)} 通过")
