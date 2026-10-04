@@ -113,8 +113,15 @@ class GreedyTenpai(Policy):
         return best if best is not None else legal[0]
 
     def _waits(self, env, p_idx):
+        """数「听牌待牌种数」。
+
+        前置条件：手牌 13 张。传 14 张进来必然返回 0——
+        14 张永远「不完整」（它在等第 14 张），所以必须先打掉一张。
+        """
         p = env.players[p_idx]
         c = p.full_counts()
+        if sum(c) != 13:
+            return 0
         mc = len(p.melds)
         n = 0
         for t in range(NUM_TILES):
