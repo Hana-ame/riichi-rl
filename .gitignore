@@ -1,2 +1,28 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytype/
+.mypy_cache/
+
+# --- Logs / 运行产物 ---
 *.log
+*.jsonl.tmp
+probe_once.jsonl
+
+# --- 第三方 vendored 引擎自身的 Python 缓存 ---
 vendor/**/__pycache__/
+vendor/**/__pycache__
+vendor/**/*.pyc
+
+# --- 大体积可再生数据（不入库，用 data/dl_houou.sh + build_all.sh 重建）---
+# 原始天鳳鳳凰室牌谱 shard（~528M，来源 1nfrared218/tenhou-mjai-riichi-training）
+data/houou/*.tar
+data/houou/*.tar.part
+# build_cache.py 的编译产物（~585M，从 *.tar 编译）
+data/cache/*.npz
+# 下载 / 编译残留
+data/*.part
+data/*.tmp
