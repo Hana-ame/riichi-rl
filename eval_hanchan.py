@@ -137,8 +137,10 @@ def run(fn, n_hanchans, label, east_only=False):
     pct = 100.0 * wins / max(1, deals)
     tanyao = 100.0 * yaku_c.get("断幺九", 0) / max(1, wins)
     pinfu = 100.0 * yaku_c.get("平和", 0) / max(1, wins)
-    print("%-20s win=%3d/%3d (%5.2f%%)  断幺=%4.1f%% 平和=%4.1f%%  %4.0fs"
-          % (label, wins, max(1, deals), pct, tanyao, pinfu, dt))
+    seat_pct = pct / 4.0   # 四席同一策略时：局和牌率/4 ≈ 单座位和牌率
+    print("%-20s 局和牌=%3d/%3d (%5.2f%%, 座位≈%5.2f%%)  断幺=%4.1f%% "
+          "平和=%4.1f%%  %4.0fs"
+          % (label, wins, max(1, deals), pct, seat_pct, tanyao, pinfu, dt))
     return pct
 
 
