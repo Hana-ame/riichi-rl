@@ -57,6 +57,7 @@ def play_one(seed, policy_name="greedy_tenpai", policy_seed=0):
         "shape_furiten": 0,     #   └ 其中因振听
         "shape_no_yaku": 0,     #   └ 其中因无役
         "tenpai_at_draw": 0,    # 摸牌后（弃牌阶段）自己处于听牌的次数
+        "tenpai_reach": [False, False, False, False],  # 本局是否进过听牌
         "ryuukyoku_reason": None,
         "conservation_ok": None,
         "delta_ok": None,
@@ -74,6 +75,8 @@ def play_one(seed, policy_name="greedy_tenpai", policy_seed=0):
             if not legal:
                 acts[p] = E.PASS_ACTION
                 continue
+            if not st["tenpai_reach"][p] and env._is_tenpai(p):
+                st["tenpai_reach"][p] = True
             # --- 规则读数（先记，再让策略选）---
             if env.phase == E.Phase.DISCARD and p == env.turn_player:
                 if env._is_tenpai(p):
@@ -122,6 +125,7 @@ def play_one(seed, policy_name="greedy_tenpai", policy_seed=0):
         st["ron_settled"] = 1
     # 守恒：各家应收点数 + 桌上供托 == 开局总点数 + 起手供托
     st["start_kyokuten"] = env.initial_kyokuten
+    st["tenpai_reach"] = [bool(x) for x in st["tenpai_reach"]]
     total = sum(result.scores) + st["kyokuten"]
     st["conservation_ok"] = (total == start_total + env.initial_kyokuten)
     # delta 守恒：sum(delta) = 本局立直供托 + 起手供托 - 结束供托
@@ -164,6 +168,17 @@ def aggregate(rows, elapsed):
         1 for r in rows if r["conservation_ok"] is False)
     out["violations"]["delta"] = sum(1 for r in rows if r["delta_ok"] is False)
     out["violations"]["unfinished"] = out["results"]["unfinished"]
+    out["tenpai"] = {
+        "seats_reached": sum(1 for r in ok for x in r["tenpai_reach"] if x),
+        "seat_deals": 4 * len(ok),
+        "seat_rate_pct": round(100.0 * sum(
+            1 for r in ok for x in r["tenpai_reach"] if x)
+            / max(1, 4 * len(ok)), 1),
+        "deals_with_any_tenpai": sum(
+            1 for r in ok if any(r["tenpai_reach"])),
+        "deal_rate_pct": round(100.0 * sum(
+            1 for r in ok if any(r["tenpai_reach"])) / max(1, len(ok)), 1),
+    }
     out["totals"]["ron_legal_to_settled"] = (
         f'{out["totals"]["ron_legal"]}'
         f' -> {out["results"].get("ron", 0)} settled'
