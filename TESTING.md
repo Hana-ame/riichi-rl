@@ -45,8 +45,9 @@ $PY engine_stats.py --games 200
 | `tests/test_arena.py` | `arena_elo.py` | 3 | Elo 逐对更新零和、ELO.md 渲染动态判读 |
 | `tests/test_aux_tasks.py` | `mahjong/aux_tasks.py` | 9 | 额外任务判定/奖励、放铳惩罚、轨迹任务、断幺/平和风格任务与权重 |
 | `tests/test_version_ladder.py` | `version_ladder.py` | 8 | 版本天梯晋级闸门（PASS/FAIL/HOLD、CI、Elo 噪声带、样本不足不放过） |
+| `tests/test_version_registry.py` | `version_registry.py` | 5 | 版本血缘识别、架构判定（47/54/243/预测器）、参数量统计 |
 
-合计 **91 个用例**，主测试套件约 2.2 秒。
+合计 **96 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
