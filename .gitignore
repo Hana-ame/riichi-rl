@@ -44,3 +44,6 @@ data/*.tmp
 data/selfplay/
 data/bc2/
 browser-screenshots/
+
+# 教师 BC 数据集（可再生成，2026-11-05）
+data/teacher*.npz
