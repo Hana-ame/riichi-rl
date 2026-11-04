@@ -29,6 +29,7 @@ from version_benchmark import make_agent
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SPEC_A = "hybrid:teacher47_v3"
 SPEC_B = "hybridd:teacher47_v3"
+SPEC_C = "hybridw:teacher47_v3"
 
 
 def two_prop_ci(k1, n1, k2, n2):
@@ -43,7 +44,7 @@ def two_prop_ci(k1, n1, k2, n2):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--games", type=int, default=240)
+    ap.add_argument("--games", type=int, default=500)
     ap.add_argument("--seed", type=int, default=20261105)
     ap.add_argument("--out-md", default=os.path.join(
         ROOT, "rules", "DANGER_VALIDATION_2026-11-05.md"))
@@ -52,11 +53,13 @@ def main():
     args = ap.parse_args()
 
     set_inference_threads(2)
-    a = make_agent(SPEC_A, os.path.join(CKPT, "teacher47_v3.pt"))
-    b = make_agent(SPEC_B, os.path.join(CKPT, "teacher47_v3.pt"))
-    refs = [RuleAgent("greedy_tenpai"), RuleAgent("call_first")]
-    specs = [("hybrid", a), ("hybridd", b),
-             ("greedy_tenpai", refs[0]), ("call_first", refs[1])]
+    base = os.path.join(CKPT, "teacher47_v3.pt")
+    a = make_agent(SPEC_A, base)
+    b = make_agent(SPEC_B, base)
+    c = make_agent(SPEC_C, base)
+    ref = RuleAgent("greedy_tenpai")
+    specs = [("hybrid", a), ("hybridd", b), ("hybridw", c),
+             ("greedy_tenpai", ref)]
 
     st = {name: {"games": 0, "wins": 0, "pts": 0.0, "dealin": 0}
           for name, _ in specs}
@@ -89,37 +92,46 @@ def main():
                      "avg_pt": round(s["pts"] / n, 1),
                      "deal_in_rate": round(100.0 * s["dealin"] / n, 2)}
 
-    d, lo, hi = two_prop_ci(st["hybrid"]["dealin"], st["hybrid"]["games"],
-                             st["hybridd"]["dealin"], st["hybridd"]["games"])
-    if hi < 0:
-        verdict = "PASS（hybridd 放铳率显著下降）"
-    elif lo > 0:
-        verdict = "FAIL（hybridd 放铳率显著上升）"
-    else:
-        verdict = "INCONCLUSIVE（放铳率差异不显著）"
+    def judge(name):
+        d, lo, hi = two_prop_ci(st["hybrid"]["dealin"], st["hybrid"]["games"],
+                                st[name]["dealin"], st[name]["games"])
+        if hi < 0:
+            v = f"PASS（{name} 放铳率显著下降）"
+        elif lo > 0:
+            v = f"FAIL（{name} 放铳率显著上升）"
+        else:
+            v = "INCONCLUSIVE（放铳率差异不显著）"
+        return d, lo, hi, v
+
+    d1, lo1, hi1, v1 = judge("hybridd")
+    d2, lo2, hi2, v2 = judge("hybridw")
 
     lines = ["# 危险张验证：hybrid vs hybridd（2026-11-05）", "",
-             f"> 同批 {args.games} 局、两版本同局占座、座位轮换；"
+             f" > 同批 {args.games} 局、三版本同局占座、座位轮换；"
              "对手 = greedy_tenpai + call_first（都会立直/攻）。", "",
              "| Agent | 局数 | 和牌率 | 场均得分 | 放铳率 |",
              "|---|---|---|---|---|"]
-    for name in ("hybrid", "hybridd", "greedy_tenpai", "call_first"):
+    for name in ("hybrid", "hybridd", "hybridw", "greedy_tenpai"):
         r = res[name]
         lines.append(f"| {name} | {r['games']} | {r['win_rate']}% | "
                      f"{r['avg_pt']:+.1f} | {r['deal_in_rate']}% |")
-    lines += ["", "## 放铳率差异（hybridd − hybrid）", "",
-              f"- 绝对差：{d * 100:+.2f} pt，95% CI [{lo * 100:+.2f}, "
-              f"{hi * 100:+.2f}]", f"- 判定：**{verdict}**", "",
-              "> 差值为负表示 hybridd 放铳更少。样本 "
-              f"{st['hybrid']['games']} 局/版；若 INCONCLUSIVE 需继续加局。"]
+    lines += ["", "## 放铳率差异（相对 hybrid）", "",
+              f"- hybridd（持有概率）→ hybrid：{d1 * 100:+.2f} pt，"
+              f"95% CI [{lo1 * 100:+.2f}, {hi1 * 100:+.2f}]，**{v1}**",
+              f"- hybridw（和牌张概率）→ hybrid：{d2 * 100:+.2f} pt，"
+              f"95% CI [{lo2 * 100:+.2f}, {hi2 * 100:+.2f}]，**{v2}**", "",
+              f"> 差值负=该版本放铳更少；样本 {st['hybrid']['games']} 局/版。"]
     text = "\n".join(lines)
     os.makedirs(os.path.dirname(args.out_md), exist_ok=True)
     with open(args.out_md, "w", encoding="utf-8") as f:
         f.write(text + "\n")
     payload = {"games": args.games, "specs": [s[0] for s in specs],
                "results": res,
-               "deal_in_diff": {"mean": round(d, 4), "ci_lo": round(lo, 4),
-                                "ci_hi": round(hi, 4), "verdict": verdict}}
+               "deal_in_diff": {
+                   "hybridd": {"mean": round(d1, 4), "ci_lo": round(lo1, 4),
+                               "ci_hi": round(hi1, 4), "verdict": v1},
+                   "hybridw": {"mean": round(d2, 4), "ci_lo": round(lo2, 4),
+                               "ci_hi": round(hi2, 4), "verdict": v2}}}
     with open(args.out_json, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=1)
     print("\n" + text, flush=True)

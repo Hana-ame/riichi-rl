@@ -243,3 +243,59 @@ class HybridShantenDangerAgent(HybridShantenAgent):
             mask[s] = 0.0
         pick_idx, pick_slot = max(ok, key=lambda x: logits[x[1]] + mask[x[1]])
         return legal[pick_idx]
+
+
+class HybridShantenWinDangerAgent(HybridShantenDangerAgent):
+    """混合 + 「对手和牌张概率」危险度（升级版危险张）。
+
+    与父类（用 opponent_model 的「对手持有该牌概率」）不同：这里用
+    `danger_model.DangerNet` 直接预测**对手每张牌是不是他的和牌张**
+    （从牌河/副露/立直等可见信息），即真正会在放铳时要命的牌。
+    """
+
+    kind = "hybrid_win"
+
+    def __init__(self, name, ckpt, danger_ckpt=None):
+        super().__init__(name, ckpt)
+        self.danger_ckpt = danger_ckpt or os.path.join(
+            ROOT, "checkpoints", "danger_model.pt")
+        self.danger_net = None
+        if os.path.exists(self.danger_ckpt):
+            from danger_model import DangerNet
+            ck = torch.load(self.danger_ckpt, map_location="cpu",
+                            weights_only=False)
+            self.danger_net = DangerNet()
+            self.danger_net.load_state_dict(ck["state_dict"])
+            self.danger_net.eval()
+
+    def danger_scores(self, env, p_idx):
+        if self.danger_net is None:
+            return np.zeros(NUM_TILES, dtype=np.float32)
+        from opponent_model import build_features
+        me = env.players[p_idx]
+        hand = np.asarray(me.counts(), dtype=np.int8)
+        left = len(env.wall) - env.wall_idx
+        di = env.dora_indicator
+        dora = int(di) if (di is not None and di >= 0) else -1
+        danger = np.zeros(NUM_TILES, dtype=np.float32)
+        for t in range(4):
+            if t == p_idx:
+                continue
+            tp = env.players[t]
+            target_river = np.zeros(NUM_TILES, dtype=np.int8)
+            other_rivers = np.zeros(NUM_TILES, dtype=np.int8)
+            for tile in tp.river:
+                target_river[tile] += 1
+            for j in range(4):
+                if j in (p_idx, t):
+                    continue
+                for tile in env.players[j].river:
+                    other_rivers[tile] += 1
+            f = build_features(hand, target_river, other_rivers,
+                               len(tp.melds), 1 if tp.riichi else 0,
+                               int(target_river.sum()), left, dora)
+            with torch.no_grad():
+                pr = self.danger_net(torch.from_numpy(f).unsqueeze(0))[0].numpy()
+            w = 1.0 if tp.riichi else 0.25
+            danger += w * np.asarray(pr)
+        return danger

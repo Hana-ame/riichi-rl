@@ -1,41 +1,49 @@
 {
- "games": 240,
+ "games": 500,
  "specs": [
   "hybrid",
   "hybridd",
-  "greedy_tenpai",
-  "call_first"
+  "hybridw",
+  "greedy_tenpai"
  ],
  "results": {
   "hybrid": {
-   "games": 240,
-   "win_rate": 12.92,
-   "avg_pt": -94.9,
-   "deal_in_rate": 5.83
+   "games": 500,
+   "win_rate": 9.2,
+   "avg_pt": -484.7,
+   "deal_in_rate": 7.6
   },
   "hybridd": {
-   "games": 240,
-   "win_rate": 12.92,
-   "avg_pt": 908.6,
-   "deal_in_rate": 5.42
+   "games": 500,
+   "win_rate": 10.4,
+   "avg_pt": 774.4,
+   "deal_in_rate": 5.8
+  },
+  "hybridw": {
+   "games": 500,
+   "win_rate": 7.2,
+   "avg_pt": -637.6,
+   "deal_in_rate": 6.6
   },
   "greedy_tenpai": {
-   "games": 240,
-   "win_rate": 10.42,
-   "avg_pt": -4.9,
-   "deal_in_rate": 4.58
-  },
-  "call_first": {
-   "games": 240,
-   "win_rate": 0.0,
-   "avg_pt": -1417.2,
-   "deal_in_rate": 12.92
+   "games": 500,
+   "win_rate": 8.6,
+   "avg_pt": -604.1,
+   "deal_in_rate": 5.8
   }
  },
  "deal_in_diff": {
-  "mean": -0.0042,
-  "ci_lo": -0.0454,
-  "ci_hi": 0.0371,
-  "verdict": "INCONCLUSIVE（放铳率差异不显著）"
+  "hybridd": {
+   "mean": -0.018,
+   "ci_lo": -0.049,
+   "ci_hi": 0.013,
+   "verdict": "INCONCLUSIVE（放铳率差异不显著）"
+  },
+  "hybridw": {
+   "mean": -0.01,
+   "ci_lo": -0.0418,
+   "ci_hi": 0.0218,
+   "verdict": "INCONCLUSIVE（放铳率差异不显著）"
+  }
  }
 }
