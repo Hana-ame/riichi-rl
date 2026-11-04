@@ -225,6 +225,7 @@ def build_participants():
     add(HanchanAgent, "a2c_r10(半庄A2C)", "a2c_r10_it25.pt")
     add(HanchanAgent, "dagger(半庄DAgger)", "dagger_it120.pt")
     add(HanchanAgent, "hc(半庄HC)", "hc_r13_it55.pt")
+    add(HanchanAgent, "teacher47_v3(加权BC)", "teacher47_v3.pt")
     add(BCAgent, "bc_v1(人类牌谱教师)", "bc_v1_last.pt")
     return P
 
@@ -267,7 +268,9 @@ def play_one(agents, seed, env_cls=HanchanState):
         done, bonus = tr.finish(env, r)
         aux_done.append(done)
         aux_bonus.append(bonus)
-    return delta, winner, aux_bonus, aux_done
+    deal_in = [r.result_type == "ron" and r.from_player == pos
+               for pos in range(4)]
+    return delta, winner, aux_bonus, aux_done, deal_in
 
 
 def elo_update(ratings, sel, deltas, K=24.0):
@@ -290,7 +293,7 @@ def elo_update(ratings, sel, deltas, K=24.0):
             ratings[b] += K * ((1.0 - sa) - (1.0 - ea))
 
 
-def render_markdown(rows, n_games, aux_weight=1.0):
+def render_markdown(rows, n_games, aux_weight=1.0, selection_note=""):
     """把排名字典列表渲染成 ELO.md（纯函数，便于从 ELO.json 重新生成）。
 
     rows 若带 avg_bonus（额外任务奖励），表里多一列并附任务完成率汇总。
@@ -310,18 +313,26 @@ def render_markdown(rows, n_games, aux_weight=1.0):
         lines.append(f"> 额外任务：每个参赛者每局领一份任务清单（和牌/自摸/"
                      f"立直/满贯/未放铳/流局听牌/8 巡内进听），完成即加奖励；"
                      f"奖励按权重 {aux_weight:g} 计入 Elo 排名。")
+    lines.append("> 选员：先全体热身，之后每轮保留 Elo 前一半 + 随机几个替换"
+                 "（表现差的会被换下；随机替换保证长尾仍有对局）。")
+    if selection_note:
+        lines.append(f"> 最后一次选员：{selection_note}")
     lines += [f"> 判读：每人 {gmin}–{gmax} 局，Elo 标准误粗估 ±{se:.0f}；"
               f"**相邻名次差 <{band:.0f} 不能当结论**（K=24 收敛慢，"
               "至少 `--games 600` 再说）。", ""]
-    if has_aux:
-        lines += ["| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | 平均点数 | 任务奖励/局 |",
-                  "|---|---|---|---|---|---|---|---|"]
-    else:
-        lines += ["| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | 平均点数 |",
-                  "|---|---|---|---|---|---|---|"]
+    has_dealin = any("deal_in_rate" in r for r in rows)
+    head = ("| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | "
+            + ("放铳率 | " if has_dealin else "")
+            + "平均点数 |" + (" 任务奖励/局 |" if has_aux else ""))
+    sep = "|---" * (8 if has_dealin and has_aux else
+                    (7 if has_dealin or has_aux else 6)) + "|"
+    lines += [head, sep]
     for k, r in enumerate(rows, 1):
         line = (f"| {k} | {r['name']} | {r['kind']} | **{r['elo']}** | "
-                f"{r['games']} | {r['win_rate']}% | {r['avg_pt']:+.0f} |")
+                f"{r['games']} | {r['win_rate']}% |")
+        if has_dealin:
+            line += f" {r.get('deal_in_rate', 0):.1f}% |"
+        line += f" {r['avg_pt']:+.0f} |"
         if has_aux:
             line += f" {r.get('avg_bonus', 0):+.0f} |"
         lines.append(line)
@@ -347,6 +358,12 @@ def main():
     ap.add_argument("--out", default=os.path.join(ROOT, "rules", "ELO.md"))
     ap.add_argument("--aux-weight", type=float, default=1.0,
                     help="额外任务奖励计入排名/Elo 的权重（0=不计）")
+    ap.add_argument("--warmup-games", type=int, default=100,
+                    help="先全体参赛热身 N 局，之后按「前一半+随机替换」选员")
+    ap.add_argument("--reselect-every", type=int, default=100,
+                    help="每 N 局重新选员（保留 Elo 前一半 + 随机几个替换）")
+    ap.add_argument("--random-fill", type=int, default=3,
+                    help="选员时从落选者里随机替换几个进参赛名单")
     args = ap.parse_args()
 
     from cpu_only import set_inference_threads
@@ -360,15 +377,36 @@ def main():
     pt_sum = {i: 0.0 for i in range(len(agents))}
     aux_sum = {i: 0.0 for i in range(len(agents))}
     aux_count = {i: {name: 0 for name in AUX.TASKS} for i in range(len(agents))}
+    deal_in_cnt = {i: 0 for i in range(len(agents))}
+    active = list(range(len(agents)))
+    selection_note = ""
     t0 = time.time()
 
+    def reselect():
+        """选员：Elo 前一半 + 从落选者里随机替换几个。"""
+        order = sorted(range(len(agents)), key=lambda i: -ratings[i])
+        keep_n = max(4, len(agents) // 2)
+        keep = order[:keep_n]
+        rest = order[keep_n:]
+        fill = rng.sample(rest, min(args.random_fill, len(rest))) if rest else []
+        chosen = keep + fill
+        names = ", ".join(agents[i].name for i in sorted(chosen))
+        return chosen, f"{time.time() - t0:.0f}s 选员：保留 Elo 前 {keep_n} 名 + 随机 {len(fill)} 个替换 -> {names}"
+
     for g in range(args.games):
-        sel = rng.sample(range(len(agents)), 4)
+        if g == args.warmup_games and args.games > args.warmup_games:
+            active, selection_note = reselect()
+            print("[arena] " + selection_note, flush=True)
+        elif g > args.warmup_games and (g - args.warmup_games) % max(1, args.reselect_every) == 0:
+            active, selection_note = reselect()
+            print("[arena] " + selection_note, flush=True)
+        pool = active if len(active) >= 4 else list(range(len(agents)))
+        sel = rng.sample(pool, 4)
         picked = [agents[i] for i in sel]
         out = play_one(picked, seed=args.seed * 7919 + g * 131)
         if out is None:
             continue
-        delta, winner, aux_bonus, aux_done = out
+        delta, winner, aux_bonus, aux_done, dealin = out
         # 额外任务奖励计入排名/Elo（用户要求：完成也有奖励）
         ranked = [delta[pos] + args.aux_weight * aux_bonus[pos]
                   for pos in range(4)]
@@ -382,6 +420,8 @@ def main():
                     aux_count[i][name] += 1
             if winner == pos:
                 wins[i] += 1
+            if dealin[pos]:
+                deal_in_cnt[i] += 1
         if (g + 1) % 25 == 0:
             print(f"[arena] {g+1}/{args.games} games "
                   f"({time.time()-t0:.0f}s)", flush=True)
@@ -396,11 +436,14 @@ def main():
             "win_rate": round(wins[i] / max(1, games_played[i]) * 100, 1),
             "avg_pt": round(pt_sum[i] / max(1, games_played[i]), 1),
             "avg_bonus": round(aux_sum[i] / max(1, games_played[i]), 1),
+            "deal_in_rate": round(deal_in_cnt[i]
+                                  / max(1, games_played[i]) * 100, 1),
             "aux_tasks": dict(aux_count[i]),
         })
     rows.sort(key=lambda r: -r["elo"])
 
-    text = render_markdown(rows, args.games, args.aux_weight)
+    text = render_markdown(rows, args.games, args.aux_weight,
+                           selection_note)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as f:
         f.write(text + "\n")
