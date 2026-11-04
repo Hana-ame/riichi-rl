@@ -120,7 +120,8 @@ def train(args):
     Xt = torch.from_numpy(X[tr_idx]); Yt = torch.from_numpy(Y[tr_idx])
     Xv = torch.from_numpy(X[val_idx]); Yv = torch.from_numpy(Y[val_idx])
 
-    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    # 项目硬约束：禁止 GPU（cpu_only.py）；与 hand_predictor 同修（2026-11-05）
+    dev = "cpu"
     model = OpponentNet().to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     print(f"device={dev}  训练 {len(tr_idx)} / 验证 {len(val_idx)}", flush=True)

@@ -210,3 +210,86 @@ CHI/PON 的标签同样被记成 50（PASS）→ 训练标签被污染。
   600 局 Elo 里非 bc 神经模型和牌率 0–3.4%（54 槽线 0%；47 槽线 1.9–3.4%）。
 - 优先做「让模型自己会和牌」同意；具体抓手按上面 §4：先换固定槽位（新数据
   生成 + 重训），再做特殊动作加权/DAgger，评估用 `eval_hanchan`（不带接管）。
+
+---
+
+# 第三轮复核证据：副露/吃碰杠、dora、牌河→手牌形状（2026-11-05）
+
+审阅要求对三项补「文件+行号+是否参赛」的直接证据。均为现场 grep/实测。
+
+## 3.1 副露（吃/碰/杠）策略
+
+**规则层（引擎，合法动作 + 执行）**
+- `mahjong/env.py:679` 吃（仅上家、字牌不可）、`:685` 碰、`:689` 明杠、
+  `:694` 加杠；`:414` 暗杠、`:420` 加杠（打牌阶段）；`:879` 响应裁决顺序
+  （和了 > 吃 > 明杠/加杠 > 碰）。
+- 杠后`_flip_dora()`（`:988`、`:1012`）追加宝牌指示牌。
+
+**策略层（谁真的吃碰杠）**
+- `mahjong/policies.py:274-281` `CallFirst._PRIORITY`：明杠 50 / 加杠 50 /
+  碰 40 / 吃 30 / 暗杠 5（都会主动副露）。
+- `GreedyTenpai`（policies.py:~86-98）响应阶段**只荣和、否则 PASS**；`damaten`/
+  `riichi_*` 继承同一逻辑 → 不吃碰杠（保门前清）。
+- 47 槽半庄线包含副露/杠固定槽：`train_hanchan.py:58-74`
+  `SLOT_PON=39 / SLOT_MINKAN=40 / SLOT_ADD_KAN=41 / SLOT_ANKAN=42 / SLOT_CHI=44..46`，
+  因此 47 槽模型**可以学副露**。
+
+**是否参赛 + 实测动作数**（40 局混战，直接统计实际选出的动作）:
+```
+call_first    总动作 2565  副露/杠 {'CHI':61,'PON':37,'ADD_KAN':11}
+yaochu_first  总动作 2555  副露/杠 {'CHI':49,'PON':41,'MINKAN':1,'ADD_KAN':12}
+greedy_tenpai 总动作 2556  副露/杠 {}          立直 25 荣和 9
+damaten       总动作 2556  副露/杠 {}          立直 0  荣和 3
+```
+参赛证据：`rules/ELO.md` — `call_first` 156 局（放铳率 10.9%、平均点 −1111）、
+`yaochu_first` 156 局；两者都在 600 局 Elo 表内。
+
+**reward/场景**：副露没有独立奖励，收益通过点数（`scenarios.reward_for_result`
+用 points_delta / 放铳惩罚）体现；没有「碰更好/吃更好」的权重（§15 禁）。
+结论：吃碰杠**策略存在且已参赛**（call_first/yaochu_first），但神经网络模型
+（除 teacher47 线）在 Elo 表里和牌率仍 0–3%，**副露学习成效未体现**。
+
+## 3.2 dora 策略
+
+- **输入特征**：`mahjong/obs2.py:78-103`——plan 15 宝牌指示牌 one-hot、plan 16
+  里宝牌指示牌 one-hot、plan 20 宝牌集合 one-hot（所有 54/47 槽模型共享 obs2，
+  即每个模型都“看得到” dora）。
+- **规则/计分**：`env.py:286 _flip_dora`（初始指示牌 + 杠后追加）、
+  `:599 _dora_set`、`:632 _dora_count`、`:638 _ura_dora_count`；
+  `scoring.evaluate(..., dora_count, aka_count, ura_dora_count)` 计入番数；
+  立直和了时 `_set_ura_dora()` 才开里宝牌。
+- **hand_predictor**：`hand_predictor.py:51-57` `build_feature(..., dora)` 把
+  宝牌 id 作为输入特征；`serve_game` 每帧传 `env.dora_indicator`。
+- **策略层**：**没有独立的“dora 策略”**——规则策略不读 dora；神经网络通过
+  obs 平面看到 dora，由训练自己决定怎么用；teacher47_v3 的「加权 BC」权重是
+  **动作类型**（和牌/自摸/立直），不是 dora 权重。
+- **是否参赛**：所有含 obs2 的模型（riichi_net/from_games/a2c/dagger/hc/
+  teacher47_v3）都输入 dora 特征，均在 ELO.md 参赛；teacher47_v3 98 局。
+  结论：dora **有特征+计分+杠翻宝牌**，但**没有显式 dora 策略**。
+
+## 3.3 牌河 → 手牌形状/向听
+
+- **记录层有序**：`env.py:829 p.river.append(tile)`（弃牌顺序），被吃碰时
+  `_consume_from_river` 只移尾张。
+- **观测层是计数不是顺序**：`obs2.py:49`（四家牌河计数平面 5–8）、`:91`
+  （自家牌河平面 18）、`:87`（`last_discard` one-hot 平面 17）。→
+  「**按牌河顺序**判断形状/向听」**没有实现**（顺序未进特征）。
+- **对手手牌推断模型（成品，可运行）**：
+  `opponent_model.py:36-46` `OpponentNet` 输出 **34 维每张牌持有概率**；
+  `:49-66 build_features` 输入 = 观察者手牌 + **目标家牌河 counts** +
+  其他两家牌河聚合 + 副露数/立直/已打张数 + 巡目/墙余/dora；
+  服务集成 `serve_game.py:248 get_opp_model / :268 opp_predictions / :382`。
+  **本轮重训**（CPU，703 局 → 139,761 训练 / 15,528 验证样本，10 epochs）：
+  `val_loss 0.2431→0.2263`，**top5 命中 0.279→0.368**（随机基线 5/34=0.147），
+  即从可见牌河推断对手持牌已显著优于随机。旧 ckpt（仅 786 样本）top5≈0.146
+  即随机水平——现已不可用的问题解决。
+- 结论：**牌河顺序→形状**未实现；**牌河计数→对手持牌概率**已有成品模型且
+  重训后 top5=36.8%（可再从持牌概率读出形/向听，但不是“按顺序”）。
+
+## 3.4 顺带修正
+
+- 审阅「aux_tasks.py 已有 defense/give_up/last_chance」不成立：这三项在
+  `scenarios.py`/`situation.py`；`aux_tasks.py` 是 7 项成就任务。
+- 「模型预测和牌率未见」不成立：`hand_predictor.py` + 已训 ckpt + 服务集成。
+- `opponent_model.py` 设备判断原为 `cuda if available`，违反项目 CPU-only
+  硬约束，本轮改为 `dev="cpu"`（与 hand_predictor 同修）。
