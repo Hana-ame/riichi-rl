@@ -69,7 +69,10 @@ def build_lineage(lineage, ckpts_arg, arch):
         out = []
         for p in paths:
             if not os.path.isabs(p):
-                p = os.path.join(CKPT, os.path.basename(p))
+                base = os.path.basename(p)
+                if not base.endswith(".pt"):
+                    base += ".pt"
+                p = os.path.join(CKPT, base)
             if not os.path.exists(p):
                 print(f"[skip] 不存在 {p}", flush=True)
                 continue
