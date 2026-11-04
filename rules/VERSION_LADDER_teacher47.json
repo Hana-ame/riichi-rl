@@ -1,0 +1,73 @@
+{
+ "lineage": "teacher47",
+ "arch": "hanchan47",
+ "games": 240,
+ "versions": [
+  {
+   "name": "teacher47_v1",
+   "elo": 1391.4,
+   "games": 240,
+   "win_rate": 2.9,
+   "avg_pt": -43.8
+  },
+  {
+   "name": "teacher47_v2",
+   "elo": 1547.6,
+   "games": 240,
+   "win_rate": 2.9,
+   "avg_pt": -179.0
+  },
+  {
+   "name": "teacher47_v3",
+   "elo": 1529.8,
+   "games": 240,
+   "win_rate": 5.0,
+   "avg_pt": 317.6
+  },
+  {
+   "name": "style_rl_v1",
+   "elo": 1531.2,
+   "games": 240,
+   "win_rate": 0.8,
+   "avg_pt": -478.2
+  }
+ ],
+ "gates": [
+  {
+   "prev": "teacher47_v1",
+   "cur": "teacher47_v2",
+   "n": 240,
+   "mean_diff": -135.3,
+   "ci_lo": -805.9,
+   "ci_hi": 535.4,
+   "elo_up": true,
+   "verdict": "HOLD",
+   "elo_delta": 156.2,
+   "elo_band": 51.6
+  },
+  {
+   "prev": "teacher47_v2",
+   "cur": "teacher47_v3",
+   "n": 240,
+   "mean_diff": 496.7,
+   "ci_lo": 6.6,
+   "ci_hi": 986.7,
+   "elo_up": false,
+   "verdict": "PASS",
+   "elo_delta": -17.8,
+   "elo_band": 51.6
+  },
+  {
+   "prev": "teacher47_v3",
+   "cur": "style_rl_v1",
+   "n": 240,
+   "mean_diff": -795.8,
+   "ci_lo": -1229.3,
+   "ci_hi": -362.4,
+   "elo_up": true,
+   "verdict": "FAIL",
+   "elo_delta": 1.4,
+   "elo_band": 51.6
+  }
+ ]
+}

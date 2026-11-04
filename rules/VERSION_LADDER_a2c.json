@@ -1,0 +1,124 @@
+{
+ "lineage": "a2c",
+ "arch": "hanchan47",
+ "games": 160,
+ "versions": [
+  {
+   "name": "a2c_r1_it10",
+   "elo": 1461.3,
+   "games": 102,
+   "win_rate": 0.0,
+   "avg_pt": -29.4
+  },
+  {
+   "name": "a2c_r1_it20",
+   "elo": 1443.3,
+   "games": 81,
+   "win_rate": 0.0,
+   "avg_pt": 61.7
+  },
+  {
+   "name": "a2c_r1_it30",
+   "elo": 1446.6,
+   "games": 83,
+   "win_rate": 0.0,
+   "avg_pt": 36.1
+  },
+  {
+   "name": "a2c_r4_it30",
+   "elo": 1611.6,
+   "games": 86,
+   "win_rate": 0.0,
+   "avg_pt": -23.3
+  },
+  {
+   "name": "a2c_r9_it25",
+   "elo": 1501.1,
+   "games": 96,
+   "win_rate": 0.0,
+   "avg_pt": -108.3
+  },
+  {
+   "name": "a2c_r10_it25",
+   "elo": 1558.8,
+   "games": 89,
+   "win_rate": 0.0,
+   "avg_pt": -22.5
+  },
+  {
+   "name": "a2c_r11_it5",
+   "elo": 1477.3,
+   "games": 103,
+   "win_rate": 1.0,
+   "avg_pt": 91.3
+  }
+ ],
+ "gates": [
+  {
+   "prev": "a2c_r1_it10",
+   "cur": "a2c_r1_it20",
+   "n": 44,
+   "mean_diff": 0.0,
+   "ci_lo": -254.9,
+   "ci_hi": 254.9,
+   "elo_delta": -18.0,
+   "elo_band": 83.7,
+   "verdict": "HOLD"
+  },
+  {
+   "prev": "a2c_r1_it20",
+   "cur": "a2c_r1_it30",
+   "n": 37,
+   "mean_diff": -108.1,
+   "ci_lo": -478.5,
+   "ci_hi": 262.3,
+   "elo_delta": 3.4,
+   "elo_band": 83.7,
+   "verdict": "HOLD"
+  },
+  {
+   "prev": "a2c_r1_it30",
+   "cur": "a2c_r4_it30",
+   "n": 43,
+   "mean_diff": -186.0,
+   "ci_lo": -440.8,
+   "ci_hi": 68.7,
+   "elo_delta": 164.9,
+   "elo_band": 83.7,
+   "verdict": "HOLD"
+  },
+  {
+   "prev": "a2c_r4_it30",
+   "cur": "a2c_r9_it25",
+   "n": 48,
+   "mean_diff": 83.3,
+   "ci_lo": -80.0,
+   "ci_hi": 246.7,
+   "elo_delta": -110.4,
+   "elo_band": 83.7,
+   "verdict": "FAIL"
+  },
+  {
+   "prev": "a2c_r9_it25",
+   "cur": "a2c_r10_it25",
+   "n": 46,
+   "mean_diff": 139.1,
+   "ci_lo": -226.6,
+   "ci_hi": 504.8,
+   "elo_delta": 57.6,
+   "elo_band": 83.7,
+   "verdict": "HOLD"
+  },
+  {
+   "prev": "a2c_r10_it25",
+   "cur": "a2c_r11_it5",
+   "n": 54,
+   "mean_diff": 266.7,
+   "ci_lo": -37.9,
+   "ci_hi": 571.3,
+   "elo_delta": -81.5,
+   "elo_band": 83.7,
+   "verdict": "HOLD"
+  }
+ ]
+}

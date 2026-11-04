@@ -44,8 +44,9 @@ $PY engine_stats.py --games 200
 | `tests/test_server.py` | `serve_game.py` `llm_player.py` | 6 | 记录 JSON 结构、LLM 动作解析边界 |
 | `tests/test_arena.py` | `arena_elo.py` | 3 | Elo 逐对更新零和、ELO.md 渲染动态判读 |
 | `tests/test_aux_tasks.py` | `mahjong/aux_tasks.py` | 9 | 额外任务判定/奖励、放铳惩罚、轨迹任务、断幺/平和风格任务与权重 |
+| `tests/test_version_ladder.py` | `version_ladder.py` | 8 | 版本天梯晋级闸门（PASS/FAIL/HOLD、CI、Elo 噪声带、样本不足不放过） |
 
-合计 **83 个用例**，主测试套件约 2.2 秒。
+合计 **91 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
