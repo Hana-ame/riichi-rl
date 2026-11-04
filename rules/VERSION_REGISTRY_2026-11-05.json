@@ -1,5 +1,5 @@
 {
- "generated": 1793823990.2313852,
+ "generated": 1793826809.337035,
  "rows": [
   {
    "file": "a2c_r1.pt",
@@ -23,6 +23,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r1_it30",
+    "cur": "a2c_r1",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V21"
   },
@@ -48,6 +68,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10_it25",
+    "cur": "a2c_r10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V19"
   },
@@ -72,6 +112,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r1_it10",
+    "cur": "a2c_r10_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V13"
   },
@@ -96,6 +156,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r5_it10",
+    "cur": "a2c_r10_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V14"
   },
@@ -120,6 +200,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r1_it20",
+    "cur": "a2c_r10_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V17"
   },
@@ -160,6 +260,26 @@
     "elo_band": 83.7,
     "verdict": "HOLD"
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r5_it20",
+    "cur": "a2c_r10_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "证据不足（HOLD）",
    "version": "V20"
   },
@@ -184,6 +304,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r4",
+    "cur": "a2c_r10_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V11"
   },
@@ -218,6 +358,26 @@
     "elo_band": 83.7,
     "verdict": "HOLD"
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r1",
+    "cur": "a2c_r11_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "证据不足（HOLD）",
    "version": "V23"
   },
@@ -242,6 +402,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10_it5",
+    "cur": "a2c_r1_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V12"
   },
@@ -274,6 +454,26 @@
     "ci_hi": 254.9,
     "elo_delta": -18.0,
     "elo_band": 83.7,
+    "verdict": "HOLD"
+   },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10_it15",
+    "cur": "a2c_r1_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
     "verdict": "HOLD"
    },
    "status": "证据不足（HOLD）",
@@ -310,6 +510,26 @@
     "elo_band": 83.7,
     "verdict": "HOLD"
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10",
+    "cur": "a2c_r1_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "证据不足（HOLD）",
    "version": "V22"
   },
@@ -335,6 +555,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r2_it30",
+    "cur": "a2c_r2",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V5"
   },
@@ -359,6 +599,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r8_it5",
+    "cur": "a2c_r2_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -383,6 +643,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r8_it10",
+    "cur": "a2c_r2_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V4"
   },
@@ -407,6 +687,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r2_it20",
+    "cur": "a2c_r2_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -1000.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V6"
   },
@@ -431,6 +731,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r2",
+    "cur": "a2c_r3_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V7"
   },
@@ -456,6 +776,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r4_it30",
+    "cur": "a2c_r4",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V9"
   },
@@ -480,6 +820,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9_it5",
+    "cur": "a2c_r4_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -504,6 +864,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9_it15",
+    "cur": "a2c_r4_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V5"
   },
@@ -538,6 +918,26 @@
     "elo_band": 83.7,
     "verdict": "HOLD"
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9",
+    "cur": "a2c_r4_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "证据不足（HOLD）",
    "version": "V10"
   },
@@ -562,6 +962,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10_it10",
+    "cur": "a2c_r5_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V15"
   },
@@ -586,6 +1006,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r10_it20",
+    "cur": "a2c_r5_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V18"
   },
@@ -609,6 +1049,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r2_it10",
+    "cur": "a2c_r8_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V3"
   },
@@ -632,6 +1092,17 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -657,6 +1128,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9_it25",
+    "cur": "a2c_r9",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V7"
   },
@@ -681,6 +1172,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r4_it10",
+    "cur": "a2c_r9_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V3"
   },
@@ -705,6 +1216,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9_it10",
+    "cur": "a2c_r9_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V4"
   },
@@ -729,6 +1260,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r4_it20",
+    "cur": "a2c_r9_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V6"
   },
@@ -763,6 +1314,26 @@
     "elo_band": 83.7,
     "verdict": "FAIL"
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r9_it20",
+    "cur": "a2c_r9_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "未通过闸门（不发布）",
    "version": "V8"
   },
@@ -787,6 +1358,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "A2C",
+    "prev": "a2c_r3_it10",
+    "cur": "a2c_r9_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -806,6 +1397,17 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "bc_243"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -831,6 +1433,26 @@
     "avg_pt": 1243.8
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "bc_243"
+   },
+   "bench_gate": {
+    "lineage": "BC",
+    "prev": "bc_v1",
+    "cur": "bc_v1_last",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "在用（和牌率达标）",
    "version": "V2"
   },
@@ -852,6 +1474,17 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -873,6 +1506,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it90",
+    "cur": "dagger_it100",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V10"
   },
@@ -894,6 +1547,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it100",
+    "cur": "dagger_it110",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V11"
   },
@@ -921,6 +1594,26 @@
     "avg_pt": -786.2
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it110",
+    "cur": "dagger_it120",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V12"
   },
@@ -942,6 +1635,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it10",
+    "cur": "dagger_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -963,6 +1676,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it20",
+    "cur": "dagger_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -1000.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V3"
   },
@@ -984,6 +1717,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it30",
+    "cur": "dagger_it40",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V4"
   },
@@ -1005,6 +1758,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it40",
+    "cur": "dagger_it50",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V5"
   },
@@ -1026,6 +1799,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it50",
+    "cur": "dagger_it60",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V6"
   },
@@ -1047,6 +1840,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it60",
+    "cur": "dagger_it70",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V7"
   },
@@ -1068,6 +1881,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it70",
+    "cur": "dagger_it80",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V8"
   },
@@ -1089,6 +1922,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "DAgger",
+    "prev": "dagger_it80",
+    "cur": "dagger_it90",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V9"
   },
@@ -1112,6 +1965,17 @@
     "avg_pt": -605.0
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -1135,6 +1999,26 @@
     "avg_pt": -179.3
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "from_games",
+    "prev": "from_games_v1",
+    "cur": "from_games_v2",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -1153,6 +2037,8 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": null,
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -1178,6 +2064,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it25",
+    "cur": "hc_r10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V16"
   },
@@ -1202,6 +2108,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it15",
+    "cur": "hc_r10_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -1000.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V10"
   },
@@ -1226,6 +2152,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it25",
+    "cur": "hc_r10_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V13"
   },
@@ -1250,6 +2196,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it30",
+    "cur": "hc_r10_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V19"
   },
@@ -1274,6 +2240,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it40",
+    "cur": "hc_r10_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V26"
   },
@@ -1298,6 +2284,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it50",
+    "cur": "hc_r10_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V30"
   },
@@ -1322,6 +2328,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it55",
+    "cur": "hc_r10_it35",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V37"
   },
@@ -1346,6 +2372,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it5",
+    "cur": "hc_r10_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V5"
   },
@@ -1370,6 +2416,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it35",
+    "cur": "hc_r11_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V23"
   },
@@ -1394,6 +2460,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it25",
+    "cur": "hc_r11_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V27"
   },
@@ -1418,6 +2504,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it45",
+    "cur": "hc_r11_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V31"
   },
@@ -1442,6 +2548,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it50",
+    "cur": "hc_r11_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V34"
   },
@@ -1466,6 +2592,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it20",
+    "cur": "hc_r11_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V20"
   },
@@ -1490,6 +2636,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it10",
+    "cur": "hc_r12_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V6"
   },
@@ -1514,6 +2680,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it15",
+    "cur": "hc_r12_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V8"
   },
@@ -1538,6 +2724,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it20",
+    "cur": "hc_r12_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V11"
   },
@@ -1562,6 +2768,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it15",
+    "cur": "hc_r12_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V14"
   },
@@ -1586,6 +2812,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it30",
+    "cur": "hc_r12_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V18"
   },
@@ -1610,6 +2856,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it35",
+    "cur": "hc_r12_it35",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V21"
   },
@@ -1634,6 +2900,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it40",
+    "cur": "hc_r12_it40",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V24"
   },
@@ -1658,6 +2944,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it45",
+    "cur": "hc_r12_it45",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V29"
   },
@@ -1682,6 +2988,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r9_it10",
+    "cur": "hc_r12_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -500.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V3"
   },
@@ -1706,6 +3032,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it30",
+    "cur": "hc_r12_it50",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V32"
   },
@@ -1730,6 +3076,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r13_it55",
+    "cur": "hc_r12_it55",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V35"
   },
@@ -1754,6 +3120,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it5",
+    "cur": "hc_r13_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V7"
   },
@@ -1778,6 +3164,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it10",
+    "cur": "hc_r13_it15",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V9"
   },
@@ -1802,6 +3208,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10_it10",
+    "cur": "hc_r13_it20",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V12"
   },
@@ -1826,6 +3252,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it20",
+    "cur": "hc_r13_it25",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V15"
   },
@@ -1850,6 +3296,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r10",
+    "cur": "hc_r13_it30",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V17"
   },
@@ -1874,6 +3340,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r11_it5",
+    "cur": "hc_r13_it35",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V22"
   },
@@ -1898,6 +3384,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r11_it10",
+    "cur": "hc_r13_it40",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -4500.0,
+    "verdict": "FAIL"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V25"
   },
@@ -1922,6 +3428,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r11_it15",
+    "cur": "hc_r13_it45",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V28"
   },
@@ -1946,6 +3472,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -1000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r12_it5",
+    "cur": "hc_r13_it5",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -500.0,
+    "cur_pt": -500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V4"
   },
@@ -1970,6 +3516,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r11_it20",
+    "cur": "hc_r13_it50",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V33"
   },
@@ -2000,6 +3566,26 @@
     "avg_pt": -1035.8
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -9000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -4500.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r11_it25",
+    "cur": "hc_r13_it55",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4500.0,
+    "cur_pt": -4500.0,
+    "verdict": "HOLD"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V36"
   },
@@ -2023,6 +3609,26 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": {
+    "lineage": "HC",
+    "prev": "hc_r9_it5",
+    "cur": "hc_r9_it10",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1500.0,
+    "cur_pt": -1000.0,
+    "verdict": "PASS"
+   },
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -2046,6 +3652,17 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -3000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1500.0,
+    "deal_in_rate": 0.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -2065,6 +3682,8 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": null,
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -2092,6 +3711,17 @@
     "avg_pt": -668.3
    },
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -8000.0,
+    "dealin": 1,
+    "win_rate": 0.0,
+    "avg_pt": -4000.0,
+    "deal_in_rate": 50.0,
+    "arch": "v1_54"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -2128,6 +3758,26 @@
     "elo_delta": 1.4,
     "elo_band": 51.6
    },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "style",
+    "prev": "style_rl_v1_it5",
+    "cur": "style_rl_v1",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -1000.0,
+    "verdict": "HOLD"
+   },
    "status": "未通过闸门（不发布）",
    "version": "V1"
   },
@@ -2152,6 +3802,17 @@
    "eval": "",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V2"
   },
@@ -2177,6 +3838,17 @@
    "eval": "自对弈 5.0%（40 局）",
    "elo": null,
    "gate": null,
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -2000.0,
+    "dealin": 0,
+    "win_rate": 0.0,
+    "avg_pt": -1000.0,
+    "deal_in_rate": 0.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V1"
   },
@@ -2212,6 +3884,26 @@
     "verdict": "HOLD",
     "elo_delta": 156.2,
     "elo_band": 51.6
+   },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -8000.0,
+    "dealin": 1,
+    "win_rate": 0.0,
+    "avg_pt": -4000.0,
+    "deal_in_rate": 50.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "teacher47",
+    "prev": "teacher47_v1",
+    "cur": "teacher47_v2",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -1000.0,
+    "cur_pt": -4000.0,
+    "verdict": "FAIL"
    },
    "status": "证据不足（HOLD）",
    "version": "V2"
@@ -2254,6 +3946,26 @@
     "verdict": "PASS",
     "elo_delta": -17.8,
     "elo_band": 51.6
+   },
+   "bench": {
+    "games": 2,
+    "wins": 0,
+    "pts": -8000.0,
+    "dealin": 1,
+    "win_rate": 0.0,
+    "avg_pt": -4000.0,
+    "deal_in_rate": 50.0,
+    "arch": "hanchan47"
+   },
+   "bench_gate": {
+    "lineage": "teacher47",
+    "prev": "teacher47_v2",
+    "cur": "teacher47_v3",
+    "prev_win": 0.0,
+    "cur_win": 0.0,
+    "prev_pt": -4000.0,
+    "cur_pt": -4000.0,
+    "verdict": "HOLD"
    },
    "status": "通过闸门（可发布）",
    "version": "V3"

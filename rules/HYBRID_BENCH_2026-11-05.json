@@ -1,0 +1,71 @@
+{
+ "refs": [
+  "teacher47_v3",
+  "bc_v1_last",
+  "greedy_tenpai"
+ ],
+ "ref_stats": {
+  "teacher47_v3": {
+   "games": 80,
+   "win_rate": 8.8,
+   "avg_pt": -258.4,
+   "deal_in_rate": 8.8
+  },
+  "bc_v1_last": {
+   "games": 80,
+   "win_rate": 18.8,
+   "avg_pt": 846.7,
+   "deal_in_rate": 5.0
+  },
+  "greedy_tenpai": {
+   "games": 80,
+   "win_rate": 12.5,
+   "avg_pt": 262.6,
+   "deal_in_rate": 6.2
+  }
+ },
+ "games_per_version": 20,
+ "stats": {
+  "teacher47_v3": {
+   "games": 20,
+   "wins": 0,
+   "pts": -22201.0,
+   "dealin": 1,
+   "win_rate": 0.0,
+   "avg_pt": -1110.0,
+   "deal_in_rate": 5.0,
+   "arch": "hanchan47"
+  },
+  "hybrid:teacher47_v3": {
+   "games": 20,
+   "wins": 2,
+   "pts": -17701.0,
+   "dealin": 1,
+   "win_rate": 10.0,
+   "avg_pt": -885.0,
+   "deal_in_rate": 5.0,
+   "arch": "hanchan47"
+  },
+  "bc_v1_last": {
+   "games": 20,
+   "wins": 3,
+   "pts": -12767.0,
+   "dealin": 2,
+   "win_rate": 15.0,
+   "avg_pt": -638.4,
+   "deal_in_rate": 10.0,
+   "arch": "bc_243"
+  },
+  "from_games_v2": {
+   "games": 20,
+   "wins": 0,
+   "pts": -48400.0,
+   "dealin": 5,
+   "win_rate": 0.0,
+   "avg_pt": -2420.0,
+   "deal_in_rate": 25.0,
+   "arch": "v1_54"
+  }
+ },
+ "gates": []
+}

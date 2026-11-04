@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import threading
+import time
 import urllib.request
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
@@ -43,6 +44,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 CLIENTS: set = set()
 PAUSED = False
 STEP_ONCE = False
+
+REALTIME_BUDGET_MS = 5000.0     # 单步决策预算（用户要求 5 秒内 realtime）
 
 POLICY_NAMES = {"llm", "net", "random", "greedy_tenpai", "damaten",
                 "riichi_needed", "riichi_ev", "call_first", "yaochu_first"}
@@ -483,6 +486,7 @@ async def run_game(key, seed, step_delay):
                     actions[p] = legal[0]
                     continue
                 pol = PER_SEAT.get(p, "greedy_tenpai")
+                _t0 = time.perf_counter()
                 if pol == "llm":
                     choices = "\n".join(f"  {i}. {LP.action_label(a)}"
                                         for i, a in enumerate(legal, 1))
@@ -514,6 +518,14 @@ async def run_game(key, seed, step_delay):
                         p, turn, env.phase, LP.action_label(act),
                         "", "", probs=net_probs(env, p, legal),
                         shanten=sh, tag=pol))
+                _ms = (time.perf_counter() - _t0) * 1000.0
+                if _ms > REALTIME_BUDGET_MS:
+                    print(f"[realtime] seat{p} 单步 {_ms:.0f}ms 超 "
+                          f"{REALTIME_BUDGET_MS:.0f}ms 预算，退回规则基线",
+                          flush=True)
+                    act = POL.make_policy("greedy_tenpai",
+                                          seed=seed * 97 + p).choose(
+                                              env, p, legal)
                 actions[p] = act
                 rec_step(env, p, actions[p], pol)   # 记录这步决策（蒸馏/离线RL用）
             result = env.step(actions)

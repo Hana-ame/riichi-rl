@@ -1,0 +1,1732 @@
+{
+ "refs": [
+  "teacher47_v3",
+  "bc_v1_last",
+  "greedy_tenpai"
+ ],
+ "ref_stats": {
+  "teacher47_v3": {
+   "games": 178,
+   "win_rate": 24.2,
+   "avg_pt": 5191.0,
+   "deal_in_rate": 0.0
+  },
+  "bc_v1_last": {
+   "games": 178,
+   "win_rate": 1.7,
+   "avg_pt": -2164.0,
+   "deal_in_rate": 0.6
+  },
+  "greedy_tenpai": {
+   "games": 178,
+   "win_rate": 0.6,
+   "avg_pt": -959.6,
+   "deal_in_rate": 0.0
+  }
+ },
+ "games_per_version": 2,
+ "stats": {
+  "a2c_r1": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r10_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r11_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r1_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r1_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r1_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r2": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r2_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r2_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r2_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r3_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r4": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r4_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r4_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r4_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r5_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r5_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r8_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r8_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "a2c_r9": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r9_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r9_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r9_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r9_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "a2c_r9_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "bc_v1": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "bc_243"
+  },
+  "bc_v1_last": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "bc_243"
+  },
+  "dagger_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it100": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it110": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it120": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it40": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it50": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it60": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it70": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it80": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "dagger_it90": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "from_games_v1": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "from_games_v2": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "hc_r10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it35": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r10_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r11_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r11_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r11_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r11_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r11_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it35": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it40": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it45": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it50": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r12_it55": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it15": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it20": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it25": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it30": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it35": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it40": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it45": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -1000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it50": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r13_it55": {
+   "games": 2,
+   "wins": 0,
+   "pts": -9000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -4500.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "hc_r9_it10": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "hc_r9_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -3000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1500.0,
+   "deal_in_rate": 0.0,
+   "arch": "v1_54"
+  },
+  "riichi_net": {
+   "games": 2,
+   "wins": 0,
+   "pts": -8000.0,
+   "dealin": 1,
+   "win_rate": 0.0,
+   "avg_pt": -4000.0,
+   "deal_in_rate": 50.0,
+   "arch": "v1_54"
+  },
+  "style_rl_v1": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "style_rl_v1_it5": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "teacher47_v1": {
+   "games": 2,
+   "wins": 0,
+   "pts": -2000.0,
+   "dealin": 0,
+   "win_rate": 0.0,
+   "avg_pt": -1000.0,
+   "deal_in_rate": 0.0,
+   "arch": "hanchan47"
+  },
+  "teacher47_v2": {
+   "games": 2,
+   "wins": 0,
+   "pts": -8000.0,
+   "dealin": 1,
+   "win_rate": 0.0,
+   "avg_pt": -4000.0,
+   "deal_in_rate": 50.0,
+   "arch": "hanchan47"
+  },
+  "teacher47_v3": {
+   "games": 2,
+   "wins": 0,
+   "pts": -8000.0,
+   "dealin": 1,
+   "win_rate": 0.0,
+   "avg_pt": -4000.0,
+   "deal_in_rate": 50.0,
+   "arch": "hanchan47"
+  }
+ },
+ "gates": [
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r8_it5",
+   "cur": "a2c_r2_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r2_it10",
+   "cur": "a2c_r8_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r8_it10",
+   "cur": "a2c_r2_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r2_it20",
+   "cur": "a2c_r2_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -1000.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r2_it30",
+   "cur": "a2c_r2",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r2",
+   "cur": "a2c_r3_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r3_it10",
+   "cur": "a2c_r9_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9_it5",
+   "cur": "a2c_r4_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r4_it10",
+   "cur": "a2c_r9_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9_it10",
+   "cur": "a2c_r9_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9_it15",
+   "cur": "a2c_r4_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r4_it20",
+   "cur": "a2c_r9_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9_it20",
+   "cur": "a2c_r9_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9_it25",
+   "cur": "a2c_r9",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r9",
+   "cur": "a2c_r4_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r4_it30",
+   "cur": "a2c_r4",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r4",
+   "cur": "a2c_r10_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10_it5",
+   "cur": "a2c_r1_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r1_it10",
+   "cur": "a2c_r10_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10_it10",
+   "cur": "a2c_r5_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r5_it10",
+   "cur": "a2c_r10_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10_it15",
+   "cur": "a2c_r1_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r1_it20",
+   "cur": "a2c_r10_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10_it20",
+   "cur": "a2c_r5_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r5_it20",
+   "cur": "a2c_r10_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10_it25",
+   "cur": "a2c_r10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r10",
+   "cur": "a2c_r1_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r1_it30",
+   "cur": "a2c_r1",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "A2C",
+   "prev": "a2c_r1",
+   "cur": "a2c_r11_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "BC",
+   "prev": "bc_v1",
+   "cur": "bc_v1_last",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it10",
+   "cur": "dagger_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it20",
+   "cur": "dagger_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -1000.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it30",
+   "cur": "dagger_it40",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it40",
+   "cur": "dagger_it50",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it50",
+   "cur": "dagger_it60",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it60",
+   "cur": "dagger_it70",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it70",
+   "cur": "dagger_it80",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it80",
+   "cur": "dagger_it90",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it90",
+   "cur": "dagger_it100",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it100",
+   "cur": "dagger_it110",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "DAgger",
+   "prev": "dagger_it110",
+   "cur": "dagger_it120",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "from_games",
+   "prev": "from_games_v1",
+   "cur": "from_games_v2",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r9_it5",
+   "cur": "hc_r9_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1500.0,
+   "cur_pt": -1000.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r9_it10",
+   "cur": "hc_r12_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it5",
+   "cur": "hc_r13_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it5",
+   "cur": "hc_r10_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it5",
+   "cur": "hc_r13_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it10",
+   "cur": "hc_r12_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it10",
+   "cur": "hc_r13_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it15",
+   "cur": "hc_r12_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it15",
+   "cur": "hc_r10_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -1000.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it10",
+   "cur": "hc_r13_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it20",
+   "cur": "hc_r12_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it20",
+   "cur": "hc_r13_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it25",
+   "cur": "hc_r10_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it15",
+   "cur": "hc_r12_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it25",
+   "cur": "hc_r10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10",
+   "cur": "hc_r13_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it30",
+   "cur": "hc_r12_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it30",
+   "cur": "hc_r10_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it20",
+   "cur": "hc_r11_it5",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r11_it5",
+   "cur": "hc_r13_it35",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it35",
+   "cur": "hc_r12_it35",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it35",
+   "cur": "hc_r11_it10",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -500.0,
+   "verdict": "PASS"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r11_it10",
+   "cur": "hc_r13_it40",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -500.0,
+   "cur_pt": -4500.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it40",
+   "cur": "hc_r12_it40",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it40",
+   "cur": "hc_r10_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it25",
+   "cur": "hc_r11_it15",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r11_it15",
+   "cur": "hc_r13_it45",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it45",
+   "cur": "hc_r12_it45",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it45",
+   "cur": "hc_r11_it20",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r11_it20",
+   "cur": "hc_r13_it50",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it50",
+   "cur": "hc_r10_it30",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r10_it30",
+   "cur": "hc_r12_it50",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it50",
+   "cur": "hc_r11_it25",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r11_it25",
+   "cur": "hc_r13_it55",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r13_it55",
+   "cur": "hc_r12_it55",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "HC",
+   "prev": "hc_r12_it55",
+   "cur": "hc_r10_it35",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4500.0,
+   "cur_pt": -4500.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "style",
+   "prev": "style_rl_v1_it5",
+   "cur": "style_rl_v1",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -1000.0,
+   "verdict": "HOLD"
+  },
+  {
+   "lineage": "teacher47",
+   "prev": "teacher47_v1",
+   "cur": "teacher47_v2",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -1000.0,
+   "cur_pt": -4000.0,
+   "verdict": "FAIL"
+  },
+  {
+   "lineage": "teacher47",
+   "prev": "teacher47_v2",
+   "cur": "teacher47_v3",
+   "prev_win": 0.0,
+   "cur_win": 0.0,
+   "prev_pt": -4000.0,
+   "cur_pt": -4000.0,
+   "verdict": "HOLD"
+  }
+ ]
+}

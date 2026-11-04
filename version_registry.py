@@ -121,6 +121,21 @@ def main():
         for r in json.load(open(elo_path, encoding="utf-8")):
             elo[r["name"]] = r
 
+    bench = {}
+    bench_refs = []
+    bp = os.path.join(ROOT, "rules", "VERSION_BENCH_2026-11-05.json")
+    if os.path.exists(bp):
+        bd = json.load(open(bp, encoding="utf-8"))
+        bench = bd.get("stats", {})
+        bench_refs = bd.get("refs", [])
+        bench_ref_stats = bd.get("ref_stats", {})
+    else:
+        bench_ref_stats = {}
+    bench_gate = {}
+    if os.path.exists(bp):
+        for g in bd.get("gates", []):
+            bench_gate[g["cur"]] = g
+
     gates = {}
     for gname in ("VERSION_LADDER_teacher47.json", "VERSION_LADDER_a2c.json",
                   "VERSION_LADDER_from_games.json"):
@@ -153,6 +168,8 @@ def main():
             "eval": EVAL_NOTE.get(base, ""),
             "elo": None,
             "gate": None,
+            "bench": bench.get(base),
+            "bench_gate": bench_gate.get(base),
             "status": "历史版本（无闸门记录）",
         }
         elo_name = ELO_NAME.get(name)
@@ -199,11 +216,20 @@ def main():
              f"> 自动扫描 `checkpoints/`：共 **{len(rows)}** 个模型文件、"
              f"**{len(by_lineage)}** 条血缘。", "",
              "> 字段：版本（同血缘内按 mtime 排序）/ ckpt / 架构与参数量 /"
-             " 训练元数据 / 赛评读数 / 状态（天梯闸门优先）。", ""]
+             " 训练元数据 / 赛评读数 / 状态（天梯闸门优先）。"]
+    if bench:
+        refs_txt = " / ".join(
+            f"{k} 和牌率 {v['win_rate']}% 场均 {v['avg_pt']:+.0f}"
+            for k, v in bench_ref_stats.items())
+        lines += ["", f"> 强桌基准：版本与**{ ' / '.join(bench_refs) }**同席对局"
+                  f"（{bench_ref_stats and '参照读数：' + refs_txt}），"
+                  "表内「强桌」列为该版本在这些对局里的和牌率/场均得分。"]
+    lines.append("")
     for lin, lst in by_lineage.items():
         lines += [f"## {lin}（{len(lst)} 个）", "",
-                  "| 版本 | ckpt | 架构 | 参数量 | 训练元数据 | 赛评读数 | 状态 |",
-                  "|---|---|---|---|---|---|---|"]
+                  "| 版本 | ckpt | 架构 | 参数量 | 训练元数据 | 赛评读数 |"
+                  " 强桌 和牌率/场均 | 状态 |",
+                  "|---|---|---|---|---|---|---|---|"]
         for r in lst:
             m = r["meta"]
             if r["arch"] == "hand_predictor":
@@ -227,8 +253,15 @@ def main():
                 g = r["gate"]
                 status += (f"（点差 {g['mean_diff']:+.0f} "
                            f"[{g['ci_lo']:+.0f},{g['ci_hi']:+.0f}]）")
+            b = r.get("bench")
+            btxt = (f"{b['win_rate']}% / {b['avg_pt']:+.0f}（{b['games']}局）"
+                    if b else "未测")
+            if r.get("bench_gate"):
+                bg = r["bench_gate"]
+                btxt += f" → 基准闸门 {bg['verdict']}"
             lines.append(f"| {r['version']} | `{r['file']}` | {r['arch']} | "
-                         f"{r['params']:,} | {meta_s} | {ev} | {status} |")
+                         f"{r['params']:,} | {meta_s} | {ev} | {btxt} | "
+                         f"{status} |")
         lines.append("")
     lines += ["## 说明", "",
               "- 版本号只在**同一血缘内部**排序，跨血缘不可比。",
