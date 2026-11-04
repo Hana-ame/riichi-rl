@@ -69,6 +69,35 @@ class TestAuxStaticTasks(unittest.TestCase):
         self.assertTrue(done["no_dealin"])
 
 
+class TestYakuStyleTasks(unittest.TestCase):
+    """断幺人/平胡人收进同一模型：yaku 任务 + 权重调参。"""
+
+    def _res(self, yaku):
+        from types import SimpleNamespace
+        return SimpleNamespace(result_type="tsumo", winner=0, from_player=None,
+                               han=2, yaku=tuple(yaku),
+                               tenpai=[False, False, False, False])
+
+    def test_tanyao_pinfu_detected(self):
+        env = U.make_env(seed=9)
+        env.start_turn()
+        done = AUX.static_tasks(env, self._res(["断幺九", "平和"]), 0)
+        self.assertTrue(done["tanyao"])
+        self.assertTrue(done["pinfu"])
+
+    def test_weights_double_style_tasks(self):
+        base = AUX.bonus_of({"tanyao": True, "pinfu": True})
+        weighted = AUX.bonus_of({"tanyao": True, "pinfu": True},
+                                {"tanyao": 2.0, "pinfu": 2.0})
+        self.assertAlmostEqual(weighted, base * 2.0)
+
+    def test_losing_hand_no_style_bonus(self):
+        env = U.make_env(seed=10)
+        env.start_turn()
+        done = AUX.static_tasks(env, self._res(["断幺九"]), 1)
+        self.assertFalse(done["tanyao"], "非和牌者不算完成和牌类任务")
+
+
 class TestAuxTracker(unittest.TestCase):
     def test_fast_tenpai_tracked(self):
         env = U.make_env(seed=5)

@@ -14,6 +14,8 @@ import random
 import sys
 import time
 
+from collections import Counter
+
 import numpy as np
 import torch
 
@@ -118,6 +120,7 @@ def play_shanten_greedy(hstate, seed):
 def run(fn, n_hanchans, label):
     t0 = time.time()
     wins = deals = 0
+    yaku_c = Counter()
     for i in range(n_hanchans):
         h = HanchanState(dealer=i % 4)
         while not h.finished:
@@ -127,11 +130,15 @@ def run(fn, n_hanchans, label):
             deals += 1
             if r.result_type != "ryuukyoku":
                 wins += 1
+                for y in (getattr(r, "yaku", ()) or ()):
+                    yaku_c[y] += 1
             h.advance(r)
     dt = time.time() - t0
     pct = 100.0 * wins / max(1, deals)
-    print("%-20s win=%3d/%3d (%5.2f%%)  %4.0fs"
-          % (label, wins, max(1, deals), pct, dt))
+    tanyao = 100.0 * yaku_c.get("断幺九", 0) / max(1, wins)
+    pinfu = 100.0 * yaku_c.get("平和", 0) / max(1, wins)
+    print("%-20s win=%3d/%3d (%5.2f%%)  断幺=%4.1f%% 平和=%4.1f%%  %4.0fs"
+          % (label, wins, max(1, deals), pct, tanyao, pinfu, dt))
     return pct
 
 

@@ -192,6 +192,24 @@ def play_one_deal(model, hstate, seed, device, temperature, encoder,
     return env, result, info
 
 
+def _parse_aux_weights(text):
+    """'tanyao=2,pinfu=2' -> {"tanyao": 2.0, "pinfu": 2.0}。
+
+    同一个模型用这几个权重调「更爱断幺还是更爱平和」——不再拆成不同模型/人。
+    """
+    out = {}
+    for part in (text or "").split(","):
+        part = part.strip()
+        if not part or "=" not in part:
+            continue
+        k, v = part.split("=", 1)
+        try:
+            out[k.strip()] = float(v)
+        except ValueError:
+            pass
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hanchans", type=int, default=8, help="每次迭代几个半庄")
@@ -208,6 +226,10 @@ def main():
     ap.add_argument("--log-every", type=int, default=10)
     ap.add_argument("--aux-bonus-weight", type=float, default=0.0,
                     help="额外任务奖励权重（>0 时把每局任务完成奖励加进 reward）")
+    ap.add_argument("--aux-weights", default="",
+                    help="风格任务权重，如 'tanyao=2,pinfu=2'（同一模型调参）")
+    ap.add_argument("--init", default="",
+                    help="从已有 ckpt 继续训练（同一模型微调风格权重用）")
     ap.add_argument("--out", default="checkpoints/hanchan_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
     ap.add_argument("--save-every", type=int, default=5)
@@ -231,6 +253,12 @@ def main():
     base = O2.OBS_TENSOR_DIM
     model.head_fc[0] = torch.nn.Linear(
         model.head_fc[0].in_features + SIT_DIM, model.head_fc[0].out_features)
+    if args.init:
+        _ck = torch.load(args.init, map_location="cpu", weights_only=False)
+        model.load_state_dict(_ck["state_dict"])
+        print(f"从 {args.init} 继续训练"
+              f"（iter={_ck.get('iter')}, win={_ck.get('win_rate')}）",
+              flush=True)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     encoder = O2.ObsEncoder()
     print(f"device={device} params={count_params(model):,} "
@@ -284,7 +312,8 @@ def main():
                         w_survive=args.survive_weight)
                     # 额外任务奖励（用户要求：每个模型都给额外任务，完成也有奖励）
                     if args.aux_bonus_weight > 0:
-                        _, _aux = AUX.deal_bonus(env, result, p)
+                        _w = _parse_aux_weights(args.aux_weights)
+                        _, _aux = AUX.deal_bonus(env, result, p, weights=_w)
                         r_term += args.aux_bonus_weight * _aux / 1000.0
                     for k, (vec, legal_slots, pick, sb, sa, _, label, gu, tf) \
                             in enumerate(lst):

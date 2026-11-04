@@ -32,11 +32,14 @@ TASKS = {
     "no_dealin": (200, "本局未放铳"),
     "tenpai_draw": (200, "流局时听牌"),
     "fast_tenpai": (300, "8 巡内进入听牌（需轨迹）"),
+    # 役种风格任务：让「断幺人 / 平胡人」都收进同一个模型，用权重调参
+    "tanyao": (300, "和牌且役含断幺九"),
+    "pinfu": (300, "和牌且役含平和"),
 }
 
 #: 局末静态任务（不需要逐步轨迹）
 STATIC_TASKS = ("win", "tsumo", "mangan", "riichi", "no_dealin",
-                "tenpai_draw")
+                "tenpai_draw", "tanyao", "pinfu")
 
 
 def _is_tenpai(env, p):
@@ -62,12 +65,26 @@ def static_tasks(env, result, p_idx):
                          or result.from_player != p_idx)
     done["tenpai_draw"] = (result.result_type == "ryuukyoku"
                            and bool(result.tenpai[p_idx]))
+    # 役种风格任务（同一模型内用 --aux-weights 调偏重）
+    yaku = set(result.yaku or ())
+    done["tanyao"] = is_win and "断幺九" in yaku
+    done["pinfu"] = is_win and "平和" in yaku
     return done
 
 
-def bonus_of(done):
-    """{task: bool} -> 奖励点数合计。"""
-    return sum(TASKS[name][0] for name, ok in done.items() if ok)
+def bonus_of(done, weights=None):
+    """{task: bool} -> 奖励点数合计。
+
+    weights: 可选的 {task_name: 倍率}——同一个模型用不同风格权重调参
+    （如 {"tanyao": 2.0, "pinfu": 2.0}），默认全 1。
+    """
+    total = 0.0
+    for name, ok in done.items():
+        if not ok:
+            continue
+        w = 1.0 if not weights else float(weights.get(name, 1.0))
+        total += TASKS[name][0] * w
+    return total
 
 
 class AuxTaskTracker:
@@ -96,14 +113,13 @@ class AuxTaskTracker:
         return done, bonus_of(done)
 
 
-def deal_bonus(env, result, p_idx, trackers=None):
+def deal_bonus(env, result, p_idx, trackers=None, weights=None):
     """便捷接口：算一个玩家本局的额外任务奖励。
 
     trackers 可选：传入 {p_idx: AuxTaskTracker} 时复用其 fast_tenpai 记录。
     """
     if trackers is not None and p_idx in trackers:
-        done, bonus = trackers[p_idx].finish(env, result)
+        done = trackers[p_idx].finish(env, result)[0]
     else:
         done = static_tasks(env, result, p_idx)
-        bonus = bonus_of(done)
-    return done, bonus
+    return done, bonus_of(done, weights)
