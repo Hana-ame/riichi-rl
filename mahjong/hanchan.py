@@ -28,7 +28,9 @@ class HanchanState:
         finished: 半庄是否已结束
     """
 
-    def __init__(self, dealer=0, start_points=25000):
+    def __init__(self, dealer=0, start_points=25000, east_only=False):
+        """east_only=True 时只打东 1–4（东风战），东 4 结束即终局。"""
+        self.east_only = bool(east_only)
         self.round = "E"
         self.kyoku = 1
         self.dealer = dealer
@@ -113,6 +115,9 @@ class HanchanState:
             return          # 已结束，不要再推进
         if self.kyoku >= KYOKU_LIMIT[self.round]:
             if self.round == "E":
+                if self.east_only:
+                    self.finished = True      # 东风战：东 4 打完即结束
+                    return
                 self.round = "S"
                 self.kyoku = 1
             else:
@@ -132,6 +137,7 @@ class HanchanState:
             "dealer": self.dealer,
             "honba": self.honba,
             "sticks": list(self.sticks),
+            "east_only": self.east_only,
             "finished": self.finished,
         }
 

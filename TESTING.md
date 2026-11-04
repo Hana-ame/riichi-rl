@@ -34,7 +34,7 @@ $PY engine_stats.py --games 200
 | 测试文件 | 覆盖模块 | 用例 | 关键点 |
 |---|---|---|---|
 | `tests/test_env_core.py` | `mahjong/env.py` | 12 | 摸牌记录、听牌判定、和牌结算一致性、响应阶段、杠宝牌、牌数守恒 |
-| `tests/test_hanchan.py` | `mahjong/hanchan.py` | 5 | 点数接力、供托管、旧式 result 兼容 |
+| `tests/test_hanchan.py` | `mahjong/hanchan.py` | 8 | 点数接力、供托管、旧式 result 兼容、东风战(E1-E4)/半庄(E1-S4) |
 | `tests/test_policies.py` | `mahjong/policies.py` | 12 | 向听最小化、不早宣言流局、不随机吃碰、立直优先、默听/没役才立直/按点数策略 |
 | `tests/test_hand_scoring.py` | `mahjong/hand.py` `scoring.py` `refengine.py` | 11 | 和牌型/七对/国士、向听、开源引擎算分、赤牌/门前清计分回归 |
 | `tests/test_obs_net.py` | `mahjong/obs2.py` `net.py` | 5 | 774 维观测、网络输出 shape、参数量锁定 |
@@ -49,7 +49,7 @@ $PY engine_stats.py --games 200
 | `tests/test_realtime_guard.py` | `realtime_guard.py` | 4 | 延迟分位数、5s 预算判定、超预算退回规则基线 |
 | `tests/test_hybrid_danger.py` | `hybrid_agents.py` | 2 | 危险分=对手持牌概率×威胁权重、无模型时零分 |
 
-合计 **102 个用例**，主测试套件约 2.2 秒。
+合计 **105 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 

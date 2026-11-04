@@ -117,12 +117,12 @@ def play_shanten_greedy(hstate, seed):
     return r
 
 
-def run(fn, n_hanchans, label):
+def run(fn, n_hanchans, label, east_only=False):
     t0 = time.time()
     wins = deals = 0
     yaku_c = Counter()
     for i in range(n_hanchans):
-        h = HanchanState(dealer=i % 4)
+        h = HanchanState(dealer=i % 4, east_only=east_only)
         while not h.finished:
             r = fn(h, 7000 + i * 13 + h.current_index())
             if r is None:
@@ -146,6 +146,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default=None)
     ap.add_argument("--hanchans", type=int, default=3)
+    ap.add_argument("--mode", default="hanchan", choices=["hanchan", "east"],
+                    help="hanchan=E1..S4 半庄；east=只打东 1..4 东风战")
     a = ap.parse_args()
 
     # 按 mtime 取最新：文件名 `a2c_r10_*` 字典序排在 `a2c_r9_*` 前面，
@@ -155,9 +157,11 @@ def main():
         key=os.path.getmtime)
     path = a.ckpt or (cks[-1] if cks else None)
 
+    east = a.mode == "east"
+    print(f"=== 模式：{'东风战(E1-E4)' if east else '半庄(E1-S4)'} ===")
     print("=== baselines ===")
-    run(play_random, a.hanchans, "uniform-random")
-    run(play_shanten_greedy, a.hanchans, "shanten-greedy")
+    run(play_random, a.hanchans, "uniform-random", east_only=east)
+    run(play_shanten_greedy, a.hanchans, "shanten-greedy", east_only=east)
 
     if path:
         model, ck = load_model(path)
@@ -166,7 +170,7 @@ def main():
               % (ck.get("iter"), ck.get("deals"), ck.get("win_rate")))
         enc = O2.ObsEncoder()
         run(lambda h, s: play_model(model, enc, h, s),
-            a.hanchans, "MODEL (greedy)")
+            a.hanchans, "MODEL (greedy)", east_only=east)
     else:
         print("no checkpoint found")
 

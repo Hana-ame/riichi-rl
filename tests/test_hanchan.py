@@ -75,5 +75,38 @@ class TestStartPointsCarry(unittest.TestCase):
         self.assertEqual(sum(h.sticks), 100000)
 
 
+class TestEastOnlyMode(unittest.TestCase):
+    """东风战：只打东 1–4，不进入南场。"""
+
+    class _R:
+        def __init__(self):
+            self.result_type = "ryuukyoku"
+            self.winner = None
+            self.points_delta = [0, 0, 0, 0]
+            self.kyokuten = 0
+
+    def test_east_only_finishes_after_four_deals(self):
+        h = HanchanState(dealer=0, east_only=True)
+        n = 0
+        while not h.finished and n < 12:
+            h.advance(self._R())
+            n += 1
+        self.assertTrue(h.finished)
+        self.assertEqual(n, 4, "东风战应只打 4 局")
+        self.assertEqual(h.round, "E")
+
+    def test_hanchan_mode_still_eight_deals(self):
+        h = HanchanState(dealer=0)
+        n = 0
+        while not h.finished and n < 12:
+            h.advance(self._R())
+            n += 1
+        self.assertEqual(n, 8)
+
+    def test_to_dict_records_flag(self):
+        h = HanchanState(east_only=True)
+        self.assertTrue(h.to_dict()["east_only"])
+
+
 if __name__ == "__main__":
     unittest.main()
