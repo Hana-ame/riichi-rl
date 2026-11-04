@@ -61,6 +61,21 @@ class TestHandPredictor(unittest.TestCase):
         self.assertTrue(float(pt.min()) >= 0.0, "听牌巡数应非负")
 
 
+class TestHandPredictorData(unittest.TestCase):
+    """回归：和牌预测器读流局记录时 winner=None 不能炸（2026-11-05 修复）。
+
+    旧 `load_dataset` 直接 `int(d["winner"])`，703 局里有 97 局是流局
+    （winner=None）→ TypeError，`hand_predictor.py` 训练必 exit 1。
+    """
+
+    def test_winner_index_none_means_ryuukyoku(self):
+        from hand_predictor import winner_index
+        import numpy as np
+        self.assertEqual(winner_index({"winner": np.array(None, dtype=object)}), -1)
+        self.assertEqual(winner_index({"winner": np.array(2)}), 2)
+        self.assertEqual(winner_index({"winner": 3}), 3)
+
+
 _HANCHAN_CKS = sorted(glob.glob(os.path.join(
     U.ROOT, "checkpoints", "a2c_r*_it*.pt")))
 

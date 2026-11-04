@@ -125,3 +125,88 @@ $PY arena_elo.py --games 600 --seed 0     # 11 个策略/模型的 Elo（约 5 m
 3. **学出来的危险张**：用 `opponent_model` 输出 + 放铳标签做监督/奖励整形；
    注意不违反 §15（手写牌效禁令）。
 4. 抢杠接响应阶段（`RULES.md §17 A17`）。
+---
+
+# 附：第二轮审阅复核（2026-11-05 00:36）
+
+外部第二轮审阅仍基于上下文推断，三条需修正/补证，另发现一个新缺陷。
+
+## 1. 牌河顺序：不是「集合」，是有序 list（现场演示）
+
+```
+$ grep -n "river" mahjong/env.py
+94:        self.river = []          # Player 初始化
+822:        p.river.append(tile)     # 弃牌入河（append 保序）
+902:            src.river.pop()      # 被吃碰时只移除尾张
+
+# 实跑：seed=7，14 步后
+river[0] = [0, 6]        # 1m 后 7m
+river[1] = [0, 6]
+log 前 8 条 = [(0,0,'discard','1m'), (1,1,'discard','1m'), (2,2,'discard','1m'),
+             (3,3,'discard','5p'), (4,0,'discard','7m'), ...]
+```
+
+结论同第一轮：**记录层有序；数值特征（obs2 的 5–8/18 平面）只做每牌计数，
+只有 `last_discard` 一张 one-hot**。要「按牌河顺序推断手牌形状」必须新增
+位置/序列特征（会改 774 维观测，旧 ckpt 不兼容）。
+
+## 2. 「无任何放铳率/攻防判定」不成立
+
+- `arena.py:65,71,178` 有 **放铳率**（`deal_in_rate`）报告；
+- `mahjong/scenarios.py` 有放铳惩罚 `W_DEAL_BASE=1.0`、`W_DEAL_DEFENSE=2.5`、
+  弃听安全奖励；
+- `mahjong/situation.py` 有 `SIT_DEFENSE`（有人立直 → 全防）与弃听判定 `deserves_give_up`。
+
+准确表述：**有「局面级攻防模式 + 放铳率统计」，没有「单张危险度打分」**；
+后者按 `RULES.md §15` 不许手写，应由模型学。
+
+## 3. 「逐手/逐局面和牌率预测未见证据」→ 现在有模型了（本轮修好并训练）
+
+`hand_predictor.py` 三输出头（`win_prob` / 期望点数 / 还几巡听牌），
+原先训练**必崩**（两个 bug，本轮修掉）：
+
+1. `int(d["winner"])` 遇流局 None → `TypeError`（703 局里 97 局是流局）；
+   已加 `winner_index()` 读 `None → -1`，回归 `tests/test_models.py`。
+2. 设备判定 `cuda if available` 违反项目 CPU-only 约束，且验证 target
+   没搬设备 → `cuda:0 vs cpu` 报错；改为 `dev="cpu"` 并搬 target。
+
+训练结果（`--epochs 20`，CPU，51,666 样本 / 703 文件 / 跳旧格式 97）：
+
+```
+baseline_win=0.009  val_win=0.0516  val_pts_mae≈500点  val_turns_mae=14.32巡
+saved checkpoints/hand_predictor.pt
+```
+
+已接入观战：`serve_game.hand_predictions(env)` 实测返回四家
+`{win≈0.01, pts=0, turns≈0.9}`。**质量仍弱**（win 头接近常数、巡数头塌到均值），
+只能当特征/参考，不能当判据。
+
+## 4. 新发现：54 槽线的动作槽映射不是单射（模型叫牌会被吞）
+
+`train_reinforce.slot_of` 是哈希：`34 + ((type*7 + tile) % 20)`。
+PASS 固定槽 50；而 CHI(起始牌) / PON(牌) 在特定 tile 上也算出 50。
+实测 40 局 10,572 个决策点：
+
+```
+有槽冲突的决策点 66（0.62%），涉及 32 局
+冲突组合：CHI+PASS 53 次、PON+PASS 13 次
+```
+
+`legal[slots.index(pick)]` 取「列表里第一个同槽动作」，而 `_legal_response_phase`
+把 PASS 放在最前 → 模型即使想 CHI/PON，也会被执行成 PASS；训练数据里这些
+CHI/PON 的标签同样被记成 50（PASS）→ 训练标签被污染。
+（RON 撞 PASS 时因为 RON 被 `insert(0)` 放最前，反而保住；TSUMO 在 RIICHI 前。）
+
+**这正是「54 槽线模型不自给自足」的结构性原因之一**。47 槽线（`train_hanchan`）
+用的是**固定特殊槽**（TSUMO=34/RON=35/RIICHI=36/…），不存在该问题；实测
+47 槽 `a2c_r11_it5` 在 `eval_hanchan` 里**不带规则接管**也能和 2/24（8.33%）。
+→ 「让神经模型自己会和牌」的正确路线：**固定槽位 + 特殊动作加权/DAgger**，
+不要继续修哈希槽线。
+
+## 5. 第二轮其余判断的复核
+
+- ⑤ 多轮迭代：`tests/run_all` 已 **67/67**（第一轮复核后新增 2 个回归）。
+- ⑥ 「模型本尊尚弱」成立：`eval_hanchan` 模型 8.33% vs 向听贪心 37.5%；
+  600 局 Elo 里非 bc 神经模型和牌率 0–3.4%（54 槽线 0%；47 槽线 1.9–3.4%）。
+- 优先做「让模型自己会和牌」同意；具体抓手按上面 §4：先换固定槽位（新数据
+  生成 + 重训），再做特殊动作加权/DAgger，评估用 `eval_hanchan`（不带接管）。

@@ -58,6 +58,19 @@ def build_feature(hand_counts, melds, riichi, shanten, left, dora):
     ])
 
 
+def winner_index(d):
+    """从单局 npz 读 winner；流局记录里存的是 None → 返回 -1。
+
+    2026-11-05 修复：旧代码直接 `int(d["winner"])`，遇到流局（None）
+    抛 TypeError，hand_predictor 训练必崩（此前 `--epochs 20` 的 exit 1
+    就是这个）。
+    """
+    raw = d["winner"]
+    if hasattr(raw, "item"):
+        raw = raw.item()
+    return int(raw) if raw is not None else -1
+
+
 def load_dataset(data_dir):
     files = sorted(glob.glob(os.path.join(data_dir, "*.npz")))
     Xs, Yw, Yp, Yt = [], [], [], []
@@ -70,7 +83,7 @@ def load_dataset(data_dir):
         hands = d["hands"]; melds = d["melds"]; riichi = d["riichi"]
         left = d["left"]; dora = d["dora"]; seats = d["seat"]
         shanten = d["shanten"]
-        winner = int(d["winner"]); pdelta = d["points_delta"]
+        winner = winner_index(d); pdelta = d["points_delta"]
         N = len(hands)
         for k in range(N):
             p = int(seats[k])
@@ -116,7 +129,9 @@ def train(args):
     print(f"基础胜率(全预测1)={base_win:.3f}  "
           f"听牌目标均值={float(Yt.mean()):.3f}", flush=True)
 
-    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    # 项目硬约束：禁止 GPU（cpu_only.py）。旧代码用 cuda-if-available，
+    # 既违反约束，验证时 target 没搬设备还会 cuda/cpu 混用报错。
+    dev = "cpu"
     model = HandPredictor().to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     print(f"device={dev} 训练{len(tr)} 验证{len(val)}", flush=True)
@@ -138,9 +153,11 @@ def train(args):
         model.eval()
         with torch.no_grad():
             vw, vp, vt = model(Xv.to(dev))
-            vwl = float(nn.functional.binary_cross_entropy(vw.squeeze(-1), Wv.to(dev)))
-            vpl = float(nn.functional.mse_loss(vp * 1000, Pv * 1000))  # 点数 MAE 尺度
-            vtl = float(nn.functional.mse_loss(vt, Tv * 18))           # 巡 MAE 尺度
+            vwl = float(nn.functional.binary_cross_entropy(
+                vw.squeeze(-1), Wv.to(dev)))
+            vpl = float(nn.functional.mse_loss(vp * 1000,
+                                               Pv.to(dev) * 1000))  # 点数 MAE
+            vtl = float(nn.functional.mse_loss(vt, Tv.to(dev) * 18))  # 巡 MAE
         print(f"epoch {ep:>2}  win_loss={tot_w/len(Xt):.4f}  "
               f"val_win={vwl:.4f}  val_pts_mae={vpl ** 0.5:.1f}点  "
               f"val_turns_mae={vtl ** 0.5:.2f}巡", flush=True)
