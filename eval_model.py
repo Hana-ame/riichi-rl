@@ -144,8 +144,9 @@ def evaluate(fn, games, label):
         r = fn(seed)
         if r is None:
             continue
+        net = E.net_points(r, [25000] * 4)
         for k in range(4):
-            pts[k] += r.points_delta[k]
+            pts[k] += net[k]
         if r.result_type == "ryuukyoku":
             dr += 1
         else:

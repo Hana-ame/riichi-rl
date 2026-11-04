@@ -23,6 +23,7 @@ import random
 from . import env as E
 from . import hand as H
 from . import tiles as T
+from . import refengine as REF
 from .tiles import NUM_TILES
 
 
@@ -81,15 +82,17 @@ class GreedyTenpai(Policy):
             ron = [a for a in legal if a.type == E.ACT_RON]
             if ron:
                 return ron[0]
-            return self.rng.choice(legal)
+            # 不随机吃碰：保持门前清才能立直（立直听牌是和牌率的主要来源）。
+            # 原实现随机吃碰会毁掉门前清，实测立直/听牌率极低。
+            return E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
 
         # 自摸和了最优先
         ts = [a for a in legal if a.type == E.ACT_TSUMO]
         if ts:
             return ts[0]
-        ryuu = [a for a in legal if a.type == E.ACT_RYUUKYOKU]
-        if ryuu:
-            return ryuu[0]
+        # 注意：**不选主动宣言流局(RYUUKYOKU)**。原实现在听牌后立刻宣言流局，
+        # 等于把听牌后的自摸/荣和机会直接扔掉——实测这是和牌率极低的直接原因。
+        # 让它继续打，听牌后正常摸牌/等放铳。
 
         discards = [a for a in legal if a.type == E.ACT_DISCARD]
         if not discards:
@@ -98,17 +101,45 @@ class GreedyTenpai(Policy):
         # 对每种可打的牌，比较「打完之后手牌还剩几张听牌待牌」。
         # 注意：手牌是 14 张，打出后变 13 张，两种状态的听牌数
         # 不可直接比较——必须**都在 13 张状态下**比。
+        # 立直：能立直就立直。立直 = 已听牌且锁定，之后和了必有役，
+        # 是「能和牌」最直接的保证（不立直的门前清荣和容易无役）。
+        riichis = [a for a in legal if a.type == E.ACT_RIICHI]
+        if riichis:
+            pl = env.players[p_idx]
+            best = None
+            best_w = -1
+            for a in riichis:
+                pl.hand.remove(a.tile)
+                pl.hand.sort()
+                w = self._waits(env, p_idx)
+                pl.hand.append(a.tile)
+                pl.hand.sort()
+                if w > best_w:
+                    best_w = w
+                    best = a
+            if best is not None:
+                return best
+
+        # 向听数最小化：没进听前也能持续把手牌推向听牌。
+        # 原实现只比「打完后待牌种数」，未听牌时该值恒 0，等于随机打牌，
+        # 实测 40 局仅 5 次真听牌——这就是和牌率极低的根因。
+        # 平手时再比待牌种数（更积极的听牌选择）。
         pl = env.players[p_idx]
         best = None
-        best_score = -1
+        best_key = None
         for a in discards:
             pl.hand.remove(a.tile)
             pl.hand.sort()
-            s = self._waits(env, p_idx)
+            try:
+                sh = REF.ref_shanten(pl.full_counts())
+            except Exception:
+                sh = 99
+            w = self._waits(env, p_idx)
             pl.hand.append(a.tile)
             pl.hand.sort()
-            if s > best_score:
-                best_score = s
+            key = (sh, -w)
+            if best_key is None or key < best_key:
+                best_key = key
                 best = a
         return best if best is not None else legal[0]
 

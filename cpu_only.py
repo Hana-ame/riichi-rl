@@ -26,6 +26,21 @@ DEVICE = "cpu"
 torch.set_num_threads(max(1, (os.cpu_count() or 4)))
 
 
+def set_inference_threads(n=2):
+    """在线推理（逐条决策）把线程压到 1–2。
+
+    `rules/MODEL_BENCH.md` §4 实测：本机 batch=1 下 12 线程反而比 1 线程
+    慢 4–7×（OpenMP 自旋 + 长尾到 0.5 s）；批量前向才是 4–8 线程更快。
+    观战/竞技场都是逐决策推理，必须调这个。
+    """
+    torch.set_num_threads(max(1, int(n)))
+
+
+def set_batch_threads(n=6):
+    """批量训练/自对弈前向用 4–8 线程（见 MODEL_BENCH §4.2）。"""
+    torch.set_num_threads(max(1, int(n)))
+
+
 def device():
     """返回唯一的合法设备 'cpu'。"""
     return DEVICE

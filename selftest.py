@@ -203,9 +203,9 @@ def test_no_illegal_win(n_games=200):
         if not r.yaku:
             illegal.append((seed, "no_yaku"))
             continue
-        # 自摸不能振听
-        if r.result_type == "tsumo" and p.furiten:
-            illegal.append((seed, "furiten_tsumo"))
+        # 振听不能荣和（自摸不受振听影响 —— RULES.md §11，2026-11-04 修正）
+        if r.result_type == "ron" and p.furiten:
+            illegal.append((seed, "furiten_ron"))
 
     total = ron_count + tsumo_count
     ok = len(illegal) == 0
@@ -221,7 +221,14 @@ def test_no_illegal_win(n_games=200):
 # ---------------------------------------------------------------------------
 
 def test_score_conservation(n_games=200):
-    """每局：结算前后点数总和不变，且 delta 之和为 0。"""
+    """每局：结算后「四家点数 + 桌上供托(kyokuten)」守恒。
+
+    2026-11-04 修正判据：原用例断言 `sum(points_delta) == 0`，但立直时
+    1000 点是从 `players.points` 直接扣进供托的、不在 delta 流水里；
+    和牌时供托归和牌者又记在 winner 的 delta 里。所以 delta 之和等于
+    「本局立直供托 + 起手供托 − 结束供托」，而不是 0。
+    真正的守恒式：sum(scores) + kyokuten == sum(起手点数) + 起手供托。
+    """
     bad = []
     total_pt_ok = 0
     for seed in range(1, n_games + 1):
@@ -231,12 +238,15 @@ def test_score_conservation(n_games=200):
         if r is None:
             continue
         after = [p.points for p in e.players]
+        riichi_cost = sum(p.riichi for p in e.players) * RS.START_KYOTEN
         dsum = sum(r.points_delta)
-        if dsum != 0:
-            bad.append((seed, "delta_sum", dsum, r.points_delta))
+        want_dsum = riichi_cost + e.initial_kyokuten - r.kyokuten
+        if dsum != want_dsum:
+            bad.append((seed, "delta_sum", dsum, want_dsum, r.points_delta))
             continue
-        if sum(after) != sum(before):
-            bad.append((seed, "total", sum(before), sum(after)))
+        if sum(after) + r.kyokuten != (sum(before) + e.initial_kyokuten):
+            bad.append((seed, "total", sum(before), sum(after),
+                        r.kyokuten))
             continue
         total_pt_ok += 1
     ok = len(bad) == 0
@@ -304,24 +314,33 @@ def test_fu_roundup():
 # ---------------------------------------------------------------------------
 
 def test_furiten():
-    """构造三种振听：舍张振听、自摸被拒、放铳被允。"""
+    """舍张振听：自摸仍可和、放铳禁止（RULES.md §11，2026-11-04 修正）。"""
     e = E.MahjongEnv(seed=100)
     p = e.players[0]
+    six_p = T.parse_tile("6p")
     # 13 张听牌：123m 456m 789m 11p 45p，听 6p
     p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
     p.melds = []
     tenpai_before = e._is_tenpai(0)
     # 往牌河里放待牌 6p，制造舍张振听
-    p.river.append(T.parse_tile("6p"))
+    p.river.append(six_p)
     e._update_furiten(p)
     furiten = p.furiten
-    # 振听后自摸和了必须被拒
+    # 振听不影响自摸：14 张和牌型 + last_drawn=6p 必须仍可和
     p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 456p"))
+    p.last_drawn = six_p
     can_tsumo = e._can_tsumo(0)
-    ok = tenpai_before and furiten and (not can_tsumo)
+    # 振听禁止荣和：同一张 6p 放铳不可和
+    p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
+    p.last_drawn = -1
+    e.last_discard = six_p
+    e.last_discard_player = 3
+    ron_allowed = e._can_ron(0)
+    ok = tenpai_before and furiten and can_tsumo and (not ron_allowed)
     return record("T6 舍张振听", ok,
                   f"听牌={tenpai_before} 振听={furiten} "
-                  f"振听后自摸={can_tsumo}（应为 False）")
+                  f"振听后自摸={can_tsumo}（应为 True） "
+                  f"振听后放铳={ron_allowed}（应为 False）")
 
 
 # ---------------------------------------------------------------------------
@@ -463,42 +482,44 @@ def test_fu_vs_reference():
 
 
 def test_furiten_chankan():
-    """T9 振听细则：普通放铳可和、抢杠不可和。
+    """T9 振听细则：自摸可和、普通放铳禁止、抢杠禁止（RULES.md §11 / §12.2）。
 
-    RULES.md §11 / §12.2：
-    - 舍张振听 -> 自摸被拒，但**普通放铳仍可和**
-    - 抢杠（chankan）+ 振听 -> 不可和
+    2026-11-04 修正方向：旧规范写反（振听禁自摸、放铳可和），
+    标准立直麻将是「振听禁荣和（含抢杠）、自摸照常」。
     """
     e = E.MahjongEnv(seed=300, dealer=1)
     p = e.players[0]
+    six_p = T.parse_tile("6p")
     p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
     p.melds = []
     p.furiten = False
     tenpai = e._is_tenpai(0)
 
     # 往牌河放待牌 6p -> 制造舍张振听
-    p.river.append(T.parse_tile("6p"))
+    p.river.append(six_p)
     e._update_furiten(p)
     furiten = p.furiten
 
-    # 振听后自摸必须被拒
+    # 振听后自摸照常可和
     p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 456p"))
-    tsumo_blocked = not e._can_tsumo(0)
+    p.last_drawn = six_p
+    tsumo_allowed = e._can_tsumo(0)
 
-    # 普通放铳必须仍可和
+    # 振听禁止普通放铳和
     p.hand = sorted(T.parse_tiles("123m 456m 789m 11p 45p"))
-    e.last_discard = T.parse_tile("6p")
+    p.last_drawn = -1
+    e.last_discard = six_p
     e.last_discard_player = 3
-    ron_allowed = e._can_ron(0)
+    ron_blocked = not e._can_ron(0)
 
-    # 抢杠 + 振听必须被拒
+    # 抢杠 + 振听同样必须被拒
     chankan_blocked = not e._can_ron(0, from_chankan=True)
 
-    ok = (tenpai and furiten and tsumo_blocked
-          and ron_allowed and chankan_blocked)
+    ok = (tenpai and furiten and tsumo_allowed
+          and ron_blocked and chankan_blocked)
     return record("T9 振听细则", ok,
-                  f"听牌={tenpai} 振听={furiten} 自摸被拒={tsumo_blocked} "
-                  f"放铳可和={ron_allowed} 抢杠被拒={chankan_blocked}")
+                  f"听牌={tenpai} 振听={furiten} 自摸可和={tsumo_allowed} "
+                  f"放铳被拒={ron_blocked} 抢杠被拒={chankan_blocked}")
 
 
 def test_riichi_action():

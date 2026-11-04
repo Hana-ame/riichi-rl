@@ -32,11 +32,15 @@ N_ACTIONS = 54
 
 
 def slot_of(action):
-    """Action -> 固定槽位。显式表，不用哈希（34..53 共 20 个特殊槽）。"""
+    """Action -> 固定槽位（34..53 共 20 个特殊槽）。
+
+    防御：部分动作（如 PASS）tile 为 None，直接参与算术会 TypeError。
+    """
     t = action.type
-    if t == E.ACT_DISCARD and 0 <= action.tile < 34:
-        return action.tile
-    return 34 + ((t * 7 + action.tile) % 20)
+    tile = action.tile if action.tile is not None else -1
+    if t == E.ACT_DISCARD and 0 <= tile < 34:
+        return tile
+    return 34 + ((t * 7 + tile) % 20)
 
 
 class Step:

@@ -1,0 +1,90 @@
+[
+ {
+  "name": "bc_v1(人类牌谱教师)",
+  "kind": "bc_243",
+  "elo": 1667.2,
+  "games": 223,
+  "win_rate": 17.9,
+  "avg_pt": 2180.9
+ },
+ {
+  "name": "greedy_tenpai",
+  "kind": "rule",
+  "elo": 1625.1,
+  "games": 209,
+  "win_rate": 11.5,
+  "avg_pt": 1187.6
+ },
+ {
+  "name": "from_games_v2(蒸馏)",
+  "kind": "v1_54",
+  "elo": 1589.1,
+  "games": 223,
+  "win_rate": 0.0,
+  "avg_pt": -112.7
+ },
+ {
+  "name": "hc(半庄HC)",
+  "kind": "hanchan_47",
+  "elo": 1536.5,
+  "games": 224,
+  "win_rate": 0.0,
+  "avg_pt": -729.2
+ },
+ {
+  "name": "from_games_v1(蒸馏)",
+  "kind": "v1_54",
+  "elo": 1486.4,
+  "games": 226,
+  "win_rate": 0.0,
+  "avg_pt": -643.4
+ },
+ {
+  "name": "a2c_r10(半庄A2C)",
+  "kind": "hanchan_47",
+  "elo": 1468.6,
+  "games": 217,
+  "win_rate": 0.0,
+  "avg_pt": -430.7
+ },
+ {
+  "name": "yaochu_first",
+  "kind": "rule",
+  "elo": 1463.8,
+  "games": 209,
+  "win_rate": 0.0,
+  "avg_pt": -570.0
+ },
+ {
+  "name": "call_first",
+  "kind": "rule",
+  "elo": 1451.2,
+  "games": 225,
+  "win_rate": 0.0,
+  "avg_pt": -187.3
+ },
+ {
+  "name": "dagger(半庄DAgger)",
+  "kind": "hanchan_47",
+  "elo": 1408.5,
+  "games": 215,
+  "win_rate": 1.9,
+  "avg_pt": -403.1
+ },
+ {
+  "name": "riichi_net(纯RL)",
+  "kind": "v1_54",
+  "elo": 1408.3,
+  "games": 205,
+  "win_rate": 3.4,
+  "avg_pt": -100.5
+ },
+ {
+  "name": "random",
+  "kind": "rule",
+  "elo": 1395.3,
+  "games": 224,
+  "win_rate": 0.0,
+  "avg_pt": -748.5
+ }
+]

@@ -85,7 +85,7 @@ def _chi_starts(tile):
 class Player:
     __slots__ = ("idx", "hand", "melds", "river", "points", "is_dealer",
                  "seat_wind", "riichi", "double_riichi", "ippatsu",
-                 "riichi_turn", "furiten", "just_kan")
+                 "riichi_turn", "furiten", "just_kan", "last_drawn")
 
     def __init__(self, idx, points, seat_wind):
         self.idx = idx
@@ -101,6 +101,7 @@ class Player:
         self.riichi_turn = -1
         self.furiten = False
         self.just_kan = False
+        self.last_drawn = -1   # 最近一次摸到的牌（自摸和了判定用）
 
     def is_menzen(self):
         return len(self.melds) == 0
@@ -159,10 +160,11 @@ class Phase:
 class GameResult:
     __slots__ = ("result_type", "winner", "from_player", "points_delta",
                  "scores", "yaku", "han", "fu", "tenpai", "log", "turns",
-                 "deltas")
+                 "deltas", "kyokuten", "reason")
 
     def __init__(self, result_type, winner, from_player, points_delta,
-                 scores, yaku, han, fu, tenpai, log, turns):
+                 scores, yaku, han, fu, tenpai, log, turns, kyokuten=0,
+                 reason=""):
         self.result_type = result_type
         self.winner = winner
         self.from_player = from_player
@@ -174,10 +176,24 @@ class GameResult:
         self.tenpai = tenpai
         self.log = log
         self.turns = turns
+        self.kyokuten = kyokuten
+        self.reason = reason
 
     def __repr__(self):
         return (f"Game[{self.result_type} winner={self.winner} "
                 f"from={self.from_player} delta={self.points_delta}]")
+
+
+def net_points(result, start_points=None):
+    """本局每家净点数变化：优先 `scores - start_points`，否则回退 delta。
+
+    start_points 为该局各家起手点数（MahjongEnv.initial_points）。
+    统计/排名用这个口径；points_delta 只是转账流水，会漏掉立直成本。
+    """
+    scores = getattr(result, "scores", None)
+    if scores is None or start_points is None:
+        return list(result.points_delta)
+    return [scores[i] - start_points[i] for i in range(N_PLAYERS)]
 
 
 class MahjongEnv:
@@ -191,7 +207,21 @@ class MahjongEnv:
     """
 
     def __init__(self, seed=None, dealer=0, honba=0, round_wind=27,
-                 kyoku=1, wall_dead=False):
+                 kyoku=1, wall_dead=False, start_kyokuten=0,
+                 start_points=None):
+        """start_points: 各家本局起手点数（半庄接力用）。默认每家 25000。
+
+        半庄里上一局的结算结果必须作为下一局的起手——旧实现每局都从
+        25000 重开，导致持越点、立直资格（<1000 不能立直）、观测里的
+        点数特征全部失真。`HanchanState.new_env` 现在传本局真实点数。
+        """
+        if start_points is None:
+            start_points = [RS.STARTING_POINTS] * N_PLAYERS
+        if len(start_points) != N_PLAYERS:
+            raise ValueError(f"start_points 需要 {N_PLAYERS} 个数，"
+                             f"收到 {len(start_points)}")
+        self.initial_points = [int(x) for x in start_points]
+        self.initial_kyokuten = start_kyokuten
         self.rng = random.Random(seed)
         self.dealer = dealer
         self.honba = honba
@@ -208,7 +238,7 @@ class MahjongEnv:
         self.players = []
         for i in range(N_PLAYERS):
             seat_wind = 27 + ((i - self.dealer) % 4)
-            p = Player(i, RS.STARTING_POINTS, seat_wind)
+            p = Player(i, self.initial_points[i], seat_wind)
             p.is_dealer = (i == self.dealer)
             self.players.append(p)
 
@@ -216,8 +246,10 @@ class MahjongEnv:
         self.wall = [t for t in range(NUM_TILES) for _ in range(4)]
         self.rng.shuffle(self.wall)
         self.wall_idx = 0
-        self.dora_indicator = None
+        self.dora_indicator = None          # 第一张（兼容旧接口）
+        self.dora_indicators = []           # 全部宝牌指示牌（初始 1 张，每次杠 +1）
         self.ura_dora_indicator = None
+        self.ura_dora_indicators = []
         self._set_dora_indicator()
 
         # 死牌山：剩余 70 张切四份（US-AR1）
@@ -243,13 +275,24 @@ class MahjongEnv:
         self.pending = [self.turn_player]
         self.log = []
         self.kan_pending_draw = False
-        self.kyokuten = 0
+        self.kyokuten = getattr(self, "initial_kyokuten", 0)
         self.renchan_player = self.dealer
         self._must_discard_after_kan = -1
 
     def _set_dora_indicator(self):
-        self.dora_indicator = self.wall[self.wall_idx]
+        self.dora_indicators = []
+        self._flip_dora()
+
+    def _flip_dora(self):
+        """翻一张宝牌指示牌：初始 1 张，每次杠后 +1，最多 5 张（规则上限）。"""
+        if len(self.dora_indicators) >= 5:
+            return
+        if self.wall_idx >= len(self.wall):
+            return
+        t = self.wall[self.wall_idx]
         self.wall_idx += 1
+        self.dora_indicators.append(t)
+        self.dora_indicator = self.dora_indicators[0]
 
     def _apply_waribashi(self):
         """死牌山：剩余牌切成 14/17/17/17，从末尾取牌。"""
@@ -267,6 +310,7 @@ class MahjongEnv:
         t = self.wall[self.wall_idx]
         self.wall_idx += 1
         p.hand.append(t)
+        p.last_drawn = t
         return t
 
     # ---------------- 牌数守恒 ----------------
@@ -289,8 +333,8 @@ class MahjongEnv:
         detail["wall"] = wall_left
         # 王牌指示牌在牌山外（已从 wall_idx 前取走），
         # 里宝牌指示牌也单算
-        total += 1 if self.dora_indicator is not None else 0
-        total += 1 if self.ura_dora_indicator is not None else 0
+        total += len(getattr(self, "dora_indicators", []))
+        total += len(getattr(self, "ura_dora_indicators", []))
         return total == NUM_TOTAL_TILES, total, detail
 
     def visible_counts(self):
@@ -323,8 +367,19 @@ class MahjongEnv:
 
     def _legal_discard_phase(self, p_idx):
         p = self.players[p_idx]
-        acts = []
         hand = p.hand
+        if p.riichi:
+            # 立直后手牌锁定：只能打刚摸的那张（摸切），不能换牌。
+            # 仍允许自摸和了。
+            acts = []
+            if self._can_tsumo(p_idx):
+                acts.append(Action(ACT_TSUMO))
+            if p.last_drawn is not None and p.last_drawn >= 0 and p.last_drawn in hand:
+                acts.append(Action(ACT_DISCARD, p.last_drawn))
+            elif hand:
+                acts.append(Action(ACT_DISCARD, hand[-1]))
+            return acts
+        acts = []
         seen = set()
         for t in hand:
             if t in seen:
@@ -367,7 +422,11 @@ class MahjongEnv:
         return acts
 
     def _can_tsumo(self, p_idx):
-        """能否自摸和了：牌型成立 + 非振听 + 有役。
+        """能否自摸和了：牌型成立 + 有役。
+
+        规则（RULES.md §11，2026-11-04 修正）：振听**只禁止荣和**，
+        自摸和了不受振听影响。旧实现在这里拦了 furiten、却允许振听荣和，
+        方向正好反了。
 
         算分与役判定改用**开源引擎**（refengine），
         自研的 hand.py/yaku.py 在使用中暴露过多个真 bug。
@@ -376,17 +435,20 @@ class MahjongEnv:
         c = p.full_counts()
         if sum(c) != 14:
             return False
-        if p.furiten:
-            return False
-        # 和了牌 = 手牌里最后摸进来的那张（本实现用最大 id 近似，
-        # 因为引擎没记录「哪张是刚摸的」；对判定影响仅限于役的构成）
-        win_tile = max((t for t in range(34) if c[t] > 0), default=None)
+        # 和了牌 = 最近摸到的那张（_draw_tile 记录；吃碰后为 -1）
+        win_tile = p.last_drawn
+        if win_tile is None or win_tile < 0 or win_tile >= NUM_TILES:
+            win_tile = max((t for t in range(34) if c[t] > 0), default=None)
         if win_tile is None:
             return False
         # c 是打牌前的 14 张，最后那张即「刚摸的」，所以要剔除一张
         c2 = list(c)
         c2[win_tile] -= 1
-        return REF.can_win_with(c2, win_tile, len(p.melds))
+        if not REF.can_win_with(c2, win_tile, len(p.melds)):
+            return False
+        score = self._best_score(p_idx, c, len(p.melds), is_tsumo=True,
+                                 winning_tile=None, from_player=None)
+        return score is not None and score.is_valid
 
     def _can_riichi(self, p_idx):
         """能否立直：门前 + 第 4 巡后 + 点棒 >= 1000 + 存在「打后听牌」的牌。"""
@@ -418,14 +480,24 @@ class MahjongEnv:
         meld_count = len(p.melds)
         total = sum(c)
         if total == 14:
-            # 14 张时，先去掉「刚摸到的」或「指定要打的那张」
+            # 14 张时，先去掉「刚摸到的」或「指定要打的那张」。
+            # 默认必须去 last_drawn（摸切）：旧实现去「最小牌号的牌」，
+            # 等于拿错误的 13 张判听牌，导致摸牌后几乎永远判不出听牌——
+            # 直接后果是弃牌阶段从不生成 RYUUKYOKU/NAGASHI 动作
+            # （回归测试 test_never_declares_ryuukyoku 在这里抓到）。
             drop = extra
             if drop is None or drop < 0 or c[drop] == 0:
-                drop = -1
-                for t in range(NUM_TILES):
-                    if c[t] > 0:
-                        drop = t
-                        break
+                ld = getattr(p, "last_drawn", -1)
+                if ld is not None and 0 <= ld < NUM_TILES and c[ld] > 0:
+                    drop = ld
+                else:
+                    drop = -1
+                    for t in range(NUM_TILES):
+                        if c[t] > 0:
+                            drop = t
+                            break
+            if drop < 0:
+                return False
             c[drop] -= 1
             total = 13
         if total != 13:
@@ -525,9 +597,13 @@ class MahjongEnv:
     # ------------------------------------------------------------------
 
     def _dora_set(self):
-        """当前有效的宝牌 tile id 集合。"""
+        """当前有效的宝牌 tile id 集合（遍历全部指示牌：初始 1 + 杠后追加）。"""
         out = set()
-        if self.dora_indicator is not None:
+        inds = getattr(self, "dora_indicators", None)
+        if inds:
+            for ind in inds:
+                out.add(T.dora_from_indicator(ind))
+        elif self.dora_indicator is not None:
             out.add(T.dora_from_indicator(self.dora_indicator))
         return out
 
@@ -628,21 +704,30 @@ class MahjongEnv:
     def _can_ron(self, p_idx, from_chankan=False):
         """能否和这张弃牌。
 
-        振听规则（RULES.md §11、§12.2）：
-        - **普通放铳**：振听**可以**和（振听只禁自摸）
-        - **抢杠**：振听**不可以**和（chankan furiten）
+        振听规则（RULES.md §11，2026-11-04 修正）：**振听禁止一切荣和**
+        （普通放铳与抢杠都不行）；自摸不受影响（见 `_can_tsumo`）。
+        旧实现方向反了：振听可以放铳和、反而禁止自摸。
         """
         p = self.players[p_idx]
         tile = self.last_discard
         if tile is None:
             return False
+        if p.furiten:
+            return False          # 振听：不能荣和（含抢杠）
         c = p.full_counts()
         if c[tile] >= 4:
             return False
         meld_count = len(p.melds)
-        if from_chankan and p.furiten:
-            return False          # 抢杠振听：不可和
-        return REF.can_win_with(c, tile, meld_count)
+        if not REF.can_win_with(c, tile, meld_count):
+            return False
+        # 有役检查：否则会生成「牌型成立但无役」的 RON，
+        # 策略选中后 _finish_ron 又静默丢弃（实测 21 次选 RON 只结算 1 次）。
+        c2 = list(c)
+        c2[tile] += 1
+        score = self._best_score(p_idx, c2, meld_count, is_tsumo=False,
+                                 winning_tile=tile,
+                                 from_player=self.last_discard_player)
+        return score is not None and score.is_valid
     # ------------------------------------------------------------------
     # 推进对局
     # ------------------------------------------------------------------
@@ -670,10 +755,11 @@ class MahjongEnv:
         """
         c = p.full_counts()
         meld_count = len(p.melds)
-        total = sum(c)
-        if total == 14:
-            # 去掉刚摸的那张（还没打）
-            pass
+        if sum(c) == 14 and p.last_drawn is not None and p.last_drawn >= 0:
+            # 刚摸牌后是 14 张；振听判定必须回到 13 张（can_win_with 的约定），
+            # 否则等于拿 15 张去判，结果不可信。
+            c = list(c)
+            c[p.last_drawn] -= 1
         river = set(p.river)
         if not river:
             p.furiten = False
@@ -722,6 +808,7 @@ class MahjongEnv:
             p.riichi_turn = self.turn
             p.ippatsu = True
             p.points = max(0, p.points - RS.START_KYOTEN)
+            self.kyokuten += RS.START_KYOTEN
             if act.tile not in p.hand:
                 act = Action(ACT_DISCARD, p.hand[-1])
 
@@ -744,8 +831,10 @@ class MahjongEnv:
 
         # 进入响应阶段
         self.phase = Phase.RESPONSE
-        self.pending = [q.idx for q in self.players
-                        if q.idx != p_idx and not q.riichi]
+        # 注意：**立直玩家也要进响应阶段**——立直后不能吃碰杠，但可以
+        # 荣和（放铳和）。旧实现把立直者排除，导致立直后只能自摸、
+        # 荣和恒为 0（实测 50 局全自摸）。
+        self.pending = [q.idx for q in self.players if q.idx != p_idx]
         if not self.pending:
             return self._advance()
         return None
@@ -759,8 +848,8 @@ class MahjongEnv:
         self.turn += 1
         if self.turn >= RS.MAX_TURNS * N_PLAYERS:
             return self._finish_ryuukyoku(reason="exhaustive")
-        if len(self.wall) - self.wall_idx <= 4:
-            return self._finish_ryuukyoku(reason="kyuushuu")
+        if len(self.wall) - self.wall_idx <= 0:
+            return self._finish_ryuukyoku(reason="exhaustive")
         self.turn_player = (self.last_discard_player + 1) % N_PLAYERS
         self.phase = Phase.DISCARD
         return self.start_turn()
@@ -889,6 +978,7 @@ class MahjongEnv:
             kind0, t0, frm0 = p.melds[target]
             p.melds[target] = ("addkan", t0, frm0)
         p.hand.sort()
+        self._flip_dora()          # 杠后翻新宝牌指示牌
         self.last_discard_player = actor
         self.turn_player = actor
         self.phase = Phase.DISCARD
@@ -912,6 +1002,7 @@ class MahjongEnv:
                         p.hand.remove(tile)
                     break
         p.hand.sort()
+        self._flip_dora()          # 杠后翻新宝牌指示牌
         self._after_claim(actor, need_draw=True)
 
     def _after_claim(self, actor, need_draw=False):
@@ -969,7 +1060,8 @@ class MahjongEnv:
             rem = total - per * len(payers)
             for k, i in enumerate(payers):
                 delta[i] = -(per + (1 if k < rem else 0))
-        delta[winner] = -sum(delta)
+        delta[winner] = -sum(delta) + self.kyokuten   # 立直棒归和牌者
+        self.kyokuten = 0
         return self._settle("tsumo", winner, None, delta, score)
 
     def _order(self, i, dealer):
@@ -994,7 +1086,8 @@ class MahjongEnv:
             total *= 2
         delta = [0, 0, 0, 0]
         delta[from_player] = -total
-        delta[winner] = total
+        delta[winner] = total + self.kyokuten   # 立直棒归和牌者
+        self.kyokuten = 0
         return self._settle("ron", winner, from_player, delta, score)
 
     def _set_ura_dora(self):
@@ -1011,38 +1104,33 @@ class MahjongEnv:
         delta = [0, 0, 0, 0]
         n_tenpai = sum(tenpai)
         if 0 < n_tenpai < N_PLAYERS:
-            # 未听者各付 300 给听者
+            # 天凤规则：每个未听牌者向每个听牌者支付 1000 点。
+            # 3 听 1 不听 → 不听者付 3000、3 家听者各 +1000；
+            # 1 听 3 不听 → 3 家各付 1000、听者 +3000。
+            # （旧实现按 300 且带 seat_wind 比较，漏付且方向错误）
             notenpai = [i for i in range(N_PLAYERS) if not tenpai[i]]
             tenpai_list = [i for i in range(N_PLAYERS) if tenpai[i]]
-            if len(tenpai_list) == 3 and len(notenpai) == 1:
-                # 3000/4 向下取整分配：名次靠前者多担
-                # 未听者付 1000 给第一名听牌者（不足 1000 的补足规则）
-                order_tenpai = sorted(tenpai_list,
-                                      key=lambda i: (self.players[i].seat_wind
-                                                     - self.players[
-                                                         self.renchan_player].seat_wind) % 4)
-                first = order_tenpai[0]
-                others = [i for i in range(N_PLAYERS) if i != first]
-                share = 1000 // len(others)
-                rem = 1000 - share * len(others)
-                for k, i in enumerate(others):
-                    amt = share + (1 if k < rem else 0)
-                    delta[i] -= amt
-                    delta[first] += amt
-            else:
+            for j in notenpai:
                 for i in tenpai_list:
-                    for j in notenpai:
-                        if self.players[i].seat_wind > self.players[j].seat_wind:
-                            delta[i] += 300
-                            delta[j] -= 300
+                    delta[i] += 1000
+                    delta[j] -= 1000
         result = self._settle("ryuukyoku", None, None, delta, None,
                               tenpai=tenpai, reason=reason)
         return result
 
     def _settle(self, result_type, winner, from_player, delta, score,
                 tenpai=None, reason=""):
-        """统一结算：应用点数变化，检查守恒。"""
+        """统一结算：应用点数变化，检查守恒。
+
+        `scores` = 各家本局结束时的绝对点数（已含立直供托的扣减与和牌者
+        收取的供托）。注意 `points_delta` 只是本局的转账流水，**不含**
+        立直时直接扣走的 1000 点（那 1000 点作为供托由和牌者收走，记在
+        winner 的 delta 里）——所以跨局流转/排名必须用 `scores`，只加
+        `points_delta` 会漏掉立直成本。
+        """
         scores = [self.players[i].points + delta[i] for i in range(N_PLAYERS)]
+        for i in range(N_PLAYERS):
+            self.players[i].points = scores[i]
         self.phase = Phase.END
         self.pending = []
         res = GameResult(
@@ -1057,6 +1145,8 @@ class MahjongEnv:
             tenpai=tenpai if tenpai is not None else [False] * N_PLAYERS,
             log=self.log,
             turns=self.turn,
+            kyokuten=self.kyokuten,
+            reason=reason,
         )
         self.last_result = res
         return res

@@ -173,8 +173,9 @@ def play_hanchan(model, dev, base_name, dealer, seed, temp=0.0, max_kyoku=8):
             n_deal += 1
             continue
         n_deal += 1
+        net = E.net_points(r, env.initial_points)
         for i in range(4):
-            pt[i] += r.points_delta[i]
+            pt[i] += net[i]
         if r.result_type != "ryuukyoku" and r.winner == 0:
             n_win += 1
         h.advance(r)

@@ -34,6 +34,7 @@ class HanchanState:
         self.dealer = dealer
         self.honba = 0
         self.sticks = [start_points] * 4
+        self.kyokuten = 0          # 供托（立直棒），流局保留到下一局
         self.finished = False
 
     def wind_of(self, player_idx):
@@ -61,19 +62,34 @@ class HanchanState:
             honba=self.honba,
             round_wind=self.wind_of(self.dealer),
             kyoku=self.kyoku,
+            start_kyokuten=self.kyokuten,
+            start_points=self.sticks,
         )
 
     def advance(self, result):
         """结算一局后推进场次。
+
+        点数接力用 `result.scores`（绝对点数）而不是 `points_delta`：
+        delta 里不含立直时直接扣走的 1000 点（供托），只加 delta 会让
+        「sticks 总和 + 供托」不再等于 100,000。
+        对没有 `scores` 的旧式/测试 result（只有 points_delta）保留
+        delta 回退路径。
 
         result: MahjongEnv.GameResult
 
         Returns:
             (next_dealer, delta_applied)
         """
-        delta = result.points_delta
-        for i in range(4):
-            self.sticks[i] += delta[i]
+        delta = list(result.points_delta)
+        scores = getattr(result, "scores", None)
+        if scores is not None:
+            self.sticks = [int(x) for x in scores]
+        else:
+            for i in range(4):
+                self.sticks[i] += delta[i]
+        # 供托接力：和牌时已由 env 结算给和牌者（result.kyokuten=0）；
+        # 流局时保留，带到下一局。
+        self.kyokuten = getattr(result, "kyokuten", 0)
 
         if result.result_type == "ryuukyoku":
             # 流局：连庄棒 +1，庄家不变，但**场次必须推进**，

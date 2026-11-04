@@ -39,3 +39,8 @@ data/cache/*.npz
 # 下载 / 编译残留
 data/*.part
 data/*.tmp
+
+# --- 可再生对局数据 / 观战截图（2026-11-04）---
+data/selfplay/
+data/bc2/
+browser-screenshots/

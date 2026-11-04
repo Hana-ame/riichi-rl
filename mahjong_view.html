@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>LLM 麻将 · 实时观战</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --felt1:#1c6b47; --felt2:#124a30; --felt3:#0b2e1d;
+    --gold:#f0cf7a; --gold2:#d9a93e;
+    --card:rgba(255,255,255,.055); --card2:rgba(255,255,255,.03);
+    --line:rgba(255,255,255,.13); --line2:rgba(255,255,255,.22);
+    --red:#ef5b5b; --blue:#5ba8ff; --purple:#a78bfa;
+    --ink:#0b1a12;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    color:#eef5f0; font-variant-numeric:tabular-nums;
+    background:
+      radial-gradient(900px 520px at 45% 12%, rgba(255,255,255,.10), transparent 60%),
+      radial-gradient(1200px 800px at 50% 42%, var(--felt1) 0%, var(--felt2) 52%, var(--felt3) 100%);
+    overflow:hidden;
+  }
+  #app{display:grid;grid-template-columns:1fr 356px;height:100vh;gap:0}
+  #main{display:flex;flex-direction:column;gap:9px;padding:12px 14px;overflow:hidden}
+
+  /* ── 顶部状态栏 ── */
+  #topbar{
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035));
+    border:1px solid var(--line2); border-radius:14px; padding:10px 18px;
+    box-shadow:0 6px 20px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  #topbar .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.55;margin-right:6px}
+  #topbar .v{font-size:20px;font-weight:800;color:#fff}
+  #kyoku{color:var(--gold);font-size:20px;font-weight:900;letter-spacing:.03em}
+  #honba{opacity:.8;font-size:14px;align-self:flex-end;margin-bottom:2px}
+  #phase{
+    margin-left:auto;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;
+    background:rgba(240,207,122,.13);color:var(--gold);border:1px solid rgba(240,207,122,.3);
+  }
+
+  /* ── 麻将牌 ── */
+  .t{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#fffef8 0%,#f4ecd6 72%,#e6d9b8 100%);
+    border-radius:5px;font-weight:700;line-height:1;color:#15231a;
+    box-shadow:0 2px 3px rgba(0,0,0,.42), 0 1px 0 rgba(255,255,255,.7) inset,
+               inset 0 -3px 0 rgba(120,100,60,.16);
+    flex:0 0 auto; user-select:none;
+  }
+  .t.big{width:41px;height:56px;font-size:32px;margin:2px 1.5px;border-radius:6px}
+  .t.small{width:22px;height:29px;font-size:17px;margin:1.5px}
+  .t.meld{width:27px;height:36px;font-size:21px;margin:0 1px}
+  .t.mini{width:19px;height:26px;font-size:15px;margin:1px}
+  .t.draw{outline:2px solid var(--gold);outline-offset:1px;box-shadow:0 0 12px rgba(240,207,122,.55),0 2px 3px rgba(0,0,0,.4)}
+  .t.riichi-mark{box-shadow:0 0 0 2px var(--red),0 2px 3px rgba(0,0,0,.4)}
+  .t.tsumo-mark{border-bottom:4px solid var(--gold);border-radius:5px 5px 2px 2px}
+  .tsumo-tag{font-size:10px;color:var(--gold);background:rgba(240,207,122,.14);
+    border-radius:4px;padding:0 5px;margin-right:2px;font-weight:700}
+  .hand-tag{font-size:10px;color:#9db8a8;background:rgba(255,255,255,.07);
+    border-radius:4px;padding:0 5px;margin-right:2px}
+  /* 花色着色 */
+  .tc-m{color:#c0392b}.tc-p{color:#1f5fbf}.tc-s{color:#1d7a3e}.tc-z{color:#2b2b2b}
+
+  /* ── 座位行 ── */
+  .seatrow{
+    background:linear-gradient(180deg,var(--card),var(--card2));
+    border:1px solid var(--line); border-radius:14px; padding:8px 14px;
+    display:flex;flex-direction:column;gap:5px; min-height:0;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .seatrow:hover{border-color:var(--line2)}
+  .seatrow.llm{border-color:rgba(91,168,255,.55);box-shadow:0 0 0 1px rgba(91,168,255,.22), 0 4px 16px rgba(30,80,160,.15)}
+  /* 当前轮到摸牌/打牌的座位 */
+  .seatrow.active{
+    background:linear-gradient(180deg,rgba(240,207,122,.20),rgba(240,207,122,.07));
+    border-color:rgba(240,207,122,.62);
+    box-shadow:0 0 0 1px rgba(240,207,122,.30), 0 4px 18px rgba(200,160,60,.18);
+  }
+  .draw-gap{display:inline-block;width:18px}
+  .rowhead{display:flex;align-items:center;gap:11px;font-size:13.5px;flex-wrap:wrap}
+  .rowhead .who{
+    font-weight:900;font-size:15px;width:30px;height:24px;display:inline-flex;
+    align-items:center;justify-content:center;border-radius:6px;
+    background:rgba(255,255,255,.10);border:1px solid var(--line);
+  }
+  .rowhead select{
+    background:rgba(10,26,17,.65);color:#e9f3ec;border:1px solid var(--line2);
+    border-radius:7px;padding:3px 7px;font-size:12.5px;outline:none;cursor:pointer;
+  }
+  .rowhead select:hover{border-color:var(--gold)}
+  .pts{
+    background:linear-gradient(180deg,var(--gold),var(--gold2));color:#2a2109;
+    border-radius:7px;padding:2px 9px;font-weight:900;font-size:13px;
+    box-shadow:inset 0 -1px 0 rgba(0,0,0,.18);
+  }
+  .riichi{
+    background:linear-gradient(180deg,#ff7a7a,var(--red));border-radius:6px;padding:2px 8px;
+    font-size:11.5px;font-weight:800;display:none;letter-spacing:.05em;
+  }
+  .stats{font-size:12px;opacity:.72}
+  .hpred{font-size:11.5px;color:#8ee7c0;background:rgba(80,220,160,.10);
+    border:1px solid rgba(80,220,160,.22);border-radius:6px;padding:1px 8px;font-weight:600}
+  .hand{display:flex;flex-wrap:wrap;align-items:center;min-height:60px}
+  .subrow{display:flex;gap:20px;align-items:center;font-size:12.5px;min-height:32px;flex-wrap:wrap}
+  .subrow .lbl{
+    font-size:10.5px;letter-spacing:.06em;opacity:.45;white-space:nowrap;
+    text-transform:uppercase;margin-right:3px;
+  }
+  .river{display:flex;flex-wrap:wrap;max-height:64px;overflow:hidden}
+  .melds{display:flex;align-items:center;gap:6px;min-height:20px}
+  .melds .sep{opacity:.25;margin:0 2px}
+  .pred{display:flex;align-items:center;gap:3px;margin-left:auto}
+  .pred .lbl{font-size:10.5px;opacity:.5;margin-right:3px;white-space:nowrap}
+
+  /* ── 右侧决策流 ── */
+  #panel{
+    background:linear-gradient(180deg,#0a1811 0%,#08130d 100%);
+    border-left:1px solid var(--line); display:flex;flex-direction:column;
+    box-shadow:-8px 0 26px rgba(0,0,0,.25);
+  }
+  #panel h2{
+    margin:0;padding:13px 16px;font-size:13px;letter-spacing:.04em;
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;
+    background:rgba(255,255,255,.03);
+  }
+  #panel h2 .llmchip{
+    background:linear-gradient(180deg,#6fb3ff,var(--blue));color:#08243f;
+    border-radius:6px;padding:2px 8px;font-weight:900;font-size:11px;letter-spacing:.06em;
+  }
+  #status{font-size:11px;padding:2px 9px;border-radius:999px;background:#1f5c3a;color:#9fe7b5;margin-left:auto}
+  #status.off{background:#5c1f1f;color:#f0a0a0}
+  #log{flex:1;overflow-y:auto;padding:11px;scrollbar-width:thin}
+  #log::-webkit-scrollbar{width:7px}
+  #log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:4px}
+  .step{
+    border:1px solid var(--line);border-radius:11px;margin-bottom:9px;padding:9px 10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+    animation:slideIn .18s ease-out;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .step .hd{display:flex;justify-content:space-between;align-items:center;font-size:11px;opacity:.6;margin-bottom:5px;gap:6px}
+  .step .pick{font-size:15px;font-weight:800;color:var(--gold);margin:3px 0 5px}
+  .step .think{font-size:12px;opacity:.8;white-space:pre-wrap;line-height:1.5;max-height:130px;overflow:auto;margin-top:4px}
+  .step .acts{font-size:10.5px;opacity:.45;margin-top:5px}
+  .prob{display:flex;align-items:center;gap:7px;font-size:11.5px;margin:2.5px 0}
+  .prob>span{width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.92}
+  .prob .bar{flex:1;height:7px;background:rgba(255,255,255,.10);border-radius:999px;overflow:hidden}
+  .prob .bar i{display:block;height:100%;border-radius:999px;
+    background:linear-gradient(90deg,#57d38c,var(--gold));transition:width .3s ease}
+  .prob b{width:46px;text-align:right;font-size:10.5px;color:var(--gold);opacity:.95}
+  .tagchip{font-size:9.5px;padding:1.5px 7px;border-radius:999px;background:#3a4650;font-weight:800;letter-spacing:.04em}
+  .tagchip.LLM{background:linear-gradient(180deg,#6fb3ff,var(--blue));color:#08243f}
+  .tagchip.NET{background:linear-gradient(180deg,#c4b5fd,var(--purple));color:#1e1033}
+  .shanten{font-size:12px;color:#7dd3fc;margin-top:3px}
+
+  /* ── 控制按钮 ── */
+  #ctrl{display:flex;gap:7px;padding:11px;border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
+  button{
+    flex:1;background:linear-gradient(180deg,#2f7d57,#225c40);color:#eaf7ee;border:1px solid rgba(255,255,255,.12);
+    border-radius:9px;padding:10px;font-weight:800;cursor:pointer;font-size:12.5px;letter-spacing:.03em;
+    transition:filter .15s, transform .05s;
+  }
+  button:hover{filter:brightness(1.18)}
+  button:active{transform:translateY(1px)}
+  button.warn{background:linear-gradient(180deg,#b4453f,#8d2f2a)}
+
+  /* ── 结算弹层 ── */
+  #result{position:fixed;inset:0;background:rgba(4,10,7,.62);backdrop-filter:blur(4px);
+          display:none;align-items:center;justify-content:center;z-index:9}
+  #result .box{
+    background:linear-gradient(180deg,#123023,#0b1e16);border:1px solid var(--gold);
+    border-radius:16px;padding:26px 40px;font-size:16px;line-height:1.9;text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(240,207,122,.15);
+  }
+  #result .box b:first-child{font-size:24px;color:var(--gold)}
+
+  @media (max-width:1080px){#app{grid-template-columns:1fr 300px}.t.big{width:34px;height:46px;font-size:26px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="main">
+    <div id="topbar">
+      <span><b id="kyoku">东1局</b><span id="honba"> 0本场</span></span>
+      <span><span class="k">巡</span><span class="v" id="turn">0</span></span>
+      <span><span class="k">墙余</span><span class="v" id="left">0</span></span>
+      <span><span class="k">宝牌指示</span><span id="doraT" style="vertical-align:middle"></span></span>
+      <span id="phase">—</span>
+    </div>
+    <div class="seatrow" id="row0"></div>
+    <div class="seatrow" id="row1"></div>
+    <div class="seatrow" id="row2"></div>
+    <div class="seatrow" id="row3"></div>
+  </div>
+
+  <div id="panel">
+    <h2><span class="llmchip">LLM</span> 决策流 <span id="status" class="off">未连接</span></h2>
+    <div id="log"><div class="placeholder" style="opacity:.45;padding:12px">等待对局开始…</div></div>
+    <div id="ctrl">
+      <button onclick="sendCtrl('start')">▶ 继续</button>
+      <button class="warn" onclick="sendCtrl('pause')">⏸ 暂停</button>
+      <button onclick="sendCtrl('step')">⏭ 单步</button>
+    </div>
+  </div>
+</div>
+
+<div id="result"><div class="box" id="resultBox"></div></div>
+
+<script>
+/* 牌 index → Unicode 麻将字符 */
+function tUni(i){
+  if(i==null||i<0) return '';
+  if(i<=8)  return String.fromCodePoint(0x1F007+i);
+  if(i<=17) return String.fromCodePoint(0x1F019+(i-9));
+  if(i<=26) return String.fromCodePoint(0x1F010+(i-18));
+  return String.fromCodePoint([0x1F000,0x1F001,0x1F002,0x1F003,0x1F006,0x1F005,0x1F004][i-27]);
+}
+function suitCls(i){ return i<9?'tc-m':i<18?'tc-p':i<27?'tc-s':'tc-z'; }
+function tEl(i,cls,extra){ return `<span class="t ${cls} ${suitCls(i)}${extra?' '+extra:''}">${tUni(i)}</span>`; }
+
+const WIND=['东','南','西','北'];
+const POLICIES=[['llm','LLM（商汤）'],['net','我的模型(riichi_net.pt)'],['call_first','先副露(会吃碰)'],['greedy_tenpai','听牌贪心'],['random','随机'],['yaochu_first','先打幺九']];
+const PHASE_CN={discard:'打牌',response:'响应',end:'终局'};
+let lastPerSeat=['llm','call_first','call_first','call_first'];
+
+function policySelect(s,cur){
+  return `<select data-seat="${s}" onchange="setPolicy(${s},this.value)">`+
+    POLICIES.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')+`</select>`;
+}
+
+/* 副露完整显示：chi=三张顺子、pon=三张、kan=四张 */
+function meldHtml(p){
+  if(!p.melds||!p.melds.length) return '';
+  return p.melds.map(([kind,t,arg])=>{
+    let tiles;
+    if(kind==='chi') tiles=[t,t+1,t+2];
+    else if(kind==='pon') tiles=[t,t,t];
+    else tiles=[t,t,t,t];
+    return tiles.map(x=>tEl(x,'meld')).join('');
+  }).join('<span class="sep">|</span>');
+}
+
+function render(d){
+  document.getElementById('kyoku').textContent = WIND[(d.round_wind||0)%4]+d.kyoku+'局';
+  document.getElementById('honba').textContent = ' '+d.honba+'本场';
+  document.getElementById('turn').textContent = d.turn;
+  document.getElementById('left').textContent = d.left;
+  document.getElementById('phase').textContent = PHASE_CN[d.phase]||d.phase||'—';
+  const doras = (d.doras && d.doras.length) ? d.doras : (d.dora >= 0 ? [d.dora] : []);
+  document.getElementById('doraT').innerHTML = doras.map(t =>
+    `<span class="t mini ${suitCls(t)}">${tUni(t)}</span>`).join('');
+  if(d.per_seat) lastPerSeat=d.per_seat;
+
+  for(let s=0;s<4;s++){
+    const p=d.players[s]; if(!p) continue;
+    const row=document.getElementById('row'+s);
+    const isLLM=(lastPerSeat[s]==='llm');
+    row.classList.toggle('llm',isLLM);
+    row.classList.toggle('active', s === d.current);
+    const n=p.hand.length;
+    let handHtml;
+    if(n===14){
+      // 刚摸的牌空一格并金框，单独一列（方便一眼看出摸切/手切）
+      handHtml = p.hand.slice(0,13).map(t=>tEl(t,'big')).join('')
+        + '<span class="draw-gap"></span>'
+        + tEl(p.hand[13],'big','draw');
+    }else{
+      handHtml = p.hand.map(t=>tEl(t,'big')).join('');
+    }
+    if(!handHtml) handHtml='<span style="opacity:.3">—</span>';
+    const lastRiverIdx=p.river.length-1;
+    const rivers=p.river.map((t,i)=>{
+      let cls=[];
+      if(i===p.riichi_turn) cls.push('riichi-mark');
+      if(i===lastRiverIdx && d.tsumo_last && d.tsumo_last[s]) cls.push('tsumo-mark');
+      return tEl(t,'small', cls.join(' '));
+    }).join('')||'<span style="opacity:.3">—</span>';
+    const lastDiscardTag = p.river.length
+      ? (d.tsumo_last && d.tsumo_last[s]
+          ? '<span class="tsumo-tag">末张摸切</span>'
+          : '<span class="hand-tag">末张手切</span>')
+      : '';
+    const st=(d.stats&&d.stats[s])||{win:0,deal:0,pt:0};
+    const winRate=st.deal? (st.win/st.deal*100).toFixed(0)+'%':'—';
+    const statsHtml=`<span class="stats">和了 ${st.win}/${st.deal} (${winRate}) · 点数差 ${st.pt>=0?'+':''}${st.pt}</span>`;
+    // 和牌预测：胜率 / 预期点数 / 还需几巡听牌
+    let hpredHtml='';
+    const hp = d.hpred && d.hpred[s];
+    if(hp){
+      const tTxt = hp.turns <= 0.6 ? '已听牌' : `还需 ${hp.turns.toFixed(1)} 巡听牌`;
+      hpredHtml=`<span class="hpred">胜率 ${(hp.win*100).toFixed(0)}% · 预期 ${hp.pts}点 · ${tTxt}</span>`;
+    }
+    let predHtml='';
+    if(s!==0){
+      const mp = d.opred && d.opred[s];   // 模型预测：34 维持有概率
+      if(mp && mp.length){
+        const top = mp.map((p,i)=>[p,i]).sort((a,b)=>b[0]-a[0]).slice(0,5);
+        predHtml=`<div class="pred"><span class="lbl">模型预测</span>`+
+          top.map(([pr,i])=>`<span style="opacity:${(0.4+pr*0.6).toFixed(2)}">${tEl(i,'mini')}</span>`).join('')+
+          `<span style="font-size:10px;opacity:.55;margin-left:3px">${(top[0][0]*100).toFixed(0)}%</span></div>`;
+      }else if(d.remain){
+        const top=d.remain.map((r,i)=>[r,i]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,5);
+        predHtml=`<div class="pred"><span class="lbl">疑似持有</span>`+
+          top.map(([r,i])=>tEl(i,'mini')).join('')+`</div>`;
+      }
+    }
+    row.innerHTML=`
+      <div class="rowhead">
+        <span class="who">P${s}</span>
+        ${policySelect(s, lastPerSeat[s])}
+        <span class="pts">${p.points}</span>
+        <span class="riichi" style="display:${p.riichi?'inline-block':'none'}">立直</span>
+        ${statsHtml}
+        ${hpredHtml}
+        ${isLLM?'<span style="color:#7db5ff;font-size:11.5px;font-weight:700">◀ LLM</span>':''}
+      </div>
+      <div class="hand">${handHtml}</div>
+      <div class="subrow">
+        <span class="lbl">副露</span><span class="melds">${meldHtml(p)||'<span style="opacity:.3">—</span>'}</span>
+        <span class="lbl">牌河</span>${lastDiscardTag}<div class="river">${rivers}</div>
+        ${predHtml}
+      </div>`;
+  }
+  if(d.result){
+    const r=d.result, box=document.getElementById('resultBox');
+    box.innerHTML=`<b>${r.result_type}</b><br>
+      和了 P${r.winner}　放铳 P${r.from_player}<br>${r.yaku||''} ${r.han||0}番 ${r.fu||0}符<br>
+      <span style="font-size:13px;opacity:.8">点数变化：${(r.points_delta||[]).join(' / ')}</span>`;
+    document.getElementById('result').style.display='flex';
+  }else{
+    document.getElementById('result').style.display='none';
+  }
+}
+
+function addStep(m){
+  const log=document.getElementById('log');
+  const ph=log.querySelector('.placeholder'); if(ph) ph.remove();
+  const div=document.createElement('div'); div.className='step';
+  const tagHtml=m.tag?`<span class="tagchip ${m.tag}">${m.tag}</span>`:'';
+  const probsHtml=(m.probs&&m.probs.length)?m.probs.map(r=>
+    `<div class="prob"><span>${esc(r.text)}</span><div class="bar"><i style="width:${Math.min(100,r.p*100)|0}%"></i></div><b>${(r.p*100).toFixed(1)}%</b></div>`
+  ).join(''):'';
+  const shHtml=(m.shanten!==undefined)?`<div class="shanten">向听数 ${m.shanten}${m.shanten===0?'（听牌！）':m.shanten<0?'（已和）':''}</div>`:'';
+  div.innerHTML=`<div class="hd"><span>P${m.seat} · 巡${m.turn} ${tagHtml}</span><span>${PHASE_CN[m.phase]||m.phase||''}</span></div>
+    <div class="pick">▶ ${esc(m.picked_text)}</div>
+    ${shHtml}
+    ${probsHtml}
+    ${m.think?`<div class="think">${esc(m.think)}</div>`:''}
+    ${m.acts?`<div class="acts">可选: ${esc(m.acts)}</div>`:''}`;
+  log.prepend(div);
+  while(log.children.length>60) log.lastChild.remove();
+}
+function esc(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* WebSocket */
+let ws;
+function setStatus(on,txt){const s=document.getElementById('status');s.className=on?'':'off';s.textContent=txt}
+function connect(){
+  const proto=location.protocol==='https:'?'wss':'ws';
+  const host=(new URLSearchParams(location.search).get('ws'))||`${proto}://${location.hostname||'localhost'}:8775`;
+  ws=new WebSocket(host);
+  ws.onopen=()=>setStatus(true,'已连接');
+  ws.onclose=()=>{setStatus(false,'断开·重连中');setTimeout(connect,2000)};
+  ws.onerror=()=>ws.close();
+  ws.onmessage=e=>{
+    const m=JSON.parse(e.data);
+    if(m.type==='state') render(m);
+    else if(m.type==='decision') addStep(m);
+    else if(m.type==='per_seat'){
+      lastPerSeat=m.per_seat;
+      document.querySelectorAll('select[data-seat]').forEach(sel=>{
+        sel.value=m.per_seat[+sel.dataset.seat];
+      });
+    }
+  };
+}
+function sendCtrl(c){ if(ws&&ws.readyState===1) ws.send(JSON.stringify({ctrl:c})); }
+function setPolicy(seat,name){ if(ws&&ws.readyState===1) ws.send(JSON.stringify({ctrl:'policy',seat,name})); }
+connect();
+</script>
+</body>
+</html>

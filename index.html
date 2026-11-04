@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>SenseNova 麻将观战</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+         background: #1a2632; color: #e8eef4; padding: 16px; }
+  h1 { font-size: 18px; margin-bottom: 4px; }
+  .sub { font-size: 12px; color: #8fa4b8; margin-bottom: 12px; }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+         background: #223244; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+  button, select, input { background: #2e4258; color: #e8eef4; border: 1px solid #3a5570;
+                          border-radius: 5px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  button:hover { background: #3a5570; }
+  input { width: 90px; cursor: text; }
+  #status { font-size: 12px; color: #7ddc9c; margin-left: auto; }
+  .table { background: #163023; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .info { font-size: 13px; color: #cfe0d0; margin-bottom: 10px; letter-spacing: .5px; }
+  .info b { color: #ffd479; }
+  .player { margin-bottom: 10px; background: #1d3a2b; border-radius: 7px; padding: 8px 10px; }
+  .player.llm { border: 1px solid #5b8def; }
+  .phead { font-size: 13px; margin-bottom: 5px; }
+  .phead .seat { font-weight: bold; color: #9fc5ff; }
+  .phead .pts { color: #ffd479; margin-left: 8px; }
+  .riichi { color: #ff7a7a; font-weight: bold; }
+  .tiles { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
+  .tile { display: inline-flex; align-items: center; justify-content: center;
+          width: 26px; height: 34px; background: #f7f3e8; color: #222; border-radius: 4px;
+          font-size: 14px; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  .tile.riv { width: 20px; height: 26px; font-size: 11px; }
+  .tile-m { color: #1f4fbf; } .tile-p { color: #c0392b; }
+  .tile-s { color: #1e8449; } .tile-z { color: #2c3e50; }
+  .river { margin-top: 5px; }
+  .meld { color: #ffd479; font-size: 12px; }
+  .log { background: #223244; border-radius: 8px; padding: 10px; height: 240px; overflow-y: auto; }
+  .log h2 { font-size: 14px; margin-bottom: 6px; color: #9fc5ff; }
+  .dec { border-left: 3px solid #5b8def; padding: 5px 8px; margin-bottom: 6px;
+         background: #1b2a3a; border-radius: 0 5px 5px 0; font-size: 12px; }
+  .dec .hd { font-weight: bold; color: #ffd479; }
+  .dec .rs { color: #b8cce0; }
+  .dec .opts { color: #7f95ab; font-size: 11px; }
+  .result { background: #2a2440; border-radius: 8px; padding: 10px; margin-bottom: 10px;
+            font-size: 13px; color: #e0d4ff; display: none; }
+  .hidden { display: none; }
+  label { font-size: 12px; color: #8fa4b8; }
+</style>
+</head>
+<body>
+  <h1>SenseNova-6.8-flash-lite 打麻将 · 实时观战</h1>
+  <div class="sub">LLM 读牌面文字推理出牌，只打 0 位；对手为规则基线。</div>
+
+  <div class="bar">
+    <label>seed</label><input id="seed" type="number" value="1000">
+    <label>对手</label>
+    <select id="opp">
+      <option value="greedy_tenpai">greedy_tenpai</option>
+      <option value="random">random</option>
+      <option value="call_first">call_first</option>
+      <option value="yaochu_first">yaochu_first</option>
+    </select>
+    <button onclick="start()">新一局</button>
+    <button onclick="send({cmd:'pause'})">暂停</button>
+    <button onclick="send({cmd:'resume'})">继续</button>
+    <button onclick="send({cmd:'step'})">单步</button>
+    <label>间隔</label>
+    <select id="speed" onchange="send({cmd:'speed',ms:+this.value})">
+      <option value="1500">慢</option><option value="600" selected>中</option><option value="150">快</option>
+    </select>
+    <span id="status">● 连接中…</span>
+  </div>
+
+  <div id="result" class="result"></div>
+  <div class="table">
+    <div class="info" id="info">等待开始…</div>
+    <div id="players"></div>
+  </div>
+  <div class="log">
+    <h2>LLM 决策流</h2>
+    <div id="declog"></div>
+  </div>
+
+<script>
+let ws, lastState = null;
+const $ = id => document.getElementById(id);
+
+function connect() {
+  ws = new WebSocket("ws://127.0.0.1:8765");
+  ws.onopen = () => $("status").textContent = "● 已连接";
+  ws.onclose = () => { $("status").textContent = "● 断开，2s后重连"; setTimeout(connect, 2000); };
+  ws.onerror = () => $("status").textContent = "● 连接失败";
+  ws.onmessage = e => {
+    const m = JSON.parse(e.data);
+    if (m.type === "state") { lastState = m; render(m); }
+    else if (m.type === "decision") addDecision(m);
+    else if (m.type === "kyoku_end") showResult(m);
+    else if (m.type === "info") $("info").textContent = m.msg;
+    else if (m.type === "game_over") $("info").textContent = "本半庄结束 " + JSON.stringify(m.scores);
+  };
+}
+
+function send(o) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+function start() { $("result").style.display = "none"; $("declog").innerHTML = "";
+  send({cmd:"start", seed:+$("seed").value, opp:$("opp").value}); }
+
+function tileSpan(name, riv) {
+  const s = name.slice(-1);
+  let c = "tile-z";
+  if (s === "m") c = "tile-m"; else if (s === "p") c = "tile-p"; else if (s === "s") c = "tile-s";
+  return `<span class="tile ${c}${riv ? ' riv' : ''}">${name}</span>`;
+}
+
+function render(m) {
+  $("info").innerHTML = `<b>${m.round_wind}${m.kyoku}局</b> ${m.honba}本场 · 巡目 <b>${m.turn}</b> · `
+    + `宝牌 <b>${m.dora}</b> · 墙余 <b>${m.wall_left}</b> · ${m.phase}`;
+  let html = "";
+  for (const p of m.players) {
+    const isLLM = p.seat === 0;
+    const hand = isLLM
+      ? `<div class="tiles">${p.hand.map(t => tileSpan(t)).join("")}</div>`
+      : `<div class="tiles"><span style="color:#7f95ab;font-size:12px">手牌 ${p.hand.length} 张（暗）</span></div>`;
+    const melds = p.melds.length
+      ? ` <span class="meld">副露: ${p.melds.map(x => x.tile).join(" ")}</span>` : "";
+    html += `<div class="player${isLLM ? ' llm' : ''}">
+      <div class="phead"><span class="seat">${isLLM ? "P0 ◀ SenseNova" : "P" + p.seat}</span>
+      <span class="pts">${p.points}</span>${p.riichi ? '<span class="riichi"> 【立直】</span>' : ""}${melds}</div>
+      ${hand}
+      <div class="tiles river">${p.river.map(t => tileSpan(t, true)).join("")}</div>
+    </div>`;
+  }
+  $("players").innerHTML = html;
+}
+
+function addDecision(d) {
+  const div = document.createElement("div");
+  div.className = "dec";
+  const opts = d.options.length > 12
+    ? d.options.slice(0, 12).join(" / ") + " …" : d.options.join(" / ");
+  div.innerHTML = `<div class="hd">P${d.player} 巡${d.turn} → ${d.chosen}</div>`
+    + (d.reason ? `<div class="rs">理由：${d.reason}</div>` : "")
+    + `<div class="opts">候选(${d.options.length})：${opts}</div>`;
+  const log = $("declog");
+  log.prepend(div);
+  while (log.children.length > 40) log.removeChild(log.lastChild);
+}
+
+function showResult(m) {
+  const r = $("result");
+  r.style.display = "block";
+  r.innerHTML = `<b>${m.result_type}</b> winner=${m.winner} from=${m["from"]} `
+    + `役=${m.yaku} ${m.han}番${m.fu}符 · 点数变化 ${JSON.stringify(m.delta)}`;
+}
+
+connect();
+</script>
+</body>
+</html>
