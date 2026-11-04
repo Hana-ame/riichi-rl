@@ -32,7 +32,10 @@ from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import refengine as REF
 from mahjong.net import MahjongNet
+from mahjong.tiles import NUM_TILES
 from train_reinforce import slot_of as slot_of54, N_ACTIONS as NA54
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 class HybridShantenAgent(Agent):
@@ -132,6 +135,106 @@ class HybridShantenAgent(Agent):
                     return legal[best]
 
         # 其它动作：模型 masked argmax（slot >= 0 的合法动作里选）
+        mask = np.full(self.n_actions, -1e9, dtype=np.float32)
+        ok = [(i, s) for i, s in zip(range(len(legal)), slots) if s >= 0]
+        if not ok:
+            return legal[0]
+        for i, s in ok:
+            mask[s] = 0.0
+        pick_idx, pick_slot = max(ok, key=lambda x: logits[x[1]] + mask[x[1]])
+        return legal[pick_idx]
+
+class HybridShantenDangerAgent(HybridShantenAgent):
+    """混合 + 危险张：弃牌仍以向听最小为主，平手/邻档时躲对危险牌。
+
+    危险度来源：`opponent_model.py`（从牌河/副露/立直推断对手每张牌持有概率，
+    已重训 top5 命中 0.368 vs 随机 0.147）。对每个对手按威胁权重（立直=1、
+    未立直=0.25）聚合其「持有该牌的概率」，作为该弃牌的危险分。
+
+    这是「读牌河 → 危险张」的最小落地：不手写筋/现物表（守 RULES §15），
+    而是用训练出来的对手持牌推断当输入。
+    """
+
+    kind = "hybrid_danger"
+
+    def __init__(self, name, ckpt, opp_ckpt=None):
+        super().__init__(name, ckpt)
+        self.opp_ckpt = opp_ckpt or os.path.join(ROOT, "checkpoints",
+                                                 "opponent_model.pt")
+        self.opp = None
+        if os.path.exists(self.opp_ckpt):
+            from opponent_model import OpponentNet
+            ck = torch.load(self.opp_ckpt, map_location="cpu",
+                            weights_only=False)
+            self.opp = OpponentNet()
+            self.opp.load_state_dict(ck["state_dict"])
+            self.opp.eval()
+
+    def _opp_hold_probs(self, env, p_idx):
+        """返回 {opp_idx: 34 维持牌概率}（不可用时返回 {}）。"""
+        if self.opp is None:
+            return {}
+        from opponent_model import build_features
+        out = {}
+        me = env.players[p_idx]
+        hand = np.asarray(me.counts(), dtype=np.int8)
+        left = len(env.wall) - env.wall_idx
+        di = env.dora_indicator
+        dora = int(di) if (di is not None and di >= 0) else -1
+        for t in range(4):
+            if t == p_idx:
+                continue
+            tp = env.players[t]
+            target_river = np.zeros(NUM_TILES, dtype=np.int8)
+            other_rivers = np.zeros(NUM_TILES, dtype=np.int8)
+            for tile in tp.river:
+                target_river[tile] += 1
+            for j in range(4):
+                if j in (p_idx, t):
+                    continue
+                for tile in env.players[j].river:
+                    other_rivers[tile] += 1
+            f = build_features(hand, target_river, other_rivers,
+                               len(tp.melds), 1 if tp.riichi else 0,
+                               int(target_river.sum()), left, dora)
+            with torch.no_grad():
+                pr = self.opp(torch.from_numpy(f).unsqueeze(0))[0].numpy()
+            out[t] = pr
+        return out
+
+    def danger_scores(self, env, p_idx):
+        """34 维危险分：所有对手「持有该牌概率 × 威胁权重」之和。"""
+        probs = self._opp_hold_probs(env, p_idx)
+        danger = np.zeros(NUM_TILES, dtype=np.float32)
+        for t, pr in probs.items():
+            w = 1.0 if env.players[t].riichi else 0.25
+            danger += w * np.asarray(pr)
+        return danger
+
+    def act(self, env, p, legal):
+        from arena_elo import _rule_override
+        ov = _rule_override(legal)
+        if ov is not None:
+            return ov
+        logits, slots = self._logits(env, p, legal)
+        if env.phase == E.Phase.DISCARD:
+            discs = [(i, a) for i, a in enumerate(legal)
+                     if a.type == E.ACT_DISCARD]
+            if discs:
+                danger = self.danger_scores(env, p)
+                shs = []
+                for i, a in discs:
+                    if a.tile is not None and a.tile in env.players[p].hand:
+                        shs.append((self._shanten_after(env, p, a.tile), i, a))
+                if shs:
+                    best_sh = min(x[0] for x in shs)
+                    cands = [x for x in shs if x[0] <= best_sh]
+                    def key(x):
+                        sh, i, a = x
+                        slot = self.TH.slot_of(a) if self.is47 else slot_of54(a)
+                        ms = float(logits[slot]) if 0 <= slot < len(logits) else -1e9
+                        return (sh, float(danger[a.tile]) - 1e-3 * ms)
+                    return legal[min(cands, key=key)[1]]
         mask = np.full(self.n_actions, -1e9, dtype=np.float32)
         ok = [(i, s) for i, s in zip(range(len(legal)), slots) if s >= 0]
         if not ok:

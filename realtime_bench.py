@@ -38,11 +38,15 @@ def build_agent(spec):
     """'hybrid:teacher47_v3' / 'teacher47_v3' / 'greedy_tenpai' -> Agent。"""
     if spec in ("greedy_tenpai",):
         return RuleAgent(spec)
-    hybrid = spec.startswith("hybrid:")
-    name = spec[len("hybrid:"):] if hybrid else spec
+    hybridd = spec.startswith("hybridd:")
+    hybrid = hybridd or spec.startswith("hybrid:")
+    name = spec.split(":", 1)[1] if hybrid else spec
     path = os.path.join(CKPT, name if name.endswith(".pt") else name + ".pt")
     if not os.path.exists(path):
         raise FileNotFoundError(path)
+    if hybridd:
+        from hybrid_agents import HybridShantenDangerAgent
+        return HybridShantenDangerAgent(spec, path)
     if hybrid:
         from hybrid_agents import HybridShantenAgent
         return HybridShantenAgent(spec, path)

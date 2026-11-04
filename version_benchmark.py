@@ -126,6 +126,9 @@ class AutoAgent(Agent):
 
 def make_agent(name, path=None):
     from mahjong import policies as POL
+    if name.startswith("hybridd:"):
+        from hybrid_agents import HybridShantenDangerAgent
+        return HybridShantenDangerAgent(name, path)
     if name.startswith("hybrid:"):
         from hybrid_agents import HybridShantenAgent
         return HybridShantenAgent(name, path)
@@ -141,7 +144,7 @@ def make_agent(name, path=None):
 
 def ckpt_path_of(name):
     """'hybrid:xxx' / 'xxx' -> checkpoints/xxx.pt 路径。"""
-    base = name.split(":", 1)[1] if name.startswith("hybrid:") else name
+    base = name.split(":", 1)[1] if name.startswith(("hybrid:", "hybridd:")) else name
     return os.path.join(CKPT, base if base.endswith(".pt") else base + ".pt")
 
 
@@ -159,6 +162,8 @@ def lineage_of(name):
         return "from_games"
     if n.startswith("teacher47"):
         return "teacher47"
+    if n.startswith(("hybrid:", "hybridd:")):
+        return "hybrid"
     if n.startswith("style_rl"):
         return "style"
     if n == "riichi_net":
@@ -202,7 +207,7 @@ def main():
     versions = []
     skipped = []
     for n in names:
-        base = n.split(":", 1)[1] if n.startswith("hybrid:") else n
+        base = n.split(":", 1)[1] if n.startswith(("hybrid:", "hybridd:")) else n
         path = os.path.join(CKPT, base if base.endswith(".pt") else base + ".pt")
         if not os.path.exists(path):
             skipped.append((n, "不存在"))

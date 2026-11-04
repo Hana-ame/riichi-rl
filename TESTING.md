@@ -47,8 +47,9 @@ $PY engine_stats.py --games 200
 | `tests/test_version_ladder.py` | `version_ladder.py` | 8 | 版本天梯晋级闸门（PASS/FAIL/HOLD、CI、Elo 噪声带、样本不足不放过） |
 | `tests/test_version_registry.py` | `version_registry.py` | 5 | 版本血缘识别、架构判定（47/54/243/预测器）、参数量统计 |
 | `tests/test_realtime_guard.py` | `realtime_guard.py` | 4 | 延迟分位数、5s 预算判定、超预算退回规则基线 |
+| `tests/test_hybrid_danger.py` | `hybrid_agents.py` | 2 | 危险分=对手持牌概率×威胁权重、无模型时零分 |
 
-合计 **100 个用例**，主测试套件约 2.2 秒。
+合计 **102 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
