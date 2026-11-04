@@ -7,6 +7,8 @@
 
 from __future__ import annotations
 
+import glob
+import os
 import unittest
 
 import tests.utils as U
@@ -57,6 +59,29 @@ class TestHandPredictor(unittest.TestCase):
         self.assertEqual(tuple(pt.shape), (3,))
         self.assertTrue(float(pw.min()) >= 0.0 and float(pw.max()) <= 1.0)
         self.assertTrue(float(pt.min()) >= 0.0, "听牌巡数应非负")
+
+
+_HANCHAN_CKS = sorted(glob.glob(os.path.join(
+    U.ROOT, "checkpoints", "a2c_r*_it*.pt")))
+
+
+@unittest.skipUnless(_HANCHAN_CKS,
+                     "checkpoints/a2c_r*_it*.pt 不存在（磁盘权重不入库）")
+class TestEvalHanchanLoading(unittest.TestCase):
+    """回归：eval_hanchan 必须能加载 47 槽半庄 ckpt（2026-11-05 修复）。
+
+    旧版 `load_model` 固定按 54 槽 MahjongNet 建网，而默认 glob 选中的
+    `a2c_r*_it*.pt` 是 47 槽半庄模型 → `load_state_dict` size mismatch，
+    `eval_hanchan.py` 开箱即崩。
+    """
+
+    def test_load_47_slot_ckpt(self):
+        from train_hanchan import N_ACTIONS
+        from eval_hanchan import load_model
+        model, ck = load_model(_HANCHAN_CKS[0])
+        self.assertIsNotNone(ck.get("iter"))
+        self.assertEqual(model.policy.out_features, N_ACTIONS,
+                         "半庄线 ckpt 必须按 47 槽建网加载")
 
 
 if __name__ == "__main__":

@@ -40,11 +40,11 @@ $PY engine_stats.py --games 200
 | `tests/test_obs_net.py` | `mahjong/obs2.py` `net.py` | 5 | 774 维观测、网络输出 shape、参数量锁定 |
 | `tests/test_tiles.py` | `mahjong/tiles.py` | 5 | 34/136 常量、牌名唯一、字牌范围 |
 | `tests/test_data_pipeline.py` | `action_bridge.py` `train_reinforce.slot_of` `gen_greedy_data.py` | 7 | 动作槽映射、双向映射一致性、数据序号续号 |
-| `tests/test_models.py` | `opponent_model.py` `hand_predictor.py` | 4 | 特征维度 108/40、前向输出形状与值域 |
+| `tests/test_models.py` | `opponent_model.py` `hand_predictor.py` `eval_hanchan.py` | 5 | 特征维度 108/40、前向输出形状与值域、47 槽半庄 ckpt 可加载 |
 | `tests/test_server.py` | `serve_game.py` `llm_player.py` | 6 | 记录 JSON 结构、LLM 动作解析边界 |
 | `tests/test_arena.py` | `arena_elo.py` | 3 | Elo 逐对更新零和、ELO.md 渲染动态判读 |
 
-合计 **65 个用例**，主测试套件约 2.2 秒。
+合计 **66 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
