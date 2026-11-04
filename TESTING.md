@@ -43,8 +43,9 @@ $PY engine_stats.py --games 200
 | `tests/test_models.py` | `opponent_model.py` `hand_predictor.py` `eval_hanchan.py` | 6 | 特征维度 108/40、前向输出形状与值域、流局 winner=None 可读、47 槽半庄 ckpt 可加载 |
 | `tests/test_server.py` | `serve_game.py` `llm_player.py` | 6 | 记录 JSON 结构、LLM 动作解析边界 |
 | `tests/test_arena.py` | `arena_elo.py` | 3 | Elo 逐对更新零和、ELO.md 渲染动态判读 |
+| `tests/test_aux_tasks.py` | `mahjong/aux_tasks.py` | 6 | 额外任务判定/奖励、放铳惩罚、轨迹任务（8 巡内听牌） |
 
-合计 **74 个用例**，主测试套件约 2.2 秒。
+合计 **80 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 

@@ -5,7 +5,17 @@
   "elo": 1625.2,
   "games": 172,
   "win_rate": 11.0,
-  "avg_pt": 619.4
+  "avg_pt": 619.4,
+  "avg_bonus": 505.8,
+  "aux_tasks": {
+   "win": 19,
+   "tsumo": 4,
+   "mangan": 5,
+   "riichi": 71,
+   "no_dealin": 166,
+   "tenpai_draw": 46,
+   "fast_tenpai": 2
+  }
  },
  {
   "name": "damaten(默听)",
@@ -13,7 +23,17 @@
   "elo": 1582.7,
   "games": 176,
   "win_rate": 12.5,
-  "avg_pt": 911.0
+  "avg_pt": 911.0,
+  "avg_bonus": 395.5,
+  "aux_tasks": {
+   "win": 22,
+   "tsumo": 11,
+   "mangan": 3,
+   "riichi": 0,
+   "no_dealin": 168,
+   "tenpai_draw": 46,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "bc_v1(人类牌谱教师)",
@@ -21,7 +41,17 @@
   "elo": 1573.9,
   "games": 168,
   "win_rate": 17.9,
-  "avg_pt": 1836.1
+  "avg_pt": 1836.1,
+  "avg_bonus": 579.8,
+  "aux_tasks": {
+   "win": 30,
+   "tsumo": 8,
+   "mangan": 16,
+   "riichi": 59,
+   "no_dealin": 166,
+   "tenpai_draw": 29,
+   "fast_tenpai": 1
+  }
  },
  {
   "name": "riichi_needed(没役才立直)",
@@ -29,7 +59,17 @@
   "elo": 1573.2,
   "games": 159,
   "win_rate": 11.3,
-  "avg_pt": 760.8
+  "avg_pt": 760.8,
+  "avg_bonus": 431.4,
+  "aux_tasks": {
+   "win": 18,
+   "tsumo": 5,
+   "mangan": 3,
+   "riichi": 34,
+   "no_dealin": 153,
+   "tenpai_draw": 34,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "a2c_r10(半庄A2C)",
@@ -37,7 +77,17 @@
   "elo": 1556.2,
   "games": 179,
   "win_rate": 0.0,
-  "avg_pt": -1126.8
+  "avg_pt": -1126.8,
+  "avg_bonus": 197.8,
+  "aux_tasks": {
+   "win": 0,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 0,
+   "no_dealin": 173,
+   "tenpai_draw": 4,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "yaochu_first",
@@ -45,7 +95,17 @@
   "elo": 1511.8,
   "games": 183,
   "win_rate": 0.0,
-  "avg_pt": -456.3
+  "avg_pt": -456.3,
+  "avg_bonus": 206.6,
+  "aux_tasks": {
+   "win": 0,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 0,
+   "no_dealin": 177,
+   "tenpai_draw": 12,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "random",
@@ -53,7 +113,17 @@
   "elo": 1500.5,
   "games": 185,
   "win_rate": 0.0,
-  "avg_pt": -797.1
+  "avg_pt": -797.1,
+  "avg_bonus": 198.9,
+  "aux_tasks": {
+   "win": 0,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 0,
+   "no_dealin": 175,
+   "tenpai_draw": 9,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "riichi_ev(按点数期望)",
@@ -61,7 +131,17 @@
   "elo": 1482.2,
   "games": 168,
   "win_rate": 12.5,
-  "avg_pt": 1076.0
+  "avg_pt": 1076.0,
+  "avg_bonus": 499.4,
+  "aux_tasks": {
+   "win": 21,
+   "tsumo": 4,
+   "mangan": 4,
+   "riichi": 63,
+   "no_dealin": 164,
+   "tenpai_draw": 40,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "riichi_net(纯RL)",
@@ -69,7 +149,17 @@
   "elo": 1467.0,
   "games": 172,
   "win_rate": 0.0,
-  "avg_pt": -532.0
+  "avg_pt": -532.0,
+  "avg_bonus": 215.7,
+  "aux_tasks": {
+   "win": 0,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 7,
+   "no_dealin": 169,
+   "tenpai_draw": 6,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "from_games_v2(蒸馏)",
@@ -77,7 +167,17 @@
   "elo": 1461.0,
   "games": 167,
   "win_rate": 0.6,
-  "avg_pt": -240.3
+  "avg_pt": -240.3,
+  "avg_bonus": 247.9,
+  "aux_tasks": {
+   "win": 1,
+   "tsumo": 1,
+   "mangan": 1,
+   "riichi": 3,
+   "no_dealin": 161,
+   "tenpai_draw": 31,
+   "fast_tenpai": 1
+  }
  },
  {
   "name": "call_first",
@@ -85,7 +185,17 @@
   "elo": 1449.8,
   "games": 188,
   "win_rate": 0.0,
-  "avg_pt": -698.9
+  "avg_pt": -698.9,
+  "avg_bonus": 204.3,
+  "aux_tasks": {
+   "win": 0,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 0,
+   "no_dealin": 177,
+   "tenpai_draw": 15,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "dagger(半庄DAgger)",
@@ -93,7 +203,17 @@
   "elo": 1433.7,
   "games": 165,
   "win_rate": 0.6,
-  "avg_pt": -569.5
+  "avg_pt": -569.5,
+  "avg_bonus": 238.2,
+  "aux_tasks": {
+   "win": 1,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 13,
+   "no_dealin": 160,
+   "tenpai_draw": 12,
+   "fast_tenpai": 0
+  }
  },
  {
   "name": "from_games_v1(蒸馏)",
@@ -101,7 +221,17 @@
   "elo": 1425.4,
   "games": 160,
   "win_rate": 0.6,
-  "avg_pt": -594.1
+  "avg_pt": -594.1,
+  "avg_bonus": 230.0,
+  "aux_tasks": {
+   "win": 1,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 9,
+   "no_dealin": 156,
+   "tenpai_draw": 8,
+   "fast_tenpai": 1
+  }
  },
  {
   "name": "hc(半庄HC)",
@@ -109,6 +239,16 @@
   "elo": 1357.4,
   "games": 158,
   "win_rate": 0.6,
-  "avg_pt": -983.1
+  "avg_pt": -983.1,
+  "avg_bonus": 208.2,
+  "aux_tasks": {
+   "win": 1,
+   "tsumo": 0,
+   "mangan": 0,
+   "riichi": 1,
+   "no_dealin": 154,
+   "tenpai_draw": 4,
+   "fast_tenpai": 0
+  }
  }
 ]

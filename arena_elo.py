@@ -29,6 +29,7 @@ import numpy as np             # noqa: E402
 import cpu_only                # noqa: E402,F401 —— 必须先于 torch 锁 CPU-only
 import torch                   # noqa: E402
 
+from mahjong import aux_tasks as AUX
 from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import policies as POL
@@ -236,10 +237,14 @@ def play_one(agents, seed, env_cls=HanchanState):
     seats = list(range(4))
     for i, a in enumerate(agents):
         a.set_game(env, h)
+    # 每个模型都领一份「额外任务清单」（用户要求：完成也有奖励）
+    trackers = [AUX.AuxTaskTracker(i) for i in range(4)]
     r = env.start_turn()
     steps = 0
     while r is None and steps < 600:
         steps += 1
+        for tr in trackers:
+            tr.observe(env)
         acts = {}
         for p in env.pending_players():
             legal = env.legal_actions(p)
@@ -256,7 +261,13 @@ def play_one(agents, seed, env_cls=HanchanState):
     winner = -1
     if r.result_type != "ryuukyoku" and r.winner is not None and r.winner >= 0:
         winner = r.winner
-    return delta, winner
+    aux_bonus = []
+    aux_done = []
+    for tr in trackers:
+        done, bonus = tr.finish(env, r)
+        aux_done.append(done)
+        aux_bonus.append(bonus)
+    return delta, winner, aux_bonus, aux_done
 
 
 def elo_update(ratings, sel, deltas, K=24.0):
@@ -279,26 +290,53 @@ def elo_update(ratings, sel, deltas, K=24.0):
             ratings[b] += K * ((1.0 - sa) - (1.0 - ea))
 
 
-def render_markdown(rows, n_games):
-    """把排名字典列表渲染成 ELO.md（纯函数，便于从 ELO.json 重新生成）。"""
+def render_markdown(rows, n_games, aux_weight=1.0):
+    """把排名字典列表渲染成 ELO.md（纯函数，便于从 ELO.json 重新生成）。
+
+    rows 若带 avg_bonus（额外任务奖励），表里多一列并附任务完成率汇总。
+    """
     games = [r["games"] for r in rows if r.get("games")]
     gmin, gmax = (min(games), max(games)) if games else (0, 0)
     mean_g = (sum(games) / len(games)) if games else 1
     # 在线 Elo 的标准误粗估：400/sqrt(n)；保守取 2×SE 作为「不可区分」带宽
     se = 400.0 / (mean_g ** 0.5) if mean_g else 0.0
     band = 2 * se
+    has_aux = any("avg_bonus" in r for r in rows)
     lines = ["# Elo 竞技场：所有模型/策略排名", "",
              f"> {n_games} 局，4 人桌随机组合，按最终点数排名更新 Elo"
              "（K=24，初始 1500，逐对零和更新）。",
-             "> 统一规则接管：所有神经网络 Agent 的和牌/立直由规则保证。",
-             f"> 判读：每人 {gmin}–{gmax} 局，Elo 标准误粗估 ±{se:.0f}；"
-             f"**相邻名次差 <{band:.0f} 不能当结论**（K=24 收敛慢，"
-             "至少 `--games 600` 再说）。", "",
-             "| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | 平均点数 |",
-             "|---|---|---|---|---|---|---|"]
+             "> 统一规则接管：所有神经网络 Agent 的和牌/立直由规则保证。"]
+    if has_aux:
+        lines.append(f"> 额外任务：每个参赛者每局领一份任务清单（和牌/自摸/"
+                     f"立直/满贯/未放铳/流局听牌/8 巡内进听），完成即加奖励；"
+                     f"奖励按权重 {aux_weight:g} 计入 Elo 排名。")
+    lines += [f"> 判读：每人 {gmin}–{gmax} 局，Elo 标准误粗估 ±{se:.0f}；"
+              f"**相邻名次差 <{band:.0f} 不能当结论**（K=24 收敛慢，"
+              "至少 `--games 600` 再说）。", ""]
+    if has_aux:
+        lines += ["| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | 平均点数 | 任务奖励/局 |",
+                  "|---|---|---|---|---|---|---|---|"]
+    else:
+        lines += ["| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | 平均点数 |",
+                  "|---|---|---|---|---|---|---|"]
     for k, r in enumerate(rows, 1):
-        lines.append(f"| {k} | {r['name']} | {r['kind']} | **{r['elo']}** | "
-                     f"{r['games']} | {r['win_rate']}% | {r['avg_pt']:+.0f} |")
+        line = (f"| {k} | {r['name']} | {r['kind']} | **{r['elo']}** | "
+                f"{r['games']} | {r['win_rate']}% | {r['avg_pt']:+.0f} |")
+        if has_aux:
+            line += f" {r.get('avg_bonus', 0):+.0f} |"
+        lines.append(line)
+
+    if has_aux and rows and rows[0].get("aux_tasks"):
+        total_deals = sum(r["games"] for r in rows)
+        names = list(rows[0]["aux_tasks"].keys())
+        lines += ["", "## 额外任务完成率（每人每局）", "",
+                  "| 参赛者 | " + " | ".join(names) + " |",
+                  "|---" * (len(names) + 1) + "|"]
+        for r in rows:
+            g = max(1, r["games"])
+            cells = [f"{100.0 * r['aux_tasks'].get(n, 0) / g:.1f}%"
+                     for n in names]
+            lines.append(f"| {r['name']} | " + " | ".join(cells) + " |")
     return "\n".join(lines)
 
 
@@ -307,6 +345,8 @@ def main():
     ap.add_argument("--games", type=int, default=300)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default=os.path.join(ROOT, "rules", "ELO.md"))
+    ap.add_argument("--aux-weight", type=float, default=1.0,
+                    help="额外任务奖励计入排名/Elo 的权重（0=不计）")
     args = ap.parse_args()
 
     from cpu_only import set_inference_threads
@@ -318,6 +358,8 @@ def main():
     games_played = {i: 0 for i in range(len(agents))}
     wins = {i: 0 for i in range(len(agents))}
     pt_sum = {i: 0.0 for i in range(len(agents))}
+    aux_sum = {i: 0.0 for i in range(len(agents))}
+    aux_count = {i: {name: 0 for name in AUX.TASKS} for i in range(len(agents))}
     t0 = time.time()
 
     for g in range(args.games):
@@ -326,11 +368,18 @@ def main():
         out = play_one(picked, seed=args.seed * 7919 + g * 131)
         if out is None:
             continue
-        delta, winner = out
-        elo_update(ratings, sel, delta)
+        delta, winner, aux_bonus, aux_done = out
+        # 额外任务奖励计入排名/Elo（用户要求：完成也有奖励）
+        ranked = [delta[pos] + args.aux_weight * aux_bonus[pos]
+                  for pos in range(4)]
+        elo_update(ratings, sel, ranked)
         for pos, i in enumerate(sel):
             games_played[i] += 1
             pt_sum[i] += delta[pos]
+            aux_sum[i] += aux_bonus[pos]
+            for name, ok in aux_done[pos].items():
+                if ok:
+                    aux_count[i][name] += 1
             if winner == pos:
                 wins[i] += 1
         if (g + 1) % 25 == 0:
@@ -346,10 +395,12 @@ def main():
             "games": games_played[i],
             "win_rate": round(wins[i] / max(1, games_played[i]) * 100, 1),
             "avg_pt": round(pt_sum[i] / max(1, games_played[i]), 1),
+            "avg_bonus": round(aux_sum[i] / max(1, games_played[i]), 1),
+            "aux_tasks": dict(aux_count[i]),
         })
     rows.sort(key=lambda r: -r["elo"])
 
-    text = render_markdown(rows, args.games)
+    text = render_markdown(rows, args.games, args.aux_weight)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as f:
         f.write(text + "\n")

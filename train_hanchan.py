@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import refengine as REF
+from mahjong import aux_tasks as AUX
 from mahjong import scenarios as SC
 from mahjong import touch as TOUCH
 from mahjong.hanchan import HanchanState
@@ -205,6 +206,8 @@ def main():
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
     ap.add_argument("--log-every", type=int, default=10)
+    ap.add_argument("--aux-bonus-weight", type=float, default=0.0,
+                    help="额外任务奖励权重（>0 时把每局任务完成奖励加进 reward）")
     ap.add_argument("--out", default="checkpoints/hanchan_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
     ap.add_argument("--save-every", type=int, default=5)
@@ -279,6 +282,10 @@ def main():
                         hstate, give_up_flag=lst[-1][7],
                         w_deal=args.deal_weight,
                         w_survive=args.survive_weight)
+                    # 额外任务奖励（用户要求：每个模型都给额外任务，完成也有奖励）
+                    if args.aux_bonus_weight > 0:
+                        _, _aux = AUX.deal_bonus(env, result, p)
+                        r_term += args.aux_bonus_weight * _aux / 1000.0
                     for k, (vec, legal_slots, pick, sb, sa, _, label, gu, tf) \
                             in enumerate(lst):
                         disc = args.gamma ** (n - 1 - k)
