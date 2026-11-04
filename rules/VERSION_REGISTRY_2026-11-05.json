@@ -1,5 +1,5 @@
 {
- "generated": 1793834801.618819,
+ "generated": 1793836428.3030791,
  "rows": [
   {
    "file": "a2c_r1.pt",
@@ -3890,6 +3890,87 @@
    "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V5"
+  },
+  {
+   "file": "teacher47_dagger_mix.pt",
+   "lineage": "教师 BC 固定槽（teacher47）",
+   "arch": "hanchan47",
+   "params": 453232,
+   "size_mb": 1.75,
+   "mtime": "2026-11-05 07:43",
+   "meta": {
+    "channels": 64,
+    "blocks": 4,
+    "n_actions": 47,
+    "touch_dim": 8,
+    "extra_scalar": 12,
+    "iter": 1,
+    "deals": -1,
+    "win_rate": 0.0,
+    "samples": 241007,
+    "best_val_acc": 0.9645228385925293
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V7"
+  },
+  {
+   "file": "teacher47_dagger_mix_v2.pt",
+   "lineage": "教师 BC 固定槽（teacher47）",
+   "arch": "hanchan47",
+   "params": 453232,
+   "size_mb": 1.75,
+   "mtime": "2026-11-05 07:50",
+   "meta": {
+    "channels": 64,
+    "blocks": 4,
+    "n_actions": 47,
+    "touch_dim": 8,
+    "extra_scalar": 12,
+    "iter": 2,
+    "deals": -1,
+    "win_rate": 0.0,
+    "samples": 241007,
+    "best_val_acc": 0.9699169993400574
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V8"
+  },
+  {
+   "file": "teacher47_dagger_v1.pt",
+   "lineage": "教师 BC 固定槽（teacher47）",
+   "arch": "hanchan47",
+   "params": 453232,
+   "size_mb": 1.75,
+   "mtime": "2026-11-05 07:40",
+   "meta": {
+    "channels": 64,
+    "blocks": 4,
+    "n_actions": 47,
+    "touch_dim": 8,
+    "extra_scalar": 12,
+    "iter": 4,
+    "deals": -1,
+    "win_rate": 0.0,
+    "samples": 32465,
+    "best_val_acc": 0.9547134637832642
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V6"
   },
   {
    "file": "teacher47_v1.pt",

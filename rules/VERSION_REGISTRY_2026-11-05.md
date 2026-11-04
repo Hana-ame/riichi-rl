@@ -1,6 +1,6 @@
 # 模型版本登记表（2026-11-05）
 
-> 自动扫描 `checkpoints/`：共 **94** 个模型文件、**12** 条血缘。
+> 自动扫描 `checkpoints/`：共 **97** 个模型文件、**12** 条血缘。
 
 > 字段：版本（同血缘内按 mtime 排序）/ ckpt / 架构与参数量 / 训练元数据 / 赛评读数 / 状态（天梯闸门优先）。
 
@@ -125,7 +125,7 @@
 | V1 | `from_games_v1.pt` | convformer54 | 1,652,967 | - | -；ELO 1450.5（win 0.0%, 放铳 1.5%, pts -605.0） | 0.0% / -1000（2局） | 历史版本（无闸门记录） |
 | V2 | `from_games_v2.pt` | convformer54 | 1,652,967 | - | -；ELO 1692.8（win 0.4%, 放铳 3.5%, pts -179.3） | 0.0% / -500（2局） → 基准闸门 PASS | 历史版本（无闸门记录） |
 
-## 教师 BC 固定槽（teacher47）（5 个）
+## 教师 BC 固定槽（teacher47）（8 个）
 
 | 版本 | ckpt | 架构 | 参数量 | 训练元数据 | 赛评读数 | 强桌 和牌率/场均 | 状态 |
 |---|---|---|---|---|---|---|---|
@@ -134,6 +134,9 @@
 | V3 | `teacher47_v3.pt` | hanchan47 | 453,232 | iter=6 deals=-1 win_rate=0.0 channels=64 blocks=4 | 自对弈 17.5%（80 局）；ELO 1435.8（win 5.1%, 放铳 5.1%, pts -179.2） | 0.0% / -4000（2局） → 基准闸门 HOLD | 通过闸门（可发布）（点差 +497 [+7,+987]） |
 | V4 | `teacher47_100h.pt` | hanchan47 | 453,232 | iter=2 deals=-1 win_rate=0.0 channels=64 blocks=4 | - | 未测 | 历史版本（无闸门记录） |
 | V5 | `teacher47_100h_v2.pt` | hanchan47 | 453,232 | iter=3 deals=-1 win_rate=0.0 channels=64 blocks=4 | - | 未测 | 历史版本（无闸门记录） |
+| V6 | `teacher47_dagger_v1.pt` | hanchan47 | 453,232 | iter=4 deals=-1 win_rate=0.0 channels=64 blocks=4 | - | 未测 | 历史版本（无闸门记录） |
+| V7 | `teacher47_dagger_mix.pt` | hanchan47 | 453,232 | iter=1 deals=-1 win_rate=0.0 channels=64 blocks=4 | - | 未测 | 历史版本（无闸门记录） |
+| V8 | `teacher47_dagger_mix_v2.pt` | hanchan47 | 453,232 | iter=2 deals=-1 win_rate=0.0 channels=64 blocks=4 | - | 未测 | 历史版本（无闸门记录） |
 
 ## 风格微调（style）（2 个）
 
@@ -165,4 +168,4 @@
 - 版本号只在**同一血缘内部**排序，跨血缘不可比。
 - 状态优先级：天梯闸门（PASS/FAIL/HOLD） > ELO 和牌率是否达标（≥15%）> 历史版本。
 - 天梯闸门来自 `version_ladder.py` 的规则：相邻版本同局净点差 95% CI 下界 >0 且 Elo 未显著下滑才 PASS。
-- 生成时间：2026-11-05 07:26；权重文件本身不入库（`.gitignore` 排除 `*.pt`）。
+- 生成时间：2026-11-05 07:53；权重文件本身不入库（`.gitignore` 排除 `*.pt`）。
