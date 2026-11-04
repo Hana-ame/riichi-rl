@@ -235,7 +235,9 @@ def _detect_yakus(melds, pair_tile, counts, meld_count, is_menzen,
         yakus.append("双立直")
     if is_ippatsu:
         yakus.append("一发")
-    if is_menzen:
+    # 门前清不是独立役，只有「门前清自摸」才成役（ron 时不算）。
+    # 2026-11-05 修正：旧实现无条件加，等于所有门清荣和白送 1 番。
+    if is_menzen and is_tsumo:
         yakus.append("门前清")
 
     if is_chiitoi_shape:

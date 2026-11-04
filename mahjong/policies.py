@@ -76,6 +76,9 @@ class GreedyTenpai(Policy):
     """
 
     name = "greedy_tenpai"
+    #: 立直决策模式：always=能立直就立直（旧行为）；never=默听；needed=没役才立直；
+    #: ev=有役且默听已满贯以上才默听，否则立直（按点数最大化）
+    riichi_mode = "always"
 
     def choose(self, env, p_idx, legal):
         if env.phase == E.Phase.RESPONSE:
@@ -104,7 +107,7 @@ class GreedyTenpai(Policy):
         # 立直：能立直就立直。立直 = 已听牌且锁定，之后和了必有役，
         # 是「能和牌」最直接的保证（不立直的门前清荣和容易无役）。
         riichis = [a for a in legal if a.type == E.ACT_RIICHI]
-        if riichis:
+        if riichis and self.riichi_mode != "never":
             pl = env.players[p_idx]
             best = None
             best_w = -1
@@ -118,7 +121,20 @@ class GreedyTenpai(Policy):
                     best_w = w
                     best = a
             if best is not None:
-                return best
+                # 默听（damaten）判断：有役时立直不是必须的。
+                if self.riichi_mode == "needed":
+                    if not self._damaten_has_yaku(env, p_idx, best.tile):
+                        return best       # 没役 -> 必须立直才有役
+                    # 有役 -> 默听，继续走打牌逻辑
+                elif self.riichi_mode == "ev":
+                    pts = self._damaten_best_points(env, p_idx, best.tile)
+                    if self._damaten_has_yaku(env, p_idx, best.tile) \
+                            and pts >= 8000:
+                        pass              # 默听已满贯+：不冒立直棒风险
+                    else:
+                        return best
+                else:
+                    return best
 
         # 向听数最小化：没进听前也能持续把手牌推向听牌。
         # 原实现只比「打完后待牌种数」，未听牌时该值恒 0，等于随机打牌，
@@ -164,6 +180,83 @@ class GreedyTenpai(Policy):
                 n += 1
             c[t] -= 1
         return n
+
+
+    def _damaten_has_yaku(self, env, p_idx, discard_tile):
+        """打掉 discard_tile 后（不立直）是否存在「有役」的待牌。
+
+        用引擎算分器判定（规则信息：和了这手算多少点/有没有役），
+        不是手写牌效表。
+        """
+        pl = env.players[p_idx]
+        pl.hand.remove(discard_tile)
+        pl.hand.sort()
+        try:
+            c = pl.full_counts()
+            mc = len(pl.melds)
+            for t in range(NUM_TILES):
+                if c[t] >= 4:
+                    continue
+                c[t] += 1
+                res = env._best_score(p_idx, c, mc, is_tsumo=False,
+                                      winning_tile=t,
+                                      from_player=pl.idx)
+                c[t] -= 1
+                if res is not None and res.is_valid:
+                    return True
+            return False
+        finally:
+            pl.hand.append(discard_tile)
+            pl.hand.sort()
+
+    def _damaten_best_points(self, env, p_idx, discard_tile):
+        """默听时（不立直）和了能拿的最大点数（用于 EV 比较）。"""
+        pl = env.players[p_idx]
+        pl.hand.remove(discard_tile)
+        pl.hand.sort()
+        best = 0
+        try:
+            c = pl.full_counts()
+            mc = len(pl.melds)
+            for t in range(NUM_TILES):
+                if c[t] >= 4:
+                    continue
+                c[t] += 1
+                res = env._best_score(p_idx, c, mc, is_tsumo=False,
+                                      winning_tile=t,
+                                      from_player=pl.idx)
+                c[t] -= 1
+                if res is not None and res.is_valid:
+                    best = max(best, int(res.points))
+            return best
+        finally:
+            pl.hand.append(discard_tile)
+            pl.hand.sort()
+
+
+class GreedyDamaten(GreedyTenpai):
+    """默听策略：能听牌也不宣告立直（保留门清+不押 1000 点、不暴露）。
+
+    有役时靠荣和/自摸；无役时无法和（除非自摸有役），属策略缺陷而非 bug——
+    正好用来测「默听 vs 立直」的点数差。
+    """
+
+    name = "damaten"
+    riichi_mode = "never"
+
+
+class GreedyRiichiNeeded(GreedyTenpai):
+    """只在「不立直就没役」时立直；有役时默听等荣和。"""
+
+    name = "riichi_needed"
+    riichi_mode = "needed"
+
+
+class GreedyRiichiEV(GreedyTenpai):
+    """按点数期望二选一：默听已有役且 ≥满贯 -> 默听，否则立直。"""
+
+    name = "riichi_ev"
+    riichi_mode = "ev"
 
 
 class CallFirst(Policy):
@@ -239,7 +332,10 @@ class DiscardYaochuFirst(Policy):
 #: 策略注册表
 POLICIES = {
     "random": RandomLegal,
-    "greedy_tenpai": GreedyTenpai,
+    "greedy_tenpai": GreedyTenpai,       # 立直优先（旧默认）
+    "damaten": GreedyDamaten,            # 默听
+    "riichi_needed": GreedyRiichiNeeded,  # 没役才立直
+    "riichi_ev": GreedyRiichiEV,         # 按点数期望
     "call_first": CallFirst,
     "yaochu_first": DiscardYaochuFirst,
 }

@@ -571,7 +571,7 @@ class MahjongEnv:
             is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
             p.seat_wind, self.round_wind, False,
             self._dora_count(p_idx, tagged, pair_tile),
-            self._aka_count(),
+            self._aka_count(p_idx),
             self._ura_dora_count(p_idx, tagged, pair_tile),
         )
 
@@ -580,7 +580,7 @@ class MahjongEnv:
         return S.evaluate(
             [(H.CHI, 0)], 0, counts, 0, True, is_tsumo, p.riichi,
             p.ippatsu, p.double_riichi, p.seat_wind, self.round_wind, True,
-            0, self._aka_count(), 0,
+            0, self._aka_count(p_idx), 0,
         )
 
     def _score_kokushi(self, p_idx, counts, meld_count, is_tsumo):
@@ -589,7 +589,7 @@ class MahjongEnv:
         return S.evaluate(
             [(H.CHI, 0)], pair if pair is not None else 0, counts, meld_count,
             True, is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
-            p.seat_wind, self.round_wind, False, 0, self._aka_count(), 0,
+            p.seat_wind, self.round_wind, False, 0, self._aka_count(p_idx), 0,
         )
 
     # ------------------------------------------------------------------
@@ -613,13 +613,20 @@ class MahjongEnv:
             out.add(T.dora_from_indicator(self.ura_dora_indicator))
         return out
 
-    def _aka_count(self):
-        """手里赤牌的张数（本规范按 tile 计数，不区分具体物理牌）。"""
+    def _aka_count(self, p_idx):
+        """**和牌者**手里赤牌的张数（每种赤牌最多 1 张，上限 3）。
+
+        2026-11-05 修正：旧实现把四家手牌一起数再 min(...,3)，
+        等于每家和牌都白送 +3 番（任何 1 番牌都变满贯）——这是
+        "要求分最大" 时最不该有的计分错误；且赤牌 id 也写错了
+        （1m/3p/5s -> 5m/5p/5s）。
+        """
+        p = self.players[p_idx]
         n = 0
-        for p in self.players:
-            for t in p.hand:
-                if t in RS.AKA_TILES:
-                    n += 1
+        for t in RS.AKA_TILES:
+            if p.hand.count(t) >= 1 or any(
+                    (m[1] == t) for m in p.melds):
+                n += 1
         return min(n, 3)
 
     def _dora_count(self, p_idx, melds, pair_tile):

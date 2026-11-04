@@ -223,7 +223,7 @@ function suitCls(i){ return i<9?'tc-m':i<18?'tc-p':i<27?'tc-s':'tc-z'; }
 function tEl(i,cls,extra){ return `<span class="t ${cls} ${suitCls(i)}${extra?' '+extra:''}">${tUni(i)}</span>`; }
 
 const WIND=['东','南','西','北'];
-const POLICIES=[['llm','LLM（商汤）'],['net','我的模型(riichi_net.pt)'],['call_first','先副露(会吃碰)'],['greedy_tenpai','听牌贪心'],['random','随机'],['yaochu_first','先打幺九']];
+const POLICIES=[['llm','LLM（商汤）'],['net','我的模型(riichi_net.pt)'],['greedy_tenpai','立直优先'],['damaten','默听'],['riichi_needed','没役才立直'],['riichi_ev','按点数选立直/默听'],['call_first','先副露(会吃碰)'],['random','随机'],['yaochu_first','先打幺九']];
 const PHASE_CN={discard:'打牌',response:'响应',end:'终局'};
 let lastPerSeat=['llm','call_first','call_first','call_first'];
 

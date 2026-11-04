@@ -92,6 +92,70 @@ class TestGreedyNoPrematureRyuukyoku(unittest.TestCase):
                             "听牌后不得主动宣言流局（应继续摸打等和牌）")
 
 
+class TestRiichiStrategies(unittest.TestCase):
+    """立直 vs 默听策略：同一局面下四套策略各自的选择必须确定。
+
+    构造：
+      - 有役听牌：123m 456m 789m 11p 45p + 摸 9s（打 9s 后听 6p，平和（役））
+      - 无役听牌：123m 456m 789m 99p 12s + 摸 9s（打 9s 后听 3s 边张，无役）
+    立直合法性要求 turn>=3 与点数>=1000，故显式设置 env.turn=3。
+    """
+
+    def _env(self, tiles14):
+        env = U.make_env(seed=21, dealer=0)
+        env.start_turn()
+        env.turn = 3                 # 第 4 巡起可立直
+        # 清掉宝牌指示牌：测试要确定性，避免随机宝牌把 1 番小牌抬成满贯
+        env.dora_indicator = None
+        env.dora_indicators = []
+        U.set_hand(env, 0, tiles14)
+        env.players[0].last_drawn = tiles14[-1]
+        return env
+
+    def _choice(self, name, tiles14):
+        env = self._env(tiles14)
+        legal = env.legal_actions(0)
+        self.assertTrue(any(a.type == E.ACT_RIICHI for a in legal),
+                        "前置条件：该局面可立直")
+        pol = POL.make_policy(name, seed=0)
+        return pol.choose(env, 0, legal)
+
+    # 有役：平和听 6p；9s(26) 是多余的摸牌，打掉后听牌
+    YAKU_ARU = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 12, 13, 26]
+    # 无役：111m 456m 789m 99p + 12s 听 3s 边张；刻子排除平和、无断幺/役牌
+    YAKU_NASHI = [0, 0, 0, 3, 4, 5, 6, 7, 8, 9, 9, 18, 19, 26]
+
+    def test_always_riichi_declares(self):
+        a = self._choice("greedy_tenpai", self.YAKU_ARU)
+        self.assertEqual(a.type, E.ACT_RIICHI, "立直优先策略应宣告立直")
+
+    def test_damaten_never_declares(self):
+        for tiles in (self.YAKU_ARU, self.YAKU_NASHI):
+            a = self._choice("damaten", tiles)
+            self.assertNotEqual(a.type, E.ACT_RIICHI,
+                                "默听策略不得宣告立直")
+
+    def test_needed_only_without_yaku(self):
+        a1 = self._choice("riichi_needed", self.YAKU_ARU)
+        self.assertNotEqual(a1.type, E.ACT_RIICHI,
+                            "有役时应默听")
+        a2 = self._choice("riichi_needed", self.YAKU_NASHI)
+        self.assertEqual(a2.type, E.ACT_RIICHI,
+                         "无役时必须立直才有役")
+
+    def test_ev_declares_riichi_on_small_yaku_hand(self):
+        # 平和小牌（默听 < 满贯）应立直加番；高分默听分支需要可靠的高打点牌型，
+        # 由 arena_elo 的对局数据统计验证（见 rules/RIICHI_STRATEGY_2026-11-05.md）。
+        a_lo = self._choice("riichi_ev", self.YAKU_ARU)
+        self.assertEqual(a_lo.type, E.ACT_RIICHI,
+                         "小牌有役时立直加番更划算")
+
+    def test_ev_never_declares_without_yaku(self):
+        a = self._choice("riichi_ev", self.YAKU_NASHI)
+        self.assertEqual(a.type, E.ACT_RIICHI,
+                         "无役时立直是唯一能和的路径")
+
+
 class TestGreedyNoRandomCalls(unittest.TestCase):
     """回归 T17：响应阶段不得随机吃/碰（保持门前清才能立直）。"""
 

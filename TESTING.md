@@ -35,8 +35,8 @@ $PY engine_stats.py --games 200
 |---|---|---|---|
 | `tests/test_env_core.py` | `mahjong/env.py` | 12 | 摸牌记录、听牌判定、和牌结算一致性、响应阶段、杠宝牌、牌数守恒 |
 | `tests/test_hanchan.py` | `mahjong/hanchan.py` | 5 | 点数接力、供托管、旧式 result 兼容 |
-| `tests/test_policies.py` | `mahjong/policies.py` | 7 | 向听最小化、不早宣言流局、不随机吃碰、立直优先 |
-| `tests/test_hand_scoring.py` | `mahjong/hand.py` `scoring.py` `refengine.py` | 9 | 和牌型/七对/国士、向听、开源引擎算分 |
+| `tests/test_policies.py` | `mahjong/policies.py` | 12 | 向听最小化、不早宣言流局、不随机吃碰、立直优先、默听/没役才立直/按点数策略 |
+| `tests/test_hand_scoring.py` | `mahjong/hand.py` `scoring.py` `refengine.py` | 11 | 和牌型/七对/国士、向听、开源引擎算分、赤牌/门前清计分回归 |
 | `tests/test_obs_net.py` | `mahjong/obs2.py` `net.py` | 5 | 774 维观测、网络输出 shape、参数量锁定 |
 | `tests/test_tiles.py` | `mahjong/tiles.py` | 5 | 34/136 常量、牌名唯一、字牌范围 |
 | `tests/test_data_pipeline.py` | `action_bridge.py` `train_reinforce.slot_of` `gen_greedy_data.py` | 7 | 动作槽映射、双向映射一致性、数据序号续号 |
@@ -44,7 +44,7 @@ $PY engine_stats.py --games 200
 | `tests/test_server.py` | `serve_game.py` `llm_player.py` | 6 | 记录 JSON 结构、LLM 动作解析边界 |
 | `tests/test_arena.py` | `arena_elo.py` | 3 | Elo 逐对更新零和、ELO.md 渲染动态判读 |
 
-合计 **67 个用例**，主测试套件约 2.2 秒。
+合计 **74 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
@@ -60,6 +60,7 @@ $PY engine_stats.py --games 200
 | 听牌时须生成流局动作且策略不选 | `test_ryuukyoku_action_generated_when_tenpai`、`test_policy_never_declares_ryuukyoku` | 同上（策略侧，且不再依赖随机对局碰运气） |
 | 半庄点数接力 + 供托守恒 | `tests/test_hanchan.py` 全部 5 例 | 每局从 25000 重开、立直棒消失、「sticks+供托≠100000」 |
 | Elo 逐对更新零和 | `tests/test_arena.py` 2 例 | 四人总分漂移（200 局后全体从 1500 掉到 ~870） |
+| 赤牌只数和牌者 / 门前清仅自摸 | `test_aka_count_winner_only`、`test_menzen_yaku_only_on_tsumo` | 每家和牌白送 +4 番（任何 1 番牌变满贯） |
 
 修复背景见 `rules/ENGINE_FIXES_2026-11-04.md`。
 

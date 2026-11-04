@@ -17,7 +17,7 @@ START_KYOTEN = 1000    # 立直最低点棒
 MAX_TURNS = 18         # 单局巡目上限（RULES.md §17-A4）
 
 # 宝牌配置（RULES.md §1.2 / §7.5）
-AKA_TILES = (0, 11, 22)   # 1m 3p 5s
+AKA_TILES = (4, 13, 22)   # 5m 5p 5s（赤牌；2026-11-05 修正：旧值误写成 1m/3p/5s）
 AKA_PER_TILE = 1          # 每种赤牌几张
 
 USE_URA_DORA = True       # 立直和了时有里宝牌

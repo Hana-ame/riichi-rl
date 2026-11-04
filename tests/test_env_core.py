@@ -106,13 +106,16 @@ class TestWinActionConsistency(unittest.TestCase):
     def test_ron_can_win_and_settles(self):
         env = U.make_env(seed=7, dealer=0)
         env.start_turn()
-        # 门前清听东：123m 456m 789m 234p + 东（13 张）
-        U.set_hand(env, 0, [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 27])
-        env.last_discard = 27
+        # 断幺听 5p：234m 567m 234p 678p + 5p（13 张）——荣和 5p 成断幺九
+        # 注意：门清荣和本身没有役（"门前清" 只在自摸时成立），
+        # 旧用例用 123m456m789m234p+东 的东单骑，其实无役，
+        # 只是被计分 bug 的假「门前清」混过去了（2026-11-05 修正）。
+        U.set_hand(env, 0, [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16])
+        env.last_discard = 13
         env.last_discard_player = 1
         env.phase = E.Phase.RESPONSE
         self.assertTrue(env._can_ron(0), "门前清听牌遇和牌张应可荣和")
-        res = env._finish_ron(0, 1, 27)
+        res = env._finish_ron(0, 1, 13)
         self.assertIsNotNone(res, "可判定的荣和必须结算，不能静默丢弃")
         self.assertEqual(res.result_type, "ron")
 

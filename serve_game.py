@@ -44,7 +44,8 @@ CLIENTS: set = set()
 PAUSED = False
 STEP_ONCE = False
 
-POLICY_NAMES = {"llm", "net", "random", "greedy_tenpai", "call_first", "yaochu_first"}
+POLICY_NAMES = {"llm", "net", "random", "greedy_tenpai", "damaten",
+                "riichi_needed", "riichi_ev", "call_first", "yaochu_first"}
 # 每家策略，观战途中可通过界面下拉随时切换（下一生效决策点即用新策略）
 PER_SEAT = {0: "greedy_tenpai", 1: "call_first", 2: "call_first", 3: "call_first"}
 
@@ -583,10 +584,14 @@ async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=1000)
     ap.add_argument("--opp", default="call_first",
-                    choices=["net", "random", "greedy_tenpai", "call_first", "yaochu_first"],
+                    choices=["net", "random", "greedy_tenpai", "damaten",
+                              "riichi_needed", "riichi_ev", "call_first",
+                              "yaochu_first"],
                     help="P1-3 初始策略；call_first 会主动吃碰（默认，便于观察副露）")
     ap.add_argument("--p0", default="greedy_tenpai",
-                    choices=["net", "llm", "random", "greedy_tenpai", "call_first", "yaochu_first"],
+                    choices=["net", "llm", "random", "greedy_tenpai",
+                              "damaten", "riichi_needed", "riichi_ev",
+                              "call_first", "yaochu_first"],
                     help="P0 初始策略（默认 net 你的模型；LLM 需显式指定）")
     ap.add_argument("--delay", type=float, default=0.35)
     args = ap.parse_args()

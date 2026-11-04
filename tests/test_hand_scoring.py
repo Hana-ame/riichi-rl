@@ -82,6 +82,42 @@ class TestSelfScoring(unittest.TestCase):
         self.assertTrue(hasattr(res, "points"))
 
 
+class TestScoringRegressions(unittest.TestCase):
+    """2026-11-05 修复：赤牌只数和牌者；「门前清」只在自摸时成役。"""
+
+    def test_menzen_yaku_only_on_tsumo(self):
+        # 234m 567m 234p 678p 55p：断幺九（荣和也有役）
+        counts = c34([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 13, 14, 15, 16])
+        melds = [(H.CHI, 1, True), (H.CHI, 4, True),
+                 (H.CHI, 10, True), (H.CHI, 14, True)]
+        ron = S.evaluate(melds, 13, counts, 0, True, False,
+                         False, False, False, 28, 27, False)
+        self.assertTrue(ron.is_valid)
+        self.assertIn("断幺九", ron.yakus)
+        self.assertNotIn("门前清", ron.yakus,
+                         "门前清不是独立役，门清荣和没有这一番")
+        tsumo = S.evaluate(melds, 13, counts, 0, True, True,
+                           False, False, False, 28, 27, False)
+        self.assertIn("门前清", tsumo.yakus,
+                      "门前清自摸应成役")
+        self.assertGreater(tsumo.han, ron.han)
+
+    def test_aka_count_winner_only(self):
+        """赤牌只数和牌者手牌：旧实现数四家、每家和牌白送 +3 番。"""
+        from mahjong import env as E
+        env = U.make_env(seed=1)
+        for i in range(4):
+            env.players[i].hand = [1, 2, 3]
+        self.assertEqual(env._aka_count(0), 0)
+        # 别家手里有赤牌（5m=4 / 5p=13 / 5s=22）不影响 0 号位
+        env.players[1].hand = [4, 13, 22]
+        env.players[2].hand = [4, 13, 22]
+        self.assertEqual(env._aka_count(0), 0,
+                         "不能把别人的赤牌算给和牌者")
+        env.players[0].hand = [4, 13, 22]
+        self.assertEqual(env._aka_count(0), 3)
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(U.run_module_tests(sys.modules[__name__]))

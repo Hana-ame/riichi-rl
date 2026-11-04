@@ -65,8 +65,8 @@ class Agent:
 class RuleAgent(Agent):
     kind = "rule"
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name, label=None):
+        self.name = label or name
         self.pol = POL.make_policy(name, seed=0)
 
     def act(self, env, p, legal):
@@ -193,8 +193,19 @@ class BCAgent(Agent):
 
 def build_participants():
     P = []
-    for n in ("random", "greedy_tenpai", "call_first", "yaochu_first"):
-        P.append(RuleAgent(n))
+    # 立直策略族：全部在同一批对局里比点数（用户要求「不同立直策略/默听策略，
+    # 要求分最大」——由 Elo 和平均点数直接判谁点最多）。
+    rule_agents = [
+        ("random", None),
+        ("greedy_tenpai", "greedy_tenpai(立直优先)"),
+        ("damaten", "damaten(默听)"),
+        ("riichi_needed", "riichi_needed(没役才立直)"),
+        ("riichi_ev", "riichi_ev(按点数期望)"),
+        ("call_first", None),
+        ("yaochu_first", None),
+    ]
+    for n, label in rule_agents:
+        P.append(RuleAgent(n, label))
 
     def add(cls, name, fname, **kw):
         path = os.path.join(CKPT, fname)
