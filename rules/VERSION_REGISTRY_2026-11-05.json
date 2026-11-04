@@ -1,5 +1,5 @@
 {
- "generated": 1793826809.337035,
+ "generated": 1793834801.618819,
  "rows": [
   {
    "file": "a2c_r1.pt",
@@ -1946,6 +1946,27 @@
    "version": "V9"
   },
   {
+   "file": "danger_model.pt",
+   "lineage": "其他",
+   "arch": "opponent_model",
+   "params": 65186,
+   "size_mb": 0.25,
+   "mtime": "2026-11-05 05:32",
+   "meta": {
+    "in_dim": 108,
+    "n_tiles": 34,
+    "samples": 65696,
+    "val_loss": 0.12187958508729935
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V1"
+  },
+  {
    "file": "from_games_v1.pt",
    "lineage": "蒸馏（from_games）",
    "arch": "convformer54",
@@ -3815,6 +3836,60 @@
    "bench_gate": null,
    "status": "历史版本（无闸门记录）",
    "version": "V2"
+  },
+  {
+   "file": "teacher47_100h.pt",
+   "lineage": "教师 BC 固定槽（teacher47）",
+   "arch": "hanchan47",
+   "params": 453232,
+   "size_mb": 1.75,
+   "mtime": "2026-11-05 07:07",
+   "meta": {
+    "channels": 64,
+    "blocks": 4,
+    "n_actions": 47,
+    "touch_dim": 8,
+    "extra_scalar": 12,
+    "iter": 2,
+    "deals": -1,
+    "win_rate": 0.0,
+    "samples": 208542,
+    "best_val_acc": 0.9348326325416565
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V4"
+  },
+  {
+   "file": "teacher47_100h_v2.pt",
+   "lineage": "教师 BC 固定槽（teacher47）",
+   "arch": "hanchan47",
+   "params": 453232,
+   "size_mb": 1.75,
+   "mtime": "2026-11-05 07:19",
+   "meta": {
+    "channels": 64,
+    "blocks": 4,
+    "n_actions": 47,
+    "touch_dim": 8,
+    "extra_scalar": 12,
+    "iter": 3,
+    "deals": -1,
+    "win_rate": 0.0,
+    "samples": 208542,
+    "best_val_acc": 0.9616380333900452
+   },
+   "eval": "",
+   "elo": null,
+   "gate": null,
+   "bench": null,
+   "bench_gate": null,
+   "status": "历史版本（无闸门记录）",
+   "version": "V5"
   },
   {
    "file": "teacher47_v1.pt",
