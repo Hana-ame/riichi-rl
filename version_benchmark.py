@@ -132,6 +132,10 @@ class AutoAgent(Agent):
 
 def make_agent(name, path=None):
     from mahjong import policies as POL
+    if name.startswith("auxd:"):
+        from aux_policy import AuxDangerAgent
+        base = name.split(":", 1)[1]
+        return AuxDangerAgent(name, os.path.join(CKPT, base if base.endswith(".pt") else base + ".pt"))
     if name.startswith("suphxfull"):
         from call_teacher_suphx import SuphxFullAgent
         return SuphxFullAgent(name)
