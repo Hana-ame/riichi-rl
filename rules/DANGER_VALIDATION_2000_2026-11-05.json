@@ -1,0 +1,49 @@
+{
+ "games": 2000,
+ "specs": [
+  "hybrid",
+  "hybridd",
+  "hybridw",
+  "greedy_tenpai"
+ ],
+ "results": {
+  "hybrid": {
+   "games": 2000,
+   "win_rate": 9.7,
+   "avg_pt": -361.0,
+   "deal_in_rate": 6.9
+  },
+  "hybridd": {
+   "games": 2000,
+   "win_rate": 10.0,
+   "avg_pt": 683.1,
+   "deal_in_rate": 6.4
+  },
+  "hybridw": {
+   "games": 2000,
+   "win_rate": 9.0,
+   "avg_pt": -555.6,
+   "deal_in_rate": 7.35
+  },
+  "greedy_tenpai": {
+   "games": 2000,
+   "win_rate": 9.1,
+   "avg_pt": -659.5,
+   "deal_in_rate": 8.35
+  }
+ },
+ "deal_in_diff": {
+  "hybridd": {
+   "mean": -0.005,
+   "ci_lo": -0.0204,
+   "ci_hi": 0.0104,
+   "verdict": "INCONCLUSIVE（放铳率差异不显著）"
+  },
+  "hybridw": {
+   "mean": 0.0045,
+   "ci_lo": -0.0114,
+   "ci_hi": 0.0204,
+   "verdict": "INCONCLUSIVE（放铳率差异不显著）"
+  }
+ }
+}
