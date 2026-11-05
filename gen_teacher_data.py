@@ -82,7 +82,7 @@ def main():
     ap.add_argument("--out", default="data/teacher47.npz")
     args = ap.parse_args()
 
-    enc = O2.ObsEncoder(order=getattr(a, "obs_order", False))
+    enc = O2.ObsEncoder(order=getattr(args, "obs_order", False))
     teacher = POL.make_policy("greedy_tenpai", seed=0)
     t0 = time.time()
     parts = []
