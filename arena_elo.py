@@ -226,6 +226,7 @@ def build_participants():
     add(HanchanAgent, "dagger(半庄DAgger)", "dagger_it120.pt")
     add(HanchanAgent, "hc(半庄HC)", "hc_r13_it55.pt")
     add(HanchanAgent, "teacher47_v3(加权BC)", "teacher47_v3.pt")
+    add(HanchanAgent, "teacher47_100h_v2(最优BC)", "teacher47_100h_v2.pt")
     add(BCAgent, "bc_v1(人类牌谱教师)", "bc_v1_last.pt")
     return P
 
