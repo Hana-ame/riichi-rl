@@ -15,6 +15,8 @@ import argparse, os, sys, time, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cpu_only  # noqa: F401
 import torch
+torch.set_num_threads(2)   # 必须在 cpu_only 之后覆盖：它把线程数设成全核，
+                           # 多进程/评测并行时会互相抢核反而挂住（实测 1082% CPU 空转）
 from mahjong import env as E
 from mahjong import refengine as REF
 from mahjong import policies as POL
@@ -51,8 +53,8 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        ags = [make_agent(label, os.path.join("checkpoints", a.ckpt)) if a.ckpt else
-               POL.make_policy(a.policy, seed=g * 97 + i) for i in range(4)]
+        ags = ([make_agent(label, path) for _ in range(4)] if a.ckpt else
+               [POL.make_policy(a.policy, seed=g * 97 + i) for i in range(4)])
         for ag in ags:
             if hasattr(ag, "set_game"):
                 ag.set_game(env, h)

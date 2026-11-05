@@ -1,33 +1,33 @@
 {
  "label": "eff_uke",
- "deals": 20,
- "seat_deals": 80,
- "seat_wins": 12,
- "seat_win_rate": 15.0,
+ "deals": 120,
+ "seat_deals": 480,
+ "seat_wins": 76,
+ "seat_win_rate": 15.833333333333334,
  "seat_win_ci": [
-  8.793954037414208,
-  24.413427501106046
+  12.840492145132362,
+  19.36872673972582
  ],
- "seat_dealins": 11,
- "seat_deal_in_rate": 13.75,
+ "seat_dealins": 57,
+ "seat_deal_in_rate": 11.875,
  "seat_deal_in_ci": [
-  7.854633679551143,
-  22.967297199630554
+  9.279343756462445,
+  15.0760651211537
  ],
  "win_pass": true,
  "deal_in_pass": true,
- "ryuukyoku": 8,
- "tenpai_at_end": 57.5,
+ "ryuukyoku": 44,
+ "tenpai_at_end": 54.166666666666664,
  "per_seat_wins": [
-  3,
-  5,
-  3,
-  1
+  16,
+  16,
+  26,
+  18
  ],
  "per_seat_dealins": [
-  0,
-  5,
-  1,
-  5
+  12,
+  14,
+  14,
+  17
  ]
 }

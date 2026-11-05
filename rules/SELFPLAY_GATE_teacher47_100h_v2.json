@@ -1,0 +1,33 @@
+{
+ "label": "teacher47_100h_v2",
+ "deals": 60,
+ "seat_deals": 240,
+ "seat_wins": 19,
+ "seat_win_rate": 7.916666666666667,
+ "seat_win_ci": [
+  5.126483412019705,
+  12.032852812808214
+ ],
+ "seat_dealins": 13,
+ "seat_deal_in_rate": 5.416666666666667,
+ "seat_deal_in_ci": [
+  3.1924882079320738,
+  9.045620465895526
+ ],
+ "win_pass": false,
+ "deal_in_pass": false,
+ "ryuukyoku": 41,
+ "tenpai_at_end": 26.25,
+ "per_seat_wins": [
+  6,
+  6,
+  3,
+  4
+ ],
+ "per_seat_dealins": [
+  2,
+  1,
+  5,
+  5
+ ]
+}
