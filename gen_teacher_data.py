@@ -77,10 +77,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hanchans", type=int, default=12)
     ap.add_argument("--seed0", type=int, default=0)
+    ap.add_argument("--obs-order", action="store_true",
+                    help="obs v3：加四家弃牌顺序平面（46 平面）")
     ap.add_argument("--out", default="data/teacher47.npz")
     args = ap.parse_args()
 
-    enc = O2.ObsEncoder()
+    enc = O2.ObsEncoder(order=getattr(a, "obs_order", False))
     teacher = POL.make_policy("greedy_tenpai", seed=0)
     t0 = time.time()
     parts = []

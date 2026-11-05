@@ -68,14 +68,15 @@ class MahjongNet(nn.Module):
     """
 
     def __init__(self, channels=160, n_blocks=6, n_actions=54,
-                 touch_dim=0, extra_scalar=0):
+                 touch_dim=0, extra_scalar=0, in_planes=None):
         super().__init__()
-        self.n_planes = N_PLANES
+        self.in_planes = int(in_planes) if in_planes else N_PLANES
+        self.n_planes = self.in_planes
         self.scalar_dim = OBS.SCALAR_DIM
         self.touch_dim = touch_dim
         self.in_scalar = self.scalar_dim + touch_dim + extra_scalar
 
-        self.embed = nn.Conv1d(N_PLANES, channels, kernel_size=1)
+        self.embed = nn.Conv1d(self.n_planes, channels, kernel_size=1)
         self.blocks = nn.Sequential(*[ResBlock(channels) for _ in range(n_blocks)])
 
         # 池化：全局 + 分段（保留牌种序列的结构信息）

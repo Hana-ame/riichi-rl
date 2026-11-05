@@ -75,9 +75,13 @@ def main():
     tr, va = perm[n_val:], perm[:n_val]
     tr = torch.from_numpy(tr); va = torch.from_numpy(va)
 
+    _xdim = int(X.shape[1])
+    _in_planes = (_xdim - TOUCH_DIM - 26 - SIT_DIM) // 34
     model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
                        n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
-                       extra_scalar=SIT_DIM)
+                       extra_scalar=SIT_DIM, in_planes=_in_planes)
+    obs_order = _in_planes > 22
+    print(f"obs planes={_in_planes} obs_order={obs_order}", flush=True)
     if args.init:
         ck = torch.load(args.init, map_location="cpu", weights_only=False)
         model.load_state_dict(ck["state_dict"])
@@ -132,6 +136,8 @@ def main():
                 "channels": args.channels,
                 "blocks": args.blocks,
                 "n_actions": N_ACTIONS,
+                "in_planes": int(_in_planes),
+                "obs_order": bool(obs_order),
                 "touch_dim": TOUCH_DIM,
                 "extra_scalar": SIT_DIM,
                 "iter": ep + 1,

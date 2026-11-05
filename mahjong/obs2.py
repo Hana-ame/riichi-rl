@@ -25,15 +25,23 @@ def _tile_plane():
     return np.eye(NUM_TILES, dtype=np.float32)
 
 
-class ObsEncoder:
-    """局面 -> (N_PLANES, 34) float32 + (SCALAR_DIM,) float32"""
+ORDER_PLANES = 4 * 6   # v3：四家各最近 6 张弃牌位次 one-hot
 
-    def __init__(self):
+
+class ObsEncoder:
+    """局面 -> (N_PLANES, 34) float32 + (SCALAR_DIM,) float32
+
+    order=True 时追加 24 个顺序平面（obs v3，共 46 平面）。
+    """
+
+    def __init__(self, order=False):
         self.eye = _tile_plane()
+        self.order = bool(order)
+        self.n_planes = N_PLANES + (ORDER_PLANES if order else 0)
 
     def encode(self, env, p_idx):
         p = env.players[p_idx]
-        planes = np.zeros((N_PLANES, NUM_TILES), dtype=np.float32)
+        planes = np.zeros((self.n_planes, NUM_TILES), dtype=np.float32)
 
         # 0: 自己手牌计数（归一到 0..4）
         for t, c in enumerate(p.counts()):
@@ -126,6 +134,11 @@ class ObsEncoder:
         s[24] = 1.0 if env.last_discard is not None else 0.0
         s[25] = 1.0 if env.last_discard_player == p_idx else 0.0
 
+        if self.order:
+            for i, q in enumerate(env.players):
+                seq = q.river[-6:]
+                for pos, t in enumerate(seq):
+                    planes[N_PLANES + i * 6 + pos, t] = 1.0
         return planes, s
 
 

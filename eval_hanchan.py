@@ -42,7 +42,8 @@ def load_model(path):
     model = MahjongNet(channels=ch, n_blocks=nb,
                        n_actions=N_ACTIONS,
                        touch_dim=TOUCH.TOUCH_DIM,
-                       extra_scalar=SIT_DIM)
+                       extra_scalar=SIT_DIM,
+                       in_planes=ck.get("in_planes", 22))
     model.load_state_dict(ck["state_dict"])
     model.eval()
     return model, ck
