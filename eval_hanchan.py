@@ -43,7 +43,8 @@ def load_model(path):
                        n_actions=N_ACTIONS,
                        touch_dim=TOUCH.TOUCH_DIM,
                        extra_scalar=SIT_DIM,
-                       in_planes=ck.get("in_planes", 22))
+                       in_planes=ck.get("in_planes", 22),
+                       aux_dim=ck.get("aux_dim", 0))
     model.load_state_dict(ck["state_dict"])
     model.eval()
     return model, ck

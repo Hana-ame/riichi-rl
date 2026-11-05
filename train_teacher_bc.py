@@ -56,6 +56,8 @@ def main():
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
     ap.add_argument("--init", default="", help="从已有 ckpt 继续训练")
+    ap.add_argument("--dora-aux-weight", type=float, default=0.0,
+                    help="dora aux 任务 BCE 权重（0=关闭）")
     ap.add_argument("--out", default="checkpoints/teacher47_v1.pt")
     args = ap.parse_args()
 
@@ -78,14 +80,23 @@ def main():
     _xdim = int(X.shape[1])
     # x = 平面*34 + 标量26 + 局势12；touch 单独在 tf（不属于 x）
     _in_planes = (_xdim - 26 - SIT_DIM) // 34
+    aux_labels = d["aux"].astype(np.float32) if "aux" in d else None
+    if aux_labels is not None and len(aux_labels) != len(Y):
+        print(f"[warn] aux 长度 {len(aux_labels)} != y 长度 {len(y)}，补零/截断对齐", flush=True)
+        if len(aux_labels) < len(Y):
+            aux_labels = np.pad(aux_labels, (0, len(Y) - len(aux_labels)))
+        else:
+            aux_labels = aux_labels[:len(Y)]
+    print(f"[debug] aux_labels len={None if aux_labels is None else len(aux_labels)}", flush=True)
+    aux_dim = 1 if (args.dora_aux_weight > 0 and aux_labels is not None) else 0
     model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
                        n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
-                       extra_scalar=SIT_DIM, in_planes=_in_planes)
+                       extra_scalar=SIT_DIM, in_planes=_in_planes, aux_dim=aux_dim)
     obs_order = _in_planes > 22
     print(f"obs planes={_in_planes} obs_order={obs_order}", flush=True)
     if args.init:
         ck = torch.load(args.init, map_location="cpu", weights_only=False)
-        model.load_state_dict(ck["state_dict"])
+        model.load_state_dict(ck["state_dict"], strict=False)
         print(f"从 {args.init} 继续训练（val_acc={ck.get('best_val_acc')}）",
               flush=True)
     print(f"params={count_params(model):,} device=cpu", flush=True)
@@ -108,11 +119,19 @@ def main():
         tot_loss = 0.0
         for i in range(0, len(tr), args.bs):
             b = tr[p[i:i + args.bs]]
-            logits, _ = model(X[b], TF[b])
+            if aux_dim:
+                logits, _, auxl = model.forward_aux(X[b], TF[b])
+            else:
+                logits, _ = model(X[b], TF[b])
             logits = logits.masked_fill(~M[b], -1e9)
             ce = F.cross_entropy(logits, Y[b], reduction="none")
             w = sample_weight(Y[b])
             loss = (ce * w).sum() / w.sum()
+            if aux_dim:
+                # b 已经是全局样本索引（来自 tr），直接索引即可
+                auxb = torch.from_numpy(aux_labels[b.numpy()])
+                loss = loss + args.dora_aux_weight * F.binary_cross_entropy_with_logits(
+                    auxl.squeeze(-1), auxb)
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -139,6 +158,7 @@ def main():
                 "n_actions": N_ACTIONS,
                 "in_planes": int(_in_planes),
                 "obs_order": bool(obs_order),
+                "aux_dim": int(aux_dim),
                 "touch_dim": TOUCH_DIM,
                 "extra_scalar": SIT_DIM,
                 "iter": ep + 1,

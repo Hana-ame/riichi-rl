@@ -68,8 +68,10 @@ class MahjongNet(nn.Module):
     """
 
     def __init__(self, channels=160, n_blocks=6, n_actions=54,
-                 touch_dim=0, extra_scalar=0, in_planes=None):
+                 touch_dim=0, extra_scalar=0, in_planes=None, aux_dim=0):
         super().__init__()
+        self.aux_dim = int(aux_dim or 0)
+        self.aux_head = nn.Linear(256, self.aux_dim) if self.aux_dim else None
         self.in_planes = int(in_planes) if in_planes else N_PLANES
         self.n_planes = self.in_planes
         self.scalar_dim = OBS.SCALAR_DIM
@@ -91,6 +93,20 @@ class MahjongNet(nn.Module):
         self.policy = nn.Linear(256, n_actions)
         self.value = nn.Linear(256, 1)
 
+    def _trunk(self, obs, touch=None):
+        B = obs.shape[0]
+        planes = obs[:, : self.n_planes * PLANE_SIZE].view(B, self.n_planes, PLANE_SIZE)
+        scalars = obs[:, self.n_planes * PLANE_SIZE:]
+        if touch is not None and self.touch_dim > 0:
+            scalars = torch.cat([scalars, touch], dim=1)
+        h = self.embed(planes)
+        h = self.blocks(h)
+        h = F.relu(self.head_conv(h))
+        seg = self.segpool(h).flatten(1)
+        glob = h.amax(-1)
+        z = torch.cat([seg, glob, scalars], dim=1)
+        return z
+
     def forward(self, obs, touch=None):
         """obs (B, DIM) -> (policy_logits, value)
 
@@ -110,17 +126,14 @@ class MahjongNet(nn.Module):
         if touch is not None and self.touch_dim > 0:
             scalars = torch.cat([scalars, touch], dim=1)
 
-        h = self.embed(planes)
-        h = self.blocks(h)
-        h = F.relu(self.head_conv(h))
-
-        # 四分段池化 + 全局池化（34 不能被 4 整除，用自适应池化）
-        seg = self.segpool(h).flatten(1)
-        glob = h.amax(-1)                                        # (B, C/2)
-        z = torch.cat([seg, glob, scalars], dim=1)
-        z = self.head_fc(z)
-
+        z = self.head_fc(self._trunk(obs, touch))
         return self.policy(z), self.value(z).squeeze(-1)
+
+    def forward_aux(self, obs, touch=None):
+        """返回 (policy, value, aux_logits)，aux_dim=0 时 aux_logits=None。"""
+        z = self.head_fc(self._trunk(obs, touch))
+        aux = self.aux_head(z) if self.aux_head is not None else None
+        return self.policy(z), self.value(z).squeeze(-1), aux
 
 
 def count_params(model):

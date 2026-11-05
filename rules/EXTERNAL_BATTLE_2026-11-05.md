@@ -95,3 +95,52 @@ $PY show_match.py --agents "teacher47_100h_v2,suphx:suphx,greedy_tenpai,hybridd:
 |---|---|---|---|---|---|
 | Suphx 复现 | 120 | **21.7%**（26/120） | 3.3% | 6.1% | 7.8% |
 | mahjonglm-10m | 20 | 0.0%（0/20） | 5.0% | 3/20 局 | 2/20 局 |
+
+## 修订（2026-11-05 23:40）：mahjonglm 适配器 v2 重做——10m/100m 均强于自研
+
+> 上一版 10m「0/20 和牌、17/20 流局」的记录来自**不忠实 prompt**（`view_complete`
+> 却只喂部分信息、缺 score 块/hidden_haipai/draw 事件），且 100M 权重文件当时
+> 因断点续传拼接而**损坏**（比 HF 对象多 5,148,672 字节）。本轮两处都修掉。
+
+### 1) 100M 权重完整性（证据）
+
+- HF 远端 `content-length: 197750008`，`x-linked-etag: feaaf6f345569bc634c9088b22df5c675271963521c55754bbf6e13f66abde84`；
+- 重新整段下载后 `sha256sum external/mahjonglm100/model.safetensors` =
+  `feaaf6f345569bc634c9088b22df5c675271963521c55754bbf6e13f66abde84` → **与远端 etag 完全一致**；
+- 旧文件 202,898,680 字节（多 5,148,672）改名为 `model.safetensors.corrupt` 留档；
+- 纯 torch 载入：`LOAD OK params=98.86M (2.0s)`（Qwen3 20 层 / hidden 640 / GQA 10Q-5KV / vocab 828）。
+
+### 2) 适配器 v2（`external_mahjonglm.py` + `mahjonglm_torch.py`）
+
+- **无 transformers 依赖**：纯 torch 复刻 Qwen3 前向（BF16→FP32 safetensors 解析、
+  GQA/RoPE(θ=1e6)/SwiGLU/q-k RMSNorm/tie embedding）+ **KV cache 增量解码**；
+- **忠实 mjai 语法 prompt**（与官方 README/tokenizer 实测生成一致）：
+  `<bos> rule_player_4 rule_length_hanchan view_imperfect_{seat} game_start
+   round_start bakaze_k kyoku_k honba TENBO_* riichi_sticks TENBO_* dora <牌>
+   score_{i} TENBO_PLUS <面值拆分 25000→10000 10000 5000> ×4
+   haipai_{seat} <13 张>/hidden_haipai_{i}；draw_{i}_{牌|hidden}；
+   discard_{i}_{牌}_{tsumogiri|tedashi}；opt_*/take_*/pass_*`
+- **所有动作由模型 logits 决策**（不再规则接管叫牌）：
+  弃牌=合法 discard token 最大 logit；立直=`opt_self_riichi` 对比最佳弃牌 + 条件 take>pass；
+  吃/碰/明杠=条件 `take_react`>`pass_react`；暗杠/加杠=条件 `take_self`>`pass_self`；
+  吃按官方语法补 `chi_pos_{low,mid,high}` + `red_not_used`；和牌=规则必和（与自研同口径）；
+- 对局用 `--opponents` 无关：`battle_external.py` 1 席外部 vs 3 席 teacher47_100h_v2，
+  统一 seed 41000+g，每局外部席轮换 0–3。
+
+### 3) 对战结果（每局每座位口径，同池）
+
+| 外部模型 | 局数 | 外部座和牌 | 外部座放铳 | 自研每座位和牌 | 自研每座位放铳 | 外部决策计数 |
+|---|---|---|---|---|---|---|
+| mahjonglm-10m | 60 | **11.7%**（7/60）CI[5.8,22.2] | **3.3%**（2/60） | 5.6%（10/180） | 3.3%（6/180） | 弃牌999/立直17/吃17/碰17/杠6 |
+| mahjonglm-100m | 20 | **15.0%**（3/20）CI[5.2,36.0] | **0.0%**（0/20） | 1.7%（1/60） | 5.0%（3/60） | 弃牌341/立直4/吃6/碰5/杠3 |
+| mahjonglm-100m | 60 | **13.3%**（8/60）CI[6.9,24.2] | **3.3%**（2/60） | 6.1%（11/180） | 5.0%（9/180） | 弃牌994/立直9/吃23/碰22/杠6 |
+
+- 两个外部模型座位和牌都 **~2 倍于自研同池每座位（6.1%）**，放铳不高于自研（3.3–5.0%）；
+  60 局下 CI 与自研仍有重叠（外部下界 6.9 vs 自研上界 10.6），但**方向与 Suphx（21.7% vs 6.1%）一致**；
+- 100m 与 10m 在本适配下差异未达显著（13.3% vs 11.7%），100m 放铳更低、和牌略高；
+- 结论：**修复后 mahjonglm 系列是有效外部对手，且强于自研**；旧「10m 0/20 和牌」记录作废。
+
+### 4) 下一动作（本轮已启动）
+
+- 用 4 席 mahjonglm 自对弈采蒸馏数据（`distill_external.py`，47 槽标签=我们动作空间，
+  **无 Suphx 那样的映射损失**），再 BC/Dagger 训练自研模型 → 同池复测。
