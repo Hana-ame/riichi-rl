@@ -49,8 +49,9 @@ $PY engine_stats.py --games 200
 | `tests/test_realtime_guard.py` | `realtime_guard.py` | 4 | 延迟分位数、5s 预算判定、超预算退回规则基线 |
 | `tests/test_hybrid_danger.py` | `hybrid_agents.py` | 2 | 危险分=对手持牌概率×威胁权重、无模型时零分 |
 | `tests/test_danger_model.py` | `danger_model.py` | 4 | 听牌和牌张枚举（正/负/14 张）、DangerNet 输出形状与值域 |
+| `tests/test_opponent_river_order.py` | `opponent_model.py` / `hand_predictor.py` | 3 | 证据测试：牌河入参是 counts 而非顺序、和牌预测器无牌河输入 |
 
-合计 **109 个用例**，主测试套件约 2.2 秒。
+合计 **112 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
