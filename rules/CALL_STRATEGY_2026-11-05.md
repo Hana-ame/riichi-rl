@@ -28,3 +28,35 @@
   ② 或对“叫/不叫”做 rollout 价值标签（模拟叫后 10 局收益差）；
   ③ 或在 RL 里把叫牌作为动作让价值函数学（PPO 自然覆盖）。
 - dora 独立策略（P4）仍未做；`aux_tasks` 加 dora 任务 + `--aux-weights` 是既定方案。
+
+---
+
+# P3-v2：用 Suphx 的 chi/pon/kan 三头当叫牌教师（已实现）
+
+## 实现
+
+`call_teacher_suphx.py`：
+
+- 输入 **313 维** = 22 维候选特征（is_dora / is_aka / 手牌 4 平面 / 副露 16 平面）
+  + 291 维状态特征（`external_suphx.build_feature`）；
+- 三个头：`chi-model`（阈值 0.081）、`pon-model`（0.261）、`kan-model`（0.083），
+  规则取自 Suphx server：`sigmoid ≥ threshold` 即叫，多个候选取 score 最大；
+- `SuphxFullAgent` = Suphx 弃牌头 + Suphx 叫牌三头 + 规则兜底（荣和/自摸优先），
+  已接 `make_agent("suphxfull")`。
+
+## 自对弈验证（4×suphxfull，10 局）
+
+| 指标 | 读数 |
+|---|---|
+| 叫牌次数 | **23 次 / 10 局（2.3 次/局）** —— 与 call_first 教师 9.5 次/局 相比合理 |
+| 荣和 / 自摸 | 0 / 1 |
+| 和牌局率 | 10.0%（10 局样本太小，仅证“能正常叫牌、不退化”） |
+
+对比首版失败：call_first 教师 → 独立 CallNet 20 局叫 190 次、局和牌 5%；
+本轮 suphxfull 叫牌频率正常，可用作**叫牌教师**。
+
+## 进行中
+
+`dagger_collect --teacher suphxfull --deals 100` → 聚合 BC208k → 训练 1 epoch →
+80 局评测（后台 `bash-588`，ETA ~25 分钟）。这是**第一次用“会正常叫牌”的强外部教师**
+训练主策略，结果决定 P3 是否走通。

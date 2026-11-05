@@ -132,6 +132,9 @@ class AutoAgent(Agent):
 
 def make_agent(name, path=None):
     from mahjong import policies as POL
+    if name.startswith("suphxfull"):
+        from call_teacher_suphx import SuphxFullAgent
+        return SuphxFullAgent(name)
     if name.startswith("suphx"):
         from external_suphx import SuphxAgent
         return SuphxAgent(name)
