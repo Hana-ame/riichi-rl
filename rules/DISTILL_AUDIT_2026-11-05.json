@@ -1,0 +1,41 @@
+{
+ "deals": 60,
+ "agents": {
+  "teacher47_100h_v2": {
+   "deals": 60,
+   "reached_tenpai": 18,
+   "tenpai_at_draw": 11,
+   "ron_legal": 0,
+   "dealin": 5,
+   "wins": 4,
+   "draws": 37,
+   "opp_tenpai_deals": 54,
+   "opp_tenpai_dealin": 5,
+   "no_tenpai_deals": 5,
+   "tenpai_rate": 30.0,
+   "tenpai_at_draw_rate": 29.7,
+   "win_rate": 6.7,
+   "deal_in_rate": 8.3,
+   "cond_deal_in_rate": 9.3,
+   "no_tenpai_rate": 8.3
+  },
+  "teacher47_suphxdistill": {
+   "deals": 60,
+   "reached_tenpai": 38,
+   "tenpai_at_draw": 13,
+   "ron_legal": 0,
+   "dealin": 5,
+   "wins": 0,
+   "draws": 37,
+   "opp_tenpai_deals": 49,
+   "opp_tenpai_dealin": 5,
+   "no_tenpai_deals": 3,
+   "tenpai_rate": 63.3,
+   "tenpai_at_draw_rate": 35.1,
+   "win_rate": 0.0,
+   "deal_in_rate": 8.3,
+   "cond_deal_in_rate": 10.2,
+   "no_tenpai_rate": 5.0
+  }
+ }
+}
