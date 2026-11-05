@@ -1,0 +1,40 @@
+{
+ "agent": "teacher47_100h_v2",
+ "games": 20,
+ "rows": {
+  "suphx:suphx": {
+   "a": {
+    "win": 1,
+    "dealin": 2,
+    "pts": 733.0,
+    "place": [
+     4,
+     6,
+     5,
+     5
+    ],
+    "win_rate": 5.0,
+    "dealin_rate": 10.0,
+    "avg_pts": 36.6,
+    "top1_rate": 20.0
+   },
+   "b": {
+    "win": 5,
+    "dealin": 0,
+    "pts": 49200.0,
+    "place": [
+     9,
+     5,
+     5,
+     1
+    ],
+    "win_rate": 25.0,
+    "dealin_rate": 0.0,
+    "avg_pts": 2460.0,
+    "top1_rate": 45.0
+   },
+   "games": 20,
+   "draw": 12
+  }
+ }
+}

@@ -132,6 +132,9 @@ class AutoAgent(Agent):
 
 def make_agent(name, path=None):
     from mahjong import policies as POL
+    if name.startswith("suphx"):
+        from external_suphx import SuphxAgent
+        return SuphxAgent(name)
     if name.startswith("hybridw:"):
         from hybrid_agents import HybridShantenWinDangerAgent
         return HybridShantenWinDangerAgent(name, path)
