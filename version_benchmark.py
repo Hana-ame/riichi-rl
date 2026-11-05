@@ -71,6 +71,12 @@ class AutoAgent(Agent):
         n_actions = int(sd["policy.weight"].shape[0])
         ch = int(ck.get("channels", 160))
         nb = int(ck.get("blocks", 6))
+        if "head_fc.0.weight" not in sd:
+            # 旧格式/非 MahjongNet（如 243 槽 BC 线）：不要硬塞 AutoAgent，
+            # 交给 make_agent 按 detect_arch 分派（BCAgent），否则会 KeyError。
+            raise ValueError(
+                f"{name}: ckpt 无 head_fc 头（{tuple(sd['policy.weight'].shape) if 'policy.weight' in sd else '?'}），"
+                f"请用 version_benchmark.make_agent() 分派到对应 Agent（如 BCAgent）")
         # 从 head_fc 输入维反推特征模式：26=obs2 标量；46=26+touch8+sit12
         head_in = int(sd["head_fc.0.weight"].shape[1])
         in_scalar = head_in - ch * 5
