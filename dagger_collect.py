@@ -37,6 +37,8 @@ def main():
         CKPT, "teacher47_100h_v2.pt"))
     ap.add_argument("--deals", type=int, default=120)
     ap.add_argument("--seed", type=int, default=20261105)
+    ap.add_argument("--teacher", default="greedy_tenpai",
+                    help="教师：规则名或 47/54/243 ckpt 名（用 make_agent 分派）")
     ap.add_argument("--out", default=os.path.join(
         ROOT := os.path.dirname(os.path.abspath(__file__)),
         "data", "dagger47_v1.npz"))
@@ -44,7 +46,14 @@ def main():
 
     torch.set_num_threads(2)
     students = [AutoAgent("student", args.ckpt) for _ in range(4)]
-    teacher = POL.make_policy("greedy_tenpai", seed=0)
+    from version_benchmark import make_agent as _mk
+    from arena_elo import RuleAgent as _RA
+    if args.teacher in ("greedy_tenpai", "call_first", "yaochu_first"):
+        teacher = _RA(args.teacher)
+    else:
+        _base = args.teacher.split(":", 1)[1] if ":" in args.teacher else args.teacher
+        _p = os.path.join(CKPT, _base if _base.endswith(".pt") else _base + ".pt")
+        teacher = _mk(args.teacher, _p)
     enc = O2.ObsEncoder()
     xs, tfs, masks, ys = [], [], [], []
     t0 = time.time()
@@ -53,6 +62,8 @@ def main():
         env = h.new_env(seed=args.seed + g * 131)
         for a in students:
             a.set_game(env, h)
+        if hasattr(teacher, "set_game"):
+            teacher.set_game(env, h)
         r = env.start_turn()
         steps = 0
         while r is None and steps < 500:
@@ -64,7 +75,8 @@ def main():
                     acts[p] = E.PASS_ACTION
                     continue
                 # 教师标签
-                t_act = teacher.choose(env, p, legal)
+                t_act = (teacher.act(env, p, legal)
+                         if hasattr(teacher, "act") else teacher.choose(env, p, legal))
                 slots = [slot_of(a) for a in legal]
                 if all(0 <= s < N_ACTIONS for s in slots):
                     lab = slot_of(t_act)
