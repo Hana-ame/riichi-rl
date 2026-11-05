@@ -33,9 +33,11 @@ from train_hanchan import (encode, slot_of, hand_shanten, N_ACTIONS, SIT_DIM)
 def run_hanchan(enc, h, teacher, seed0):
     """跑一个半庄，返回 (vecs, touches, masks, labels, slots_ok)。"""
     xs, tfs, masks, labels = [], [], [], []
+    aux = []
     deals = 0
     while not h.finished:
         env = h.new_env(seed=seed0 + h.current_index() * 131 + deals)
+        deal_ps = []
         r = env.start_turn()
         steps = 0
         while r is None and steps < 400:
@@ -63,27 +65,38 @@ def run_hanchan(enc, h, teacher, seed0):
                 tfs.append(tf)
                 masks.append(mask)
                 labels.append(lab)
+                deal_ps.append(p)
                 acts[p] = act
             r = env.step(acts)
         if r is None:
+            for _p0 in deal_ps:
+                aux.append(0.0)
             break
+        won = (r.result_type not in ("ryuukyoku",)) and getattr(r, "winner", None) is not None
+        has_dora = (getattr(r, "dora_count", 0) + getattr(r, "aka_count", 0)
+                    + getattr(r, "ura_dora_count", 0)) > 0
+        for p0 in deal_ps:
+            aux.append(1.0 if (won and r.winner == p0 and has_dora) else 0.0)
         deals += 1
         h.advance(r)
     return (np.stack(xs), np.stack(tfs).reshape(len(xs), -1),
-            np.stack(masks), np.array(labels, dtype=np.int64))
+            np.stack(masks), np.array(labels, dtype=np.int64),
+            np.array(aux, dtype=np.float32))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hanchans", type=int, default=12)
     ap.add_argument("--seed0", type=int, default=0)
+    ap.add_argument("--teacher", default="greedy_tenpai",
+                    help="教师规则：greedy_tenpai/call_first/damaten/riichi_ev")
     ap.add_argument("--obs-order", action="store_true",
                     help="obs v3：加四家弃牌顺序平面（46 平面）")
     ap.add_argument("--out", default="data/teacher47.npz")
     args = ap.parse_args()
 
     enc = O2.ObsEncoder(order=getattr(args, "obs_order", False))
-    teacher = POL.make_policy("greedy_tenpai", seed=0)
+    teacher = POL.make_policy(getattr(args, "teacher", "greedy_tenpai"), seed=0)
     t0 = time.time()
     parts = []
     for i in range(args.hanchans):
@@ -97,8 +110,9 @@ def main():
     TF = np.concatenate([p[1] for p in parts])
     M = np.concatenate([p[2] for p in parts])
     Y = np.concatenate([p[3] for p in parts])
+    AUX = np.concatenate([p[4] for p in parts])
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
-    np.savez_compressed(args.out, x=X, tf=TF, mask=M, y=Y)
+    np.savez_compressed(args.out, x=X, tf=TF, mask=M, y=Y, aux=AUX)
     print(f"样本 {len(X)}  观测 {X.shape[1]}  touch {TF.shape[1]}  "
           f"槽 {M.shape[1]}")
     for name, slot in (("tsumo", 34), ("ron", 35), ("riichi", 36)):
