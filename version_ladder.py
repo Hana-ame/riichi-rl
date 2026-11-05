@@ -166,7 +166,11 @@ def main():
     t0 = time.time()
 
     for g in range(args.games):
-        sel = rng.sample(range(len(agents)), 4)
+        # 版本池不足 4 个时按循环补齐座位（2 版本 → 各 2 席），保证 4 人局
+        base = list(range(len(agents)))
+        while len(base) < 4:
+            base = base + list(range(len(agents)))
+        sel = rng.sample(base, 4)
         picked = [agents[i] for i in sel]
         out = play_one(picked, seed=args.seed * 7919 + g * 131)
         if out is None:
