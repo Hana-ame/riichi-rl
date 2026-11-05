@@ -35,11 +35,13 @@ TASKS = {
     # 役种风格任务：让「断幺人 / 平胡人」都收进同一个模型，用权重调参
     "tanyao": (300, "和牌且役含断幺九"),
     "pinfu": (300, "和牌且役含平和"),
+    # dora 任务（P4）：和牌且宝牌/赤/里宝至少 1 番
+    "dora": (300, "和牌且宝牌/赤/里宝≥1 番"),
 }
 
 #: 局末静态任务（不需要逐步轨迹）
 STATIC_TASKS = ("win", "tsumo", "mangan", "riichi", "no_dealin",
-                "tenpai_draw", "tanyao", "pinfu")
+                "tenpai_draw", "tanyao", "pinfu", "dora")
 
 
 def _is_tenpai(env, p):
@@ -69,6 +71,9 @@ def static_tasks(env, result, p_idx):
     yaku = set(result.yaku or ())
     done["tanyao"] = is_win and "断幺九" in yaku
     done["pinfu"] = is_win and "平和" in yaku
+    done["dora"] = is_win and (int(getattr(result, "dora_count", 0))
+                               + int(getattr(result, "aka_count", 0))
+                               + int(getattr(result, "ura_dora_count", 0))) > 0
     return done
 
 

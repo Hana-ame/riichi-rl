@@ -160,11 +160,12 @@ class Phase:
 class GameResult:
     __slots__ = ("result_type", "winner", "from_player", "points_delta",
                  "scores", "yaku", "han", "fu", "tenpai", "log", "turns",
-                 "deltas", "kyokuten", "reason")
+                 "deltas", "kyokuten", "reason",
+                 "dora_count", "aka_count", "ura_dora_count")
 
     def __init__(self, result_type, winner, from_player, points_delta,
                  scores, yaku, han, fu, tenpai, log, turns, kyokuten=0,
-                 reason=""):
+                 reason="", dora_count=0, aka_count=0, ura_dora_count=0):
         self.result_type = result_type
         self.winner = winner
         self.from_player = from_player
@@ -178,6 +179,9 @@ class GameResult:
         self.turns = turns
         self.kyokuten = kyokuten
         self.reason = reason
+        self.dora_count = int(dora_count)
+        self.aka_count = int(aka_count)
+        self.ura_dora_count = int(ura_dora_count)
 
     def __repr__(self):
         return (f"Game[{self.result_type} winner={self.winner} "
@@ -566,30 +570,36 @@ class MahjongEnv:
                 # 暗牌分解出来的刻子/杠视为暗
                 tagged.append((kind, t, True))
         is_menzen = p.is_menzen()
+        dora_c = self._dora_count(p_idx, tagged, pair_tile)
+        aka_c = self._aka_count(p_idx)
+        ura_c = self._ura_dora_count(p_idx, tagged, pair_tile)
+        self._last_dora_counts = (dora_c, aka_c, ura_c)
         return S.evaluate(
             tagged, pair_tile, counts, meld_count, is_menzen,
             is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
             p.seat_wind, self.round_wind, False,
-            self._dora_count(p_idx, tagged, pair_tile),
-            self._aka_count(p_idx),
-            self._ura_dora_count(p_idx, tagged, pair_tile),
+            dora_c, aka_c, ura_c,
         )
 
     def _score_chiitoi(self, p_idx, counts, is_tsumo):
         p = self.players[p_idx]
+        aka_c = self._aka_count(p_idx)
+        self._last_dora_counts = (0, aka_c, 0)
         return S.evaluate(
             [(H.CHI, 0)], 0, counts, 0, True, is_tsumo, p.riichi,
             p.ippatsu, p.double_riichi, p.seat_wind, self.round_wind, True,
-            0, self._aka_count(p_idx), 0,
+            0, aka_c, 0,
         )
 
     def _score_kokushi(self, p_idx, counts, meld_count, is_tsumo):
         p = self.players[p_idx]
         pair = H.kokushi_pair(counts)
+        aka_c = self._aka_count(p_idx)
+        self._last_dora_counts = (0, aka_c, 0)
         return S.evaluate(
             [(H.CHI, 0)], pair if pair is not None else 0, counts, meld_count,
             True, is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
-            p.seat_wind, self.round_wind, False, 0, self._aka_count(p_idx), 0,
+            p.seat_wind, self.round_wind, False, 0, aka_c, 0,
         )
 
     # ------------------------------------------------------------------
@@ -1154,6 +1164,12 @@ class MahjongEnv:
             turns=self.turn,
             kyokuten=self.kyokuten,
             reason=reason,
+            dora_count=(self._last_dora_counts[0] if score is not None
+                        and getattr(self, "_last_dora_counts", None) else 0),
+            aka_count=(self._last_dora_counts[1] if score is not None
+                       and getattr(self, "_last_dora_counts", None) else 0),
+            ura_dora_count=(self._last_dora_counts[2] if score is not None
+                            and getattr(self, "_last_dora_counts", None) else 0),
         )
         self.last_result = res
         return res
