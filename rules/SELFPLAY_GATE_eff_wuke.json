@@ -1,0 +1,43 @@
+{
+ "label": "eff_wuke",
+ "deals": 120,
+ "seat_deals": 480,
+ "seat_wins": 77,
+ "seat_win_rate": 16.041666666666668,
+ "seat_win_ci": [
+  13.030091596889928,
+  19.592485709402048
+ ],
+ "seat_dealins": 53,
+ "seat_deal_in_rate": 11.041666666666666,
+ "seat_deal_in_ci": [
+  8.541268221178754,
+  14.160706970702226
+ ],
+ "win_pass": true,
+ "deal_in_pass": true,
+ "ryuukyoku": 43,
+ "tenpai_at_end": 57.5,
+ "per_seat_wins": [
+  23,
+  18,
+  13,
+  23
+ ],
+ "per_seat_dealins": [
+  15,
+  20,
+  7,
+  11
+ ],
+ "action_counts": {
+  "discard": 6849,
+  "riichi": 276,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 24,
+  "ron": 53,
+  "pass": 21322
+ }
+}

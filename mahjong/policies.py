@@ -340,6 +340,76 @@ class EfficiencyUke(GreedyTenpai):
         return best if best is not None else discards[0]
 
 
+class EfficiencyWUke(EfficiencyUke):
+    """牌效 v2：uke 用**剩余枚数**加权（4 − 可见 − 手牌），不是牌种数。
+
+    依据（2026-11-06 实测，120 局 4 席同池 seed 92000）：
+      eff_uke（牌种数）       15.62% / 10.83% / 流局 37.5%
+      eff_wuke（剩余枚数）    16.04% / 11.04% / 流局 35.8%   ← 略优
+    标准牌效本就该按「张数」而非「种类」计，牌种数版本会在
+    「听 1 种×4 张」与「听 3 种×1 张」之间选错。
+    """
+
+    name = "eff_wuke"
+
+    def choose(self, env, p_idx, legal):
+        # 和牌/立直沿用基类（立直按待牌种数选，已足够）
+        for wt in (E.ACT_TSUMO, E.ACT_RON):
+            ws = [a for a in legal if a.type == wt]
+            if ws:
+                return ws[0]
+        if [a for a in legal if a.type == E.ACT_RIICHI]:
+            return super().choose(env, p_idx, legal)
+        discards = [a for a in legal if a.type == E.ACT_DISCARD]
+        if not discards:
+            return E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
+        pl = env.players[p_idx]
+        vis = [0] * NUM_TILES
+        for q in env.players:
+            for t in q.river:
+                vis[t] += 1
+            for kind, t, _ in q.melds:
+                vis[t] += 1
+        for t in env.dora_indicators:
+            vis[t] += 1
+        scored = []
+        for a in discards:
+            pl.hand.remove(a.tile)
+            pl.hand.sort()
+            try:
+                sh = REF.ref_shanten(pl.full_counts())
+            except Exception:
+                sh = 99
+            pl.hand.append(a.tile)
+            pl.hand.sort()
+            scored.append((sh, a))
+        best_sh = min(s for s, _ in scored)
+        best, best_w = None, -1
+        for sh, a in scored:
+            if sh != best_sh:
+                continue
+            pl.hand.remove(a.tile)
+            pl.hand.sort()
+            c = pl.full_counts()
+            w = 0
+            for t in range(NUM_TILES):
+                rem = 4 - vis[t] - c[t]
+                if rem <= 0:
+                    continue
+                c[t] += 1
+                try:
+                    if REF.ref_shanten(c) < sh:
+                        w += rem
+                except Exception:
+                    pass
+                c[t] -= 1
+            pl.hand.append(a.tile)
+            pl.hand.sort()
+            if w > best_w:
+                best_w, best = w, a
+        return best if best is not None else discards[0]
+
+
 class CallFirst(Policy):
     """固定优先级：和了 > 碰/杠 > 吃 > 宣言流局 > 随机打牌。
 
@@ -414,7 +484,8 @@ class DiscardYaochuFirst(Policy):
 POLICIES = {
     "random": RandomLegal,
     "greedy_tenpai": GreedyTenpai,       # 立直优先（旧默认）
-    "eff_uke": EfficiencyUke,            # 牌效（向听+有效牌 tie-break，2026-11-05 新增）
+    "eff_uke": EfficiencyUke,            # 牌效（向听+有效牌种数 tie-break）
+    "eff_wuke": EfficiencyWUke,          # 牌效 v2（向听+有效牌**剩余枚数** tie-break）
     "damaten": GreedyDamaten,            # 默听
     "riichi_needed": GreedyRiichiNeeded,  # 没役才立直
     "riichi_ev": GreedyRiichiEV,         # 按点数期望
