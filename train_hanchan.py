@@ -232,6 +232,9 @@ def main():
                     help="从已有 ckpt 继续训练（同一模型微调风格权重用）")
     ap.add_argument("--out", default="checkpoints/hanchan_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
+    ap.add_argument("--ppo-epochs", type=int, default=1,
+                    help=">1 时启用 PPO clipped 目标（复用同一批 rollout）")
+    ap.add_argument("--clip", type=float, default=0.2)
     ap.add_argument("--save-every", type=int, default=5)
     ap.add_argument("--force-win", action="store_true")
     ap.add_argument("--behaviour", default="random",
@@ -335,35 +338,56 @@ def main():
         # 共享同一个终局回报，优势几乎全为 0 -> 学不动。
         # 用 critic 估计每个状态的 V(s) 才能把稀疏奖励摊到每一步。
         CH = 2048
-        _pol_acc = _v_acc = _ent_acc = 0.0
-        _nb = 0
+        # 把 rollout 打包成 chunk（PPO 需要复用同一批数据多轮）
+        chunks = []
         for start in range(0, len(vecs), CH):
             sl = slots[start:start + CH]
             x = torch.from_numpy(np.stack(vecs[start:start + CH]))
             tx = torch.from_numpy(np.stack(touches[start:start + CH]))
             rt_chunk = rt[start:start + CH]
-            # 向量化掩码：不再逐样本建 (N_ACTIONS,) 的 mask（那是主要开销）
             bsz = len(sl)
             mrow = torch.full((bsz, N_ACTIONS), -1e9)
             for i, (pick, legal_slots) in enumerate(sl):
                 for s in legal_slots:
                     mrow[i, s] = 0.0
             pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long)
-            logits, values = model(x, tx)
-            masked = logits + mrow
-            logp_all = F.log_softmax(masked, dim=-1)
-            logp_pick = logp_all.gather(1, pick_t.unsqueeze(1)).squeeze(1)
-            ent = -(logp_all.exp() * logp_all).sum(-1).mean()
-            adv_chunk = rt_chunk - values.detach()
-            pol = -(logp_pick * adv_chunk).mean()
-            vloss = F.mse_loss(values, rt_chunk)
-            (pol + vloss - args.entropy * ent).backward()
-            _pol_acc += pol.item()
-            _v_acc += vloss.item()
-            _ent_acc += ent.item()
-            _nb += 1
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        opt.step()
+            chunks.append((x, tx, rt_chunk, mrow, pick_t))
+        # 行为策略的 log prob（PPO 的 old policy）
+        with torch.no_grad():
+            old_logps = []
+            for x, tx, rt_chunk, mrow, pick_t in chunks:
+                logits, _ = model(x, tx)
+                logp_all = F.log_softmax(logits + mrow, dim=-1)
+                old_logps.append(logp_all.gather(
+                    1, pick_t.unsqueeze(1)).squeeze(1))
+        _pol_acc = _v_acc = _ent_acc = 0.0
+        _nb = 0
+        ppo_epochs = max(1, int(getattr(args, "ppo_epochs", 1)))
+        clip = float(getattr(args, "clip", 0.2))
+        for ep in range(ppo_epochs):
+            opt.zero_grad()
+            for ci, (x, tx, rt_chunk, mrow, pick_t) in enumerate(chunks):
+                logits, values = model(x, tx)
+                logp_all = F.log_softmax(logits + mrow, dim=-1)
+                logp_pick = logp_all.gather(
+                    1, pick_t.unsqueeze(1)).squeeze(1)
+                ent = -(logp_all.exp() * logp_all).sum(-1).mean()
+                adv_chunk = (rt_chunk - values.detach())
+                if ppo_epochs > 1:
+                    ratio = torch.exp(logp_pick - old_logps[ci])
+                    clipped = torch.clamp(ratio, 1.0 - clip, 1.0 + clip)
+                    pol = -(torch.min(ratio * adv_chunk,
+                                      clipped * adv_chunk).mean())
+                else:
+                    pol = -(logp_pick * adv_chunk).mean()
+                vloss = F.mse_loss(values, rt_chunk)
+                (pol + vloss - args.entropy * ent).backward()
+                _pol_acc += pol.item()
+                _v_acc += vloss.item()
+                _ent_acc += ent.item()
+                _nb += 1
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
 
         # 每轮存一次 checkpoint，避免长跑时一颗都产不出
         if args.save_every and (it + 1) % args.save_every == 0:
