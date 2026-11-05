@@ -171,7 +171,7 @@ def main():
         print("=== model: %s ===" % os.path.basename(path))
         print("  iter=%s deals=%s train_win=%s"
               % (ck.get("iter"), ck.get("deals"), ck.get("win_rate")))
-        enc = O2.ObsEncoder()
+        enc = O2.ObsEncoder(order=bool(ck.get("obs_order", False)))
         run(lambda h, s: play_model(model, enc, h, s),
             a.hanchans, "MODEL (greedy)", east_only=east)
     else:

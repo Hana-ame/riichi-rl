@@ -76,7 +76,8 @@ def main():
     tr = torch.from_numpy(tr); va = torch.from_numpy(va)
 
     _xdim = int(X.shape[1])
-    _in_planes = (_xdim - TOUCH_DIM - 26 - SIT_DIM) // 34
+    # x = 平面*34 + 标量26 + 局势12；touch 单独在 tf（不属于 x）
+    _in_planes = (_xdim - 26 - SIT_DIM) // 34
     model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
                        n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
                        extra_scalar=SIT_DIM, in_planes=_in_planes)
