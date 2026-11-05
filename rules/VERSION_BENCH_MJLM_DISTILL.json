@@ -1,0 +1,62 @@
+{
+ "refs": [
+  "teacher47_v3",
+  "bc_v1_last",
+  "greedy_tenpai"
+ ],
+ "ref_stats": {
+  "teacher47_v3": {
+   "games": 40,
+   "win_rate": 5.0,
+   "avg_pt": -1400.9,
+   "deal_in_rate": 10.0
+  },
+  "bc_v1_last": {
+   "games": 40,
+   "win_rate": 17.5,
+   "avg_pt": 813.4,
+   "deal_in_rate": 5.0
+  },
+  "greedy_tenpai": {
+   "games": 40,
+   "win_rate": 15.0,
+   "avg_pt": 985.9,
+   "deal_in_rate": 5.0
+  }
+ },
+ "games_per_version": 20,
+ "stats": {
+  "teacher47_100h_v2": {
+   "games": 20,
+   "wins": 2,
+   "pts": -13734.0,
+   "dealin": 1,
+   "win_rate": 10.0,
+   "avg_pt": -686.7,
+   "deal_in_rate": 5.0,
+   "arch": "hanchan47"
+  },
+  "teacher47_mjlm_distill": {
+   "games": 20,
+   "wins": 1,
+   "pts": -23201.0,
+   "dealin": 3,
+   "win_rate": 5.0,
+   "avg_pt": -1160.0,
+   "deal_in_rate": 15.0,
+   "arch": "hanchan47"
+  }
+ },
+ "gates": [
+  {
+   "lineage": "teacher47",
+   "prev": "teacher47_100h_v2",
+   "cur": "teacher47_mjlm_distill",
+   "prev_win": 10.0,
+   "cur_win": 5.0,
+   "prev_pt": -686.7,
+   "cur_pt": -1160.0,
+   "verdict": "FAIL"
+  }
+ ]
+}

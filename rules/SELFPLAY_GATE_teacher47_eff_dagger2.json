@@ -1,0 +1,33 @@
+{
+ "label": "teacher47_eff_dagger2",
+ "deals": 240,
+ "seat_deals": 960,
+ "seat_wins": 143,
+ "seat_win_rate": 14.895833333333334,
+ "seat_win_ci": [
+  12.783580792618247,
+  17.287916432651965
+ ],
+ "seat_dealins": 127,
+ "seat_deal_in_rate": 13.229166666666666,
+ "seat_deal_in_ci": [
+  11.231731526184143,
+  15.51971808960335
+ ],
+ "win_pass": false,
+ "deal_in_pass": true,
+ "ryuukyoku": 97,
+ "tenpai_at_end": 51.875,
+ "per_seat_wins": [
+  40,
+  29,
+  33,
+  41
+ ],
+ "per_seat_dealins": [
+  29,
+  32,
+  29,
+  37
+ ]
+}
