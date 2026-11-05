@@ -1,0 +1,7 @@
+{
+ "samples": 65696,
+ "dim": 108,
+ "opp_shanten_mae": 0.671,
+ "opp_tenpai_auc": 0.996,
+ "win_auc": 0.572
+}

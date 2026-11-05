@@ -52,8 +52,9 @@ $PY engine_stats.py --games 200
 | `tests/test_opponent_river_order.py` | `opponent_model.py` / `hand_predictor.py` | 3 | 证据测试：牌河入参是 counts 而非顺序、和牌预测器无牌河输入 |
 | `tests/test_opp_shanten.py` | `opp_shanten.py` | 6 | 牌河顺序位次平面（不同顺序特征不同）、向听标签、双头输出形状 |
 | `tests/test_dora_task.py` | `mahjong/aux_tasks.py` / `env.py` | 5 | dora 额外任务（宝牌/赤/里宝≥1 番）、GameResult 携带 dora 计数、权重 |
+| `tests/test_aux_heads.py` | `aux_heads.py` | 3 | 三辅助头输出形状、AUC 计算（完美/一般） |
 
-合计 **123 个用例**，主测试套件约 2.2 秒。
+合计 **126 个用例**，主测试套件约 2.2 秒。
 
 ## 回归测试（2026-11-04 引擎修复，已锁住）
 
