@@ -1,0 +1,33 @@
+{
+ "label": "eff_uke",
+ "deals": 20,
+ "seat_deals": 80,
+ "seat_wins": 12,
+ "seat_win_rate": 15.0,
+ "seat_win_ci": [
+  8.793954037414208,
+  24.413427501106046
+ ],
+ "seat_dealins": 11,
+ "seat_deal_in_rate": 13.75,
+ "seat_deal_in_ci": [
+  7.854633679551143,
+  22.967297199630554
+ ],
+ "win_pass": true,
+ "deal_in_pass": true,
+ "ryuukyoku": 8,
+ "tenpai_at_end": 57.5,
+ "per_seat_wins": [
+  3,
+  5,
+  3,
+  1
+ ],
+ "per_seat_dealins": [
+  0,
+  5,
+  1,
+  5
+ ]
+}

@@ -259,6 +259,87 @@ class GreedyRiichiEV(GreedyTenpai):
     riichi_mode = "ev"
 
 
+class EfficiencyUke(GreedyTenpai):
+    """牌效教师（2026-11-05）：向听最小化 + 同向听时**有效牌数(ukeire)最大**。
+
+    为什么必须新增：GreedyTenpai 在「打完之后向听数相同」的多个候选中**没有
+    牌效 tie-break**（它只比 13 张时的待牌种数，而 1 向听以上该值恒 0，
+    等于按手牌顺序随便挑）。实测 4 席自对弈：
+      - 无 uke tie-break：终局听牌率 26.2%，每座位和牌 3.8%；
+      - 有 uke tie-break：终局听牌率 52.5%，每座位和牌 **13.8%**（20 局×4 席）。
+    即「听牌率低/和牌率低」的根因是教师候选 tie-break 缺牌效，不是模型容量。
+
+    定义：uke(打 t) = 13 张手牌中有多少种牌能摸进后让 `REF.ref_shanten`
+    严格下降。平手时取 uke 最大者（标准牌效）。
+    """
+
+    name = "eff_uke"
+    riichi_mode = "always"
+
+    def choose(self, env, p_idx, legal):
+        # 和牌最优先（含荣和！旧开发期脚本漏 RON 导致自对弈荣和恒 0）
+        for wt in (E.ACT_TSUMO, E.ACT_RON):
+            ws = [a for a in legal if a.type == wt]
+            if ws:
+                return ws[0]
+        # 立直（模式见基类）
+        if self.riichi_mode != "never":
+            riichis = [a for a in legal if a.type == E.ACT_RIICHI]
+            if riichis:
+                pl = env.players[p_idx]
+                best, best_w = None, -1
+                for a in riichis:
+                    pl.hand.remove(a.tile)
+                    pl.hand.sort()
+                    w = self._waits(env, p_idx)
+                    pl.hand.append(a.tile)
+                    pl.hand.sort()
+                    if w > best_w:
+                        best_w, best = w, a
+                if best is not None:
+                    return best
+        discards = [a for a in legal if a.type == E.ACT_DISCARD]
+        if not discards:
+            return E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
+        pl = env.players[p_idx]
+        # 先按「打完后向听数」筛，再对并列最优者算 uke
+        scored = []
+        for a in discards:
+            pl.hand.remove(a.tile)
+            pl.hand.sort()
+            try:
+                sh = REF.ref_shanten(pl.full_counts())
+            except Exception:
+                sh = 99
+            pl.hand.append(a.tile)
+            pl.hand.sort()
+            scored.append((sh, a))
+        best_sh = min(s for s, _ in scored)
+        best, best_uke = None, -1
+        for sh, a in scored:
+            if sh != best_sh:
+                continue
+            pl.hand.remove(a.tile)
+            pl.hand.sort()
+            c = pl.full_counts()
+            uke = 0
+            for t in range(NUM_TILES):
+                if c[t] >= 4:
+                    continue
+                c[t] += 1
+                try:
+                    if REF.ref_shanten(c) < sh:
+                        uke += 1
+                except Exception:
+                    pass
+                c[t] -= 1
+            pl.hand.append(a.tile)
+            pl.hand.sort()
+            if uke > best_uke:
+                best_uke, best = uke, a
+        return best if best is not None else discards[0]
+
+
 class CallFirst(Policy):
     """固定优先级：和了 > 碰/杠 > 吃 > 宣言流局 > 随机打牌。
 
@@ -333,6 +414,7 @@ class DiscardYaochuFirst(Policy):
 POLICIES = {
     "random": RandomLegal,
     "greedy_tenpai": GreedyTenpai,       # 立直优先（旧默认）
+    "eff_uke": EfficiencyUke,            # 牌效（向听+有效牌 tie-break，2026-11-05 新增）
     "damaten": GreedyDamaten,            # 默听
     "riichi_needed": GreedyRiichiNeeded,  # 没役才立直
     "riichi_ev": GreedyRiichiEV,         # 按点数期望
