@@ -91,10 +91,12 @@ class AutoAgent(Agent):
             touch, extra = 0, 0
             self.mode = "obs2"
         self.model = MahjongNet(channels=ch, n_blocks=nb, n_actions=n_actions,
-                                touch_dim=touch, extra_scalar=extra)
+                                touch_dim=touch, extra_scalar=extra,
+                                in_planes=int(ck.get("in_planes", 22)),
+                                aux_dim=int(ck.get("aux_dim", 0)))
         self.model.load_state_dict(sd)
         self.model.eval()
-        self.enc = O2.ObsEncoder()
+        self.enc = O2.ObsEncoder(order=bool(ck.get("obs_order", False)))
         self.hstate = None
         self.n_actions = n_actions
         self.is47 = n_actions == 47
