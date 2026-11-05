@@ -144,3 +144,22 @@ $PY show_match.py --agents "teacher47_100h_v2,suphx:suphx,greedy_tenpai,hybridd:
 
 - 用 4 席 mahjonglm 自对弈采蒸馏数据（`distill_external.py`，47 槽标签=我们动作空间，
   **无 Suphx 那样的映射损失**），再 BC/Dagger 训练自研模型 → 同池复测。
+
+## 追加（2026-11-06 02:45）：新模型 eff_v3 vs mahjonglm-100m——自研首次反超外部
+
+用牌效教师线新模型 `teacher47_eff_v3`（4 席自对弈每座位和牌 ~14.9–15.4%）替换旧 100h_v2：
+
+```bash
+$PY battle_external.py --model external/mahjonglm100 --name mahjonglm100 \
+    --ckpt checkpoints/teacher47_eff_v3.pt --deals 40
+```
+
+| 侧 | 每座位和牌 | 每座位放铳 |
+|---|---|---|
+| **自研 teacher47_eff_v3（3 席）** | **11.67%（14/120）** | **7.50%（9/120）** |
+| mahjonglm-100m（1 席） | 7.50%（3/40） | 10.00%（4/40） |
+
+- 同一套对手（100m 决策计数：弃牌 633/立直 5/吃 12/碰 19/杠 6）；
+- 对照 40 分钟前同脚本、旧模型 100h_v2：外部 13.3% / 3.3%，自研每座位 6.1% / 5.0%
+  → **旧模型被外部压制，新模型反过来压制外部**（和牌 11.7% vs 7.5%，放铳 7.5% vs 10.0%）；
+- 40 局样本小（外部和牌 CI 约 [1.6,20.4]），但方向与自对弈门槛改善一致。
