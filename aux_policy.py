@@ -80,9 +80,18 @@ class AuxDangerAgent:
                                     int(env.dora_indicator) if env.dora_indicator is not None else -1)
             with torch.no_grad():
                 _, p_tp, _ = self.aux(torch.from_numpy(f)[None])
-                p_hold = self.opp(torch.from_numpy(f)[None])[0].numpy()
+                ph = self.opp(torch.from_numpy(f)[None])
+                ph = (ph[0] if isinstance(ph, tuple) else ph).detach().numpy()
+                # 若输出是 logits（不在 [0,1]）则 sigmoid；若是概率则直接用
+                if ph.min() < 0 or ph.max() > 1:
+                    import torch as _t
+                    ph = _t.sigmoid(_t.from_numpy(ph)).numpy()
+                ph = ph.reshape(-1)
             pt = float(torch.sigmoid(p_tp)[0])
-            danger += pt * np.asarray(p_hold, dtype=np.float32)
+            danger += pt * np.asarray(ph, dtype=np.float32)
+        mx = float(danger.max())
+        if mx > 0:
+            danger = danger / mx
         return danger
 
     def act(self, env, p_idx, legal):
