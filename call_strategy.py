@@ -74,6 +74,11 @@ def train(data_path, out):
     Xt = torch.from_numpy(Xc[tr]); Lt = torch.from_numpy(labels[tr]); Tt = torch.from_numpy(types[tr])
     Xv = torch.from_numpy(Xc[va]); Lv = torch.from_numpy(labels[va]); Tv = torch.from_numpy(types[va])
     pos_w = float((1 - labels.mean()) / max(1e-6, labels.mean()))
+    # 类型类别权重（按教师分布反频率）：chi 多、pon 少，避免类型头全押碰
+    import collections as _C
+    tcnt = _C.Counter(types[t] for t in tr)
+    ttot = sum(tcnt.values()) or 1
+    type_w = torch.tensor([ttot / (len(TYPES) * max(1, tcnt[i])) for i in range(len(TYPES))])
     for ep in range(15):
         perm = torch.randperm(len(Xt))
         for i in range(0, len(Xt), 256):
@@ -81,16 +86,29 @@ def train(data_path, out):
             pc, pt = net(Xt[b])
             loss = nn.functional.binary_cross_entropy_with_logits(
                 pc, Lt[b], pos_weight=torch.tensor(pos_w)) + 0.5 * \
-                nn.functional.cross_entropy(pt, Tt[b])
+                nn.functional.cross_entropy(pt, Tt[b], weight=type_w)
             opt.zero_grad(); loss.backward(); opt.step()
     with torch.no_grad():
         pc, pt = net(Xv)
-        acc = float(((torch.sigmoid(pc) > 0.5).float() == Lv).float().mean())
+        prob = torch.sigmoid(pc).numpy()
+        # 二分搜索阈值，使验证集预测叫牌率 ≈ 教师正例率（避免过叫/欠叫）
+        target = float(labels[va].mean())
+        lo, hi = 0.0, 1.0
+        for _ in range(40):
+            mid = (lo + hi) / 2
+            if (prob >= mid).mean() > target:
+                lo = mid
+            else:
+                hi = mid
+        thr = (lo + hi) / 2
+        acc = float(((prob > thr).astype(float) == Lv).float().mean())
         call_rec = float(((torch.sigmoid(pc) > 0.5).float() * Lv).sum() /
                          max(1.0, Lv.sum()))
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
-    torch.save({"state_dict": net.state_dict(), "in_dim": int(Xc.shape[1])}, out)
-    print(f"val 叫牌 acc={acc:.3f} recall={call_rec:.3f} → {out}")
+    torch.save({"state_dict": net.state_dict(), "in_dim": int(Xc.shape[1]),
+                "threshold": float(thr)}, out)
+    print(f"val 叫牌 acc={acc:.3f} recall={call_rec:.3f} threshold={thr:.3f} "
+          f"pred_rate={(prob >= thr).mean():.3f}（教师 {target:.3f}）→ {out}")
     return 0
 
 
@@ -109,7 +127,7 @@ class CallAgent:
         ck = torch.load(call_ckpt, map_location="cpu", weights_only=False)
         self.net = CallNet(ck["in_dim"])
         self.net.load_state_dict(ck["state_dict"]); self.net.eval()
-        self.threshold = threshold
+        self.threshold = float(ck.get("threshold", threshold))
         self.enc = None
 
     def set_game(self, env, hstate):
