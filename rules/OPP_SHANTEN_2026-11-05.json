@@ -1,0 +1,14 @@
+{
+ "baseline_108": {
+  "samples": 22827,
+  "dim": 108,
+  "shanten_mae": 0.328,
+  "tenpai_auc": 1.0
+ },
+ "with_order_924": {
+  "samples": 22827,
+  "dim": 924,
+  "shanten_mae": 0.31,
+  "tenpai_auc": 1.0
+ }
+}
