@@ -1,0 +1,22 @@
+{
+ "teacher47_100h_v2": {
+  "elo": 1515.2,
+  "avg_pts": -1225.0,
+  "wins": 0
+ },
+ "teacher47_v3": {
+  "elo": 1354.1,
+  "avg_pts": -14822.3,
+  "wins": 0
+ },
+ "suphx": {
+  "elo": 1689.2,
+  "avg_pts": 34214.0,
+  "wins": 4
+ },
+ "greedy_tenpai": {
+  "elo": 1441.5,
+  "avg_pts": -7833.3,
+  "wins": 1
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "call_agent": {
+  "deals": 20,
+  "calls": 190,
+  "ron": 1,
+  "tsumo": 0,
+  "deal_win_rate": 5.0
+ },
+ "no_call": {
+  "deals": 20,
+  "calls": 0,
+  "ron": 4,
+  "tsumo": 2,
+  "deal_win_rate": 30.0
+ }
+}
