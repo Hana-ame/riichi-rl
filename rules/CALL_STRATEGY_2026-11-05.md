@@ -60,3 +60,15 @@
 `dagger_collect --teacher suphxfull --deals 100` → 聚合 BC208k → 训练 1 epoch →
 80 局评测（后台 `bash-588`，ETA ~25 分钟）。这是**第一次用“会正常叫牌”的强外部教师**
 训练主策略，结果决定 P3 是否走通。
+
+---
+
+# P3-v3：用 Suphx-full 600 局数据训练「叫牌决策」（首次非退化）
+
+- 数据：`data/dagger_suphxfull600.npz`（Suphx 全模型当教师的 600 局 DAgger 数据）；
+  其中「叫牌合法」样本 **11,842 条**，教师选择叫牌 **3,197（27.0%）**——
+  正负样本均衡（对比 call_first 教师 99.9% 全叫，首次可用于学习）；
+- 网络：`CallNet`（obs 786+touch8 → 叫牌概率 + 类型），训练 15 epochs：
+  **val 叫牌 acc 0.658 / recall 0.624** → `checkpoints/call_policy_suphx.pt`；
+- 用法：`CallAgent`（主模型管弃牌，叫牌用此模型）；全对局评测（calls/局、和牌率）
+  因 RL 训练占 CPU 暂缓，RL 结束后补跑。
