@@ -1,0 +1,43 @@
+{
+ "label": "teacher47_eff_v3_danger15",
+ "deals": 60,
+ "seat_deals": 240,
+ "seat_wins": 27,
+ "seat_win_rate": 11.25,
+ "seat_win_ci": [
+  7.84768606712071,
+  15.873286892374306
+ ],
+ "seat_dealins": 23,
+ "seat_deal_in_rate": 9.583333333333334,
+ "seat_deal_in_ci": [
+  6.470864194700611,
+  13.96929039746086
+ ],
+ "win_pass": false,
+ "deal_in_pass": true,
+ "ryuukyoku": 33,
+ "tenpai_at_end": 39.583333333333336,
+ "per_seat_wins": [
+  7,
+  6,
+  6,
+  8
+ ],
+ "per_seat_dealins": [
+  7,
+  9,
+  3,
+  4
+ ],
+ "action_counts": {
+  "discard": 3613,
+  "riichi": 95,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 4,
+  "ron": 23,
+  "pass": 11101
+ }
+}

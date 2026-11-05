@@ -38,6 +38,10 @@ def main():
     ap.add_argument("--ckpt", default="")
     ap.add_argument("--policy", default="", help="规则策略名（与 --ckpt 二选一）")
     ap.add_argument("--ensemble", default="", help="逗号分隔的多个 ckpt = 集成（logits 平均）")
+    ap.add_argument("--danger-ckpt", default="", help="模型 + 危险分惩罚（λ 见 --danger-lam）")
+    ap.add_argument("--danger-lam", type=float, default=5.0)
+    ap.add_argument("--danger-riichi-only", action="store_true",
+                    help="只在有对手立直时才施加危险惩罚")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
     a = ap.parse_args()
@@ -45,7 +49,12 @@ def main():
     if a.ensemble:
         ens_paths = [os.path.join("checkpoints", n if n.endswith(".pt") else n + ".pt")
                      for n in a.ensemble.split(",")]
-    if a.ensemble:
+    if a.danger_ckpt:
+        path = os.path.join("checkpoints", a.danger_ckpt if a.danger_ckpt.endswith(".pt")
+                            else a.danger_ckpt + ".pt")
+        label = f"{os.path.basename(path).replace('.pt','')}_danger{int(a.danger_lam)}" + (
+            "_riichionly" if a.danger_riichi_only else "")
+    elif a.ensemble:
         from ensemble_agent import EnsembleAgent
         label = "ens_" + "+".join(os.path.basename(p).replace(".pt", "") for p in ens_paths)
     elif a.ckpt:
@@ -62,7 +71,11 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        if a.ensemble:
+        if a.danger_ckpt:
+            from danger_model_agent import ModelDangerAgent
+            ags = [ModelDangerAgent(label, path, lam=a.danger_lam,
+                                    riichi_only=a.danger_riichi_only) for _ in range(4)]
+        elif a.ensemble:
             ags = [EnsembleAgent(label, ens_paths) for _ in range(4)]
         elif a.ckpt:
             ags = [make_agent(label, path) for _ in range(4)]
