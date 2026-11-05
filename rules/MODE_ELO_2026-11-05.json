@@ -1,0 +1,46 @@
+{
+ "hanchan": {
+  "teacher47_100h_v2": {
+   "elo": 1548.4,
+   "sessions": 30,
+   "avg_pts_per_session": 4641.1
+  },
+  "teacher47_v3": {
+   "elo": 1464.8,
+   "sessions": 30,
+   "avg_pts_per_session": -7144.5
+  },
+  "bc_v1_last": {
+   "elo": 1520.2,
+   "sessions": 30,
+   "avg_pts_per_session": 5157.8
+  },
+  "greedy_tenpai": {
+   "elo": 1466.5,
+   "sessions": 30,
+   "avg_pts_per_session": 3278.9
+  }
+ },
+ "east": {
+  "teacher47_100h_v2": {
+   "elo": 1485.8,
+   "sessions": 30,
+   "avg_pts_per_session": 1593.3
+  },
+  "teacher47_v3": {
+   "elo": 1433.3,
+   "sessions": 30,
+   "avg_pts_per_session": -3995.6
+  },
+  "bc_v1_last": {
+   "elo": 1558.6,
+   "sessions": 30,
+   "avg_pts_per_session": 1497.8
+  },
+  "greedy_tenpai": {
+   "elo": 1522.3,
+   "sessions": 30,
+   "avg_pts_per_session": 3571.1
+  }
+ }
+}
