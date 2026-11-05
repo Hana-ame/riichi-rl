@@ -1,0 +1,176 @@
+{
+ "agent": "teacher47_100h_v2",
+ "games": 60,
+ "rows": {
+  "teacher47_v3": {
+   "a": {
+    "win": 4,
+    "dealin": 2,
+    "pts": 20600.0,
+    "place": [
+     14,
+     15,
+     15,
+     16
+    ],
+    "win_rate": 6.67,
+    "dealin_rate": 3.33,
+    "avg_pts": 343.3,
+    "top1_rate": 23.3
+   },
+   "b": {
+    "win": 2,
+    "dealin": 3,
+    "pts": -49165.0,
+    "place": [
+     10,
+     13,
+     20,
+     17
+    ],
+    "win_rate": 3.33,
+    "dealin_rate": 5.0,
+    "avg_pts": -819.4,
+    "top1_rate": 16.7
+   },
+   "games": 60,
+   "draw": 38
+  },
+  "bc_v1_last": {
+   "a": {
+    "win": 3,
+    "dealin": 5,
+    "pts": -5333.0,
+    "place": [
+     13,
+     18,
+     12,
+     17
+    ],
+    "win_rate": 5.0,
+    "dealin_rate": 8.33,
+    "avg_pts": -88.9,
+    "top1_rate": 21.7
+   },
+   "b": {
+    "win": 6,
+    "dealin": 1,
+    "pts": 24634.0,
+    "place": [
+     13,
+     17,
+     19,
+     11
+    ],
+    "win_rate": 10.0,
+    "dealin_rate": 1.67,
+    "avg_pts": 410.6,
+    "top1_rate": 21.7
+   },
+   "games": 60,
+   "draw": 37
+  },
+  "hybridd:teacher47_v3": {
+   "a": {
+    "win": 4,
+    "dealin": 2,
+    "pts": -6734.0,
+    "place": [
+     10,
+     19,
+     14,
+     17
+    ],
+    "win_rate": 6.67,
+    "dealin_rate": 3.33,
+    "avg_pts": -112.2,
+    "top1_rate": 16.7
+   },
+   "b": {
+    "win": 6,
+    "dealin": 5,
+    "pts": 15168.0,
+    "place": [
+     16,
+     12,
+     18,
+     14
+    ],
+    "win_rate": 10.0,
+    "dealin_rate": 8.33,
+    "avg_pts": 252.8,
+    "top1_rate": 26.7
+   },
+   "games": 60,
+   "draw": 33
+  },
+  "from_games_v2": {
+   "a": {
+    "win": 1,
+    "dealin": 3,
+    "pts": -32999.0,
+    "place": [
+     7,
+     18,
+     15,
+     20
+    ],
+    "win_rate": 1.67,
+    "dealin_rate": 5.0,
+    "avg_pts": -550.0,
+    "top1_rate": 11.7
+   },
+   "b": {
+    "win": 0,
+    "dealin": 1,
+    "pts": -8600.0,
+    "place": [
+     19,
+     14,
+     15,
+     12
+    ],
+    "win_rate": 0.0,
+    "dealin_rate": 1.67,
+    "avg_pts": -143.3,
+    "top1_rate": 31.7
+   },
+   "games": 60,
+   "draw": 51
+  },
+  "greedy_tenpai": {
+   "a": {
+    "win": 4,
+    "dealin": 5,
+    "pts": -2133.0,
+    "place": [
+     11,
+     18,
+     11,
+     20
+    ],
+    "win_rate": 6.67,
+    "dealin_rate": 8.33,
+    "avg_pts": -35.5,
+    "top1_rate": 18.3
+   },
+   "b": {
+    "win": 7,
+    "dealin": 2,
+    "pts": 26735.0,
+    "place": [
+     18,
+     10,
+     19,
+     13
+    ],
+    "win_rate": 11.67,
+    "dealin_rate": 3.33,
+    "avg_pts": 445.6,
+    "top1_rate": 30.0
+   },
+   "games": 60,
+   "draw": 34
+  }
+ }
+}
