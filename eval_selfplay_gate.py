@@ -37,13 +37,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default="")
     ap.add_argument("--policy", default="", help="规则策略名（与 --ckpt 二选一）")
+    ap.add_argument("--ensemble", default="", help="逗号分隔的多个 ckpt = 集成（logits 平均）")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
     a = ap.parse_args()
-    if a.ckpt:
+    ens_paths = []
+    if a.ensemble:
+        ens_paths = [os.path.join("checkpoints", n if n.endswith(".pt") else n + ".pt")
+                     for n in a.ensemble.split(",")]
+    if a.ensemble:
+        from ensemble_agent import EnsembleAgent
+        label = "ens_" + "+".join(os.path.basename(p).replace(".pt", "") for p in ens_paths)
+    elif a.ckpt:
         path = a.ckpt if a.ckpt.endswith(".pt") else os.path.join("checkpoints", a.ckpt + ".pt")
         label = os.path.basename(path).replace(".pt", "")
-        agents = [make_agent(label, path) for _ in range(4)]
     elif a.policy:
         label = a.policy
         agents = [POL.make_policy(a.policy, seed=i) for i in range(4)]
@@ -55,8 +62,12 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        ags = ([make_agent(label, path) for _ in range(4)] if a.ckpt else
-               [POL.make_policy(a.policy, seed=g * 97 + i) for i in range(4)])
+        if a.ensemble:
+            ags = [EnsembleAgent(label, ens_paths) for _ in range(4)]
+        elif a.ckpt:
+            ags = [make_agent(label, path) for _ in range(4)]
+        else:
+            ags = [POL.make_policy(a.policy, seed=g * 97 + i) for i in range(4)]
         for ag in ags:
             if hasattr(ag, "set_game"):
                 ag.set_game(env, h)

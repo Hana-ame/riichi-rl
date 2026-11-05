@@ -1,43 +1,43 @@
 {
  "label": "teacher47_eff_v3",
- "deals": 60,
- "seat_deals": 240,
- "seat_wins": 37,
- "seat_win_rate": 15.416666666666666,
+ "deals": 120,
+ "seat_deals": 480,
+ "seat_wins": 79,
+ "seat_win_rate": 16.458333333333332,
  "seat_win_ci": [
-  11.39635895515078,
-  20.52665992267811
+  13.409863873767677,
+  20.03943027539188
  ],
- "seat_dealins": 29,
- "seat_deal_in_rate": 12.083333333333334,
+ "seat_dealins": 55,
+ "seat_deal_in_rate": 11.458333333333334,
  "seat_deal_in_ci": [
-  8.546293107499938,
-  16.815089035661853
+  8.909722347612114,
+  14.618969687136445
  ],
  "win_pass": true,
  "deal_in_pass": true,
- "ryuukyoku": 23,
- "tenpai_at_end": 52.5,
+ "ryuukyoku": 41,
+ "tenpai_at_end": 48.125,
  "per_seat_wins": [
-  5,
-  14,
-  11,
-  7
+  16,
+  22,
+  23,
+  18
  ],
  "per_seat_dealins": [
+  16,
+  17,
   5,
-  10,
-  4,
-  10
+  17
  ],
  "action_counts": {
-  "discard": 3483,
-  "riichi": 126,
+  "discard": 6687,
+  "riichi": 231,
   "chi": 0,
   "pon": 0,
   "kan": 0,
-  "tsumo": 8,
-  "ron": 29,
-  "pass": 10798
+  "tsumo": 24,
+  "ron": 56,
+  "pass": 20698
  }
 }
