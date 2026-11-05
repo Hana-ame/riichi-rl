@@ -33,7 +33,7 @@ class DoraAgent(AutoAgent):
         a = super().act(env, p, legal)
         if self.alpha <= 0 or not env.legal_actions(p):
             return a
-        discards = [x for x in legal if getattr(x, "kind", "") == "discard"]
+        discards = [x for x in legal if x.type == E.ACT_DISCARD]
         if not discards:
             return a
         dora = self._dora_tiles(env)
@@ -48,7 +48,6 @@ class DoraAgent(AutoAgent):
             sc = float(logits[s]) - self.alpha * (1.0 if x.tile in dora else 0.0)
             if sc > best_s:
                 best_s, best = sc, x
-        # 只在模型原本会打宝牌时覆盖；否则保持模型动作（避免全局扰动）
-        if getattr(a, "tile", None) in dora:
-            return best
-        return a
+        # 修复：只要手里有宝牌就重新排序（旧逻辑只在模型原本打宝牌时覆盖，
+        # 实测从未触发 → alpha 三档无差异）
+        return best
