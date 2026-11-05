@@ -50,6 +50,8 @@ def main():
     else:
         raise SystemExit("需要 --ckpt 或 --policy")
     seat_w = [0] * 4; seat_d = [0] * 4; ryu = 0; ten = 0; nten = 0
+    act_cnt = {"discard": 0, "riichi": 0, "chi": 0, "pon": 0, "kan": 0,
+               "tsumo": 0, "ron": 0, "pass": 0}
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
@@ -69,6 +71,15 @@ def main():
                 act = ag.choose(env, p, legal) if isinstance(ag, POL.Policy) else ag.act(env, p, legal)
                 if act not in legal:
                     act = E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
+                _t = act.type
+                if _t == E.ACT_DISCARD: act_cnt["discard"] += 1
+                elif _t == E.ACT_RIICHI: act_cnt["riichi"] += 1
+                elif _t == E.ACT_CHI: act_cnt["chi"] += 1
+                elif _t == E.ACT_PON: act_cnt["pon"] += 1
+                elif _t in (E.ACT_ANKAN, E.ACT_MINKAN, E.ACT_ADD_KAN): act_cnt["kan"] += 1
+                elif _t == E.ACT_TSUMO: act_cnt["tsumo"] += 1
+                elif _t == E.ACT_RON: act_cnt["ron"] += 1
+                elif _t == E.ACT_PASS: act_cnt["pass"] += 1
                 acts[p] = act
             r = env.step(acts)
         k = r.result_type if r is not None else "HANG"
@@ -95,12 +106,14 @@ def main():
           f"门槛 9–20%  -> {'PASS' if 9 <= dr <= 20 else 'FAIL'}")
     print(f"  流局 {ryu}/{a.deals} = {100*ryu/a.deals:.1f}%  终局听牌 {100*ten/nten:.1f}%")
     print(f"  分座位和牌 {seat_w}  分座位放铳 {seat_d}")
+    print(f"  动作计数 {act_cnt}")
     out = {"label": label, "deals": a.deals, "seat_deals": N,
            "seat_wins": W, "seat_win_rate": wr, "seat_win_ci": wci,
            "seat_dealins": D, "seat_deal_in_rate": dr, "seat_deal_in_ci": dci,
            "win_pass": 15 <= wr <= 25, "deal_in_pass": 9 <= dr <= 20,
            "ryuukyoku": ryu, "tenpai_at_end": 100 * ten / nten,
-           "per_seat_wins": seat_w, "per_seat_dealins": seat_d}
+           "per_seat_wins": seat_w, "per_seat_dealins": seat_d,
+           "action_counts": act_cnt}
     p = f"rules/SELFPLAY_GATE_{label}.json"
     json.dump(out, open(p, "w"), ensure_ascii=False, indent=1)
     print(f"  写入 {p}")
