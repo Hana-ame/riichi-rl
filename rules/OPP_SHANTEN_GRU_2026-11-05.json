@@ -1,0 +1,11 @@
+{
+ "mlp_base108": {
+  "mae": 0.339,
+  "tenpai_auc": 0.996
+ },
+ "gru_order": {
+  "mae": 0.326,
+  "tenpai_auc": 0.999
+ },
+ "mae_gain_order_vs_base": 0.013
+}
