@@ -42,6 +42,13 @@ def main():
     ap.add_argument("--danger-lam", type=float, default=5.0)
     ap.add_argument("--danger-riichi-only", action="store_true",
                     help="只在有对手立直时才施加危险惩罚")
+    ap.add_argument("--call-head", default="", help="副露二分类头 ckpt（模型决定叫/不叫）")
+    ap.add_argument("--call-thr", type=float, default=0.5)
+    ap.add_argument("--dora-ckpt", default="", help="宝牌策略模型（aux 头驱动立牌价值）")
+    ap.add_argument("--dora-lam", type=float, default=1.0)
+    ap.add_argument("--model-choice-ckpt", default="",
+                    help="模型自己决定立直（去掉规则强制立直）")
+    ap.add_argument("--dora-keep", action="store_true", help="宝牌保值：压低打宝牌的 logit")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
     a = ap.parse_args()
@@ -49,7 +56,24 @@ def main():
     if a.ensemble:
         ens_paths = [os.path.join("checkpoints", n if n.endswith(".pt") else n + ".pt")
                      for n in a.ensemble.split(",")]
-    if a.danger_ckpt:
+    if a.model_choice_ckpt:
+        path = os.path.join("checkpoints", a.model_choice_ckpt if a.model_choice_ckpt.endswith(".pt")
+                            else a.model_choice_ckpt + ".pt")
+        label = f"{os.path.basename(path).replace('.pt','')}_modelchoice"
+    elif a.dora_ckpt:
+        if a.dora_ckpt == "self":     # 用 --ckpt 当主模型，只加宝牌价值（无 aux 头）
+            path = os.path.join("checkpoints", a.ckpt if a.ckpt.endswith(".pt")
+                                else a.ckpt + ".pt")
+        else:
+            path = os.path.join("checkpoints", a.dora_ckpt if a.dora_ckpt.endswith(".pt")
+                                else a.dora_ckpt + ".pt")
+        label = f"{os.path.basename(path).replace('.pt','')}_dora{a.dora_lam}" + (
+            "_keep" if a.dora_keep else "")
+    elif a.call_head:
+        path = os.path.join("checkpoints", a.ckpt if a.ckpt.endswith(".pt")
+                            else a.ckpt + ".pt")
+        label = f"{os.path.basename(path).replace('.pt','')}_callhead{a.call_thr}"
+    elif a.danger_ckpt:
         path = os.path.join("checkpoints", a.danger_ckpt if a.danger_ckpt.endswith(".pt")
                             else a.danger_ckpt + ".pt")
         label = f"{os.path.basename(path).replace('.pt','')}_danger{int(a.danger_lam)}" + (
@@ -71,7 +95,18 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        if a.danger_ckpt:
+        if a.model_choice_ckpt:
+            from model_choice_agent import ModelChoiceAgent
+            ags = [ModelChoiceAgent(label, path) for _ in range(4)]
+        elif a.dora_ckpt:
+            from dora_agent import DoraValueAgent
+            ags = [DoraValueAgent(label, path, lam=a.dora_lam, keep=a.dora_keep)
+                   for _ in range(4)]
+        elif a.call_head:
+            from call_head import CallHeadAgent
+            ags = [CallHeadAgent(label, path, a.call_head, thr=a.call_thr)
+                   for _ in range(4)]
+        elif a.danger_ckpt:
             from danger_model_agent import ModelDangerAgent
             ags = [ModelDangerAgent(label, path, lam=a.danger_lam,
                                     riichi_only=a.danger_riichi_only) for _ in range(4)]
