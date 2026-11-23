@@ -18,6 +18,7 @@ import argparse
 import os
 import sys
 import time
+import multiprocessing as mp
 
 import numpy as np
 
@@ -27,12 +28,13 @@ from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import policies as POL
 from mahjong.hanchan import HanchanState
+from mahjong import event_stream as ES
 from train_hanchan import (encode, slot_of, hand_shanten, N_ACTIONS, SIT_DIM)
 
 
-def run_hanchan(enc, h, teacher, seed0):
-    """跑一个半庄，返回 (vecs, touches, masks, labels, slots_ok)。"""
-    xs, tfs, masks, labels = [], [], [], []
+def run_hanchan(enc, h, teacher, seed0, event_len=ES.DEFAULT_EVENT_LEN):
+    """跑一个半庄，返回 (vecs, touches, masks, labels, aux, events)。"""
+    xs, tfs, masks, labels, evs = [], [], [], [], []
     aux = []
     deals = 0
     while not h.finished:
@@ -65,6 +67,7 @@ def run_hanchan(enc, h, teacher, seed0):
                 tfs.append(tf)
                 masks.append(mask)
                 labels.append(lab)
+                evs.append(ES.encode_event_stream(env, p, max_len=event_len))
                 deal_ps.append(p)
                 acts[p] = act
             r = env.step(acts)
@@ -81,7 +84,16 @@ def run_hanchan(enc, h, teacher, seed0):
         h.advance(r)
     return (np.stack(xs), np.stack(tfs).reshape(len(xs), -1),
             np.stack(masks), np.array(labels, dtype=np.int64),
-            np.array(aux, dtype=np.float32))
+            np.array(aux, dtype=np.float32),
+            np.stack(evs))
+
+
+def _gen_worker(task):
+    idx, teacher_name, obs_order, seed0, event_len = task
+    enc = O2.ObsEncoder(order=obs_order)
+    teacher = POL.make_policy(teacher_name, seed=idx)
+    h = HanchanState(dealer=idx % 4)
+    return run_hanchan(enc, h, teacher, seed0 + 10_000 + idx * 7919, event_len=event_len)
 
 
 def main():
@@ -89,30 +101,48 @@ def main():
     ap.add_argument("--hanchans", type=int, default=12)
     ap.add_argument("--seed0", type=int, default=0)
     ap.add_argument("--teacher", default="greedy_tenpai",
-                    help="教师规则：greedy_tenpai/call_first/damaten/riichi_ev")
+                    help="教师规则：greedy_tenpai/call_first/damaten/riichi_ev/eff_wuke")
     ap.add_argument("--obs-order", action="store_true",
                     help="obs v3：加四家弃牌顺序平面（46 平面）")
+    ap.add_argument("--event-len", type=int, default=ES.DEFAULT_EVENT_LEN)
+    ap.add_argument("--workers", type=int, default=1,
+                    help="多进程并行采集 worker 数（>1 时启用 CPU 多核加速）")
     ap.add_argument("--out", default="data/teacher47.npz")
     args = ap.parse_args()
 
-    enc = O2.ObsEncoder(order=getattr(args, "obs_order", False))
-    teacher = POL.make_policy(getattr(args, "teacher", "greedy_tenpai"), seed=0)
     t0 = time.time()
     parts = []
-    for i in range(args.hanchans):
-        h = HanchanState(dealer=i % 4)
-        parts.append(run_hanchan(enc, h, teacher, 10_000 + i * 7919))
-        if (i + 1) % 3 == 0:
-            print(f"  {i + 1}/{args.hanchans} 半庄 "
-                  f"{sum(len(p[3]) for p in parts)} 样本 "
-                  f"({time.time() - t0:.0f}s)", flush=True)
+    tasks = [
+        (i, args.teacher, bool(args.obs_order), int(args.seed0), int(args.event_len))
+        for i in range(args.hanchans)
+    ]
+    if args.workers > 1:
+        ctx = mp.get_context("spawn")
+        with ctx.Pool(processes=args.workers) as pool:
+            for done_i, res in enumerate(pool.imap_unordered(_gen_worker, tasks), start=1):
+                parts.append(res)
+                if done_i % 3 == 0 or done_i == args.hanchans:
+                    print(f"  {done_i}/{args.hanchans} 半庄 "
+                          f"{sum(len(p[3]) for p in parts)} 样本 "
+                          f"({time.time() - t0:.0f}s, workers={args.workers})", flush=True)
+    else:
+        enc = O2.ObsEncoder(order=bool(args.obs_order))
+        teacher = POL.make_policy(args.teacher, seed=0)
+        for i in range(args.hanchans):
+            h = HanchanState(dealer=i % 4)
+            parts.append(run_hanchan(enc, h, teacher, args.seed0 + 10_000 + i * 7919, event_len=args.event_len))
+            if (i + 1) % 3 == 0 or (i + 1) == args.hanchans:
+                print(f"  {i + 1}/{args.hanchans} 半庄 "
+                      f"{sum(len(p[3]) for p in parts)} 样本 "
+                      f"({time.time() - t0:.0f}s)", flush=True)
     X = np.concatenate([p[0] for p in parts])
     TF = np.concatenate([p[1] for p in parts])
     M = np.concatenate([p[2] for p in parts])
     Y = np.concatenate([p[3] for p in parts])
     AUX = np.concatenate([p[4] for p in parts])
+    EV = np.concatenate([p[5] for p in parts])
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
-    np.savez_compressed(args.out, x=X, tf=TF, mask=M, y=Y, aux=AUX)
+    np.savez_compressed(args.out, x=X, tf=TF, mask=M, y=Y, aux=AUX, events=EV)
     print(f"样本 {len(X)}  观测 {X.shape[1]}  touch {TF.shape[1]}  "
           f"槽 {M.shape[1]}")
     for name, slot in (("tsumo", 34), ("ron", 35), ("riichi", 36)):

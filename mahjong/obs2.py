@@ -7,6 +7,12 @@
 
 铁律：每个平面都必须是**公开或自有的信息**。
 禁止：对手手牌、牌山顺序、未来牌、任何牌效统计量。
+
+修复记录：
+- 宝牌平面使用 mahjong.tiles.dora_from_indicator（修正 9m->1m、北->东、中->白 循环）
+  并覆盖所有已翻出的杠宝牌指示牌；
+- 四家手牌张数、牌河、副露、点数与弃牌顺序统一按相对视角旋转
+  （0=自家, 1=下家, 2=对家, 3=上家），避免绝对座位编号导致网络难以对齐敌我。
 """
 
 from __future__ import annotations
@@ -14,6 +20,7 @@ from __future__ import annotations
 import numpy as np
 
 from mahjong import env as E
+from mahjong import tiles as T
 from mahjong.tiles import NUM_TILES
 
 N_PLANES = 22
@@ -41,23 +48,25 @@ class ObsEncoder:
 
     def encode(self, env, p_idx):
         p = env.players[p_idx]
+        # 相对座位顺序：0=自家, 1=下家, 2=对家, 3=上家
+        rel_players = [env.players[(p_idx + offset) % 4] for offset in range(4)]
         planes = np.zeros((self.n_planes, NUM_TILES), dtype=np.float32)
 
-        # 0: 自己手牌计数（归一到 0..4）
+        # 0: 自己手牌计数（0..4）
         for t, c in enumerate(p.counts()):
             planes[0, t] = c
 
-        # 1-4: 四家暗牌张数
-        for i, q in enumerate(env.players):
+        # 1-4: 四家暗牌张数（相对视角）
+        for i, q in enumerate(rel_players):
             planes[1 + i, :] = len(q.hand) / 14.0
 
-        # 5-8: 四家牌河计数
-        for i, q in enumerate(env.players):
+        # 5-8: 四家牌河计数（相对视角）
+        for i, q in enumerate(rel_players):
             for t in q.river:
                 planes[5 + i, t] += 1.0
 
-        # 9-12: 四家副露计数
-        for i, q in enumerate(env.players):
+        # 9-12: 四家副露计数（相对视角）
+        for i, q in enumerate(rel_players):
             for kind, t, _ in q.melds:
                 n = 4 if kind in ("ankan", "minkan", "addkan") else 3
                 if kind == "chi":
@@ -67,12 +76,13 @@ class ObsEncoder:
                 else:
                     planes[9 + i, t] += n
 
-        # 13: 各家副露组数（放在 0 号位做标记，其余为 0）
-        planes[13, 0] = len(p.melds) / 4.0
+        # 13: 各家副露组数（相对视角放在 0..3 号位）
+        for i, q in enumerate(rel_players):
+            planes[13, i] = len(q.melds) / 4.0
 
         # 14: 场上已见牌总数（弃牌/副露合计，按牌种）
         seen = np.zeros(NUM_TILES, dtype=np.float32)
-        for q in env.players:
+        for q in rel_players:
             for t in q.river:
                 seen[t] += 1
             for kind, t, _ in q.melds:
@@ -82,11 +92,16 @@ class ObsEncoder:
                     seen[t] += 4 if kind in ("ankan", "minkan", "addkan") else 3
         planes[14] = seen
 
-        # 15: 宝牌指示牌 one-hot
-        if env.dora_indicator is not None:
+        # 15: 宝牌指示牌（包含全部已翻开的杠宝牌指示牌）
+        dora_inds = getattr(env, "dora_indicators", None)
+        if dora_inds:
+            for ind in dora_inds:
+                if ind is not None and 0 <= ind < NUM_TILES:
+                    planes[15, ind] += 1.0
+        elif env.dora_indicator is not None:
             planes[15, env.dora_indicator] = 1.0
 
-        # 16: 里宝牌指示牌 one-hot
+        # 16: 里宝牌指示牌 one-hot（仅公开可见时非 None）
         if env.ura_dora_indicator is not None:
             planes[16, env.ura_dora_indicator] = 1.0
 
@@ -94,7 +109,7 @@ class ObsEncoder:
         if env.last_discard is not None:
             planes[17, env.last_discard] = 1.0
 
-        # 18: 自家牌河 one-hot
+        # 18: 自家牌河计数
         for t in p.river:
             planes[18, t] += 1.0
 
@@ -102,22 +117,23 @@ class ObsEncoder:
         if p.riichi:
             planes[19, :] = 1.0
 
-        # 20: 宝牌集合 one-hot（公开信息：指示牌可推出）
-        if env.dora_indicator is not None:
-            d = (env.dora_indicator + 1) % NUM_TILES
-            planes[20, d] = 1.0
+        # 20: 宝牌集合（按正确规则循环映射，覆盖所有已翻指示牌）
+        if dora_inds:
+            for ind in dora_inds:
+                if ind is not None and 0 <= ind < NUM_TILES:
+                    planes[20, T.dora_from_indicator(ind)] += 1.0
+        elif env.dora_indicator is not None:
+            planes[20, T.dora_from_indicator(env.dora_indicator)] = 1.0
         if env.ura_dora_indicator is not None:
-            d = (env.ura_dora_indicator + 1) % NUM_TILES
-            planes[20, d] += 1.0
+            planes[20, T.dora_from_indicator(env.ura_dora_indicator)] += 1.0
 
-        # 21: 剩余未知牌数（不可见牌 = 4 - 已见 - 自己手里），
-        #     这是公开可推的信息，不含任何牌序
+        # 21: 剩余未知牌数（不可见牌 = 4 - 已见 - 自己手里）
         planes[21] = np.clip(4.0 - seen - np.array(
             p.counts(), dtype=np.float32), 0, 4)
 
         # --- 标量 ---
         s = np.zeros(SCALAR_DIM, dtype=np.float32)
-        s[0:4] = [q.points / 25000.0 for q in env.players]
+        s[0:4] = [q.points / 25000.0 for q in rel_players]
         s[4] = 1.0 if p.is_dealer else 0.0
         s[5] = min(1.0, env.turn / 72.0)
         s[6:10] = [1.0 if env.round_wind == t else 0.0
@@ -127,7 +143,7 @@ class ObsEncoder:
         s[14] = 1.0 if p.furiten else 0.0
         s[15] = 1.0 if p.riichi else 0.0
         s[16] = min(1.0, (len(env.wall) - env.wall_idx) / 70.0)
-        s[17:21] = [len(q.hand) / 14.0 for q in env.players]
+        s[17:21] = [len(q.hand) / 14.0 for q in rel_players]
         s[21] = 1.0 if env.phase == E.Phase.DISCARD else 0.0
         s[22] = 1.0 if env.phase == E.Phase.RESPONSE else 0.0
         s[23] = len(p.melds) / 4.0
@@ -135,7 +151,7 @@ class ObsEncoder:
         s[25] = 1.0 if env.last_discard_player == p_idx else 0.0
 
         if self.order:
-            for i, q in enumerate(env.players):
+            for i, q in enumerate(rel_players):
                 seq = q.river[-6:]
                 for pos, t in enumerate(seq):
                     planes[N_PLANES + i * 6 + pos, t] = 1.0

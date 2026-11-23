@@ -161,8 +161,15 @@ def parse_tiles(s: str):
 
 
 def dora_from_indicator(indicator: int) -> int:
-    """宝牌指示牌 -> 宝牌（RULES.md §7.5）：下一个数牌种，9 的下一张是 1"""
-    return (indicator + 1) % NUM_TILES
+    """宝牌指示牌 -> 宝牌（RULES.md §7.5）：数牌 1..9 同花色循环，风牌 东南西北循环，三元牌 白发中循环。"""
+    if 0 <= indicator < 27:
+        base = (indicator // 9) * 9
+        return base + ((indicator - base + 1) % 9)
+    if 27 <= indicator <= 30:
+        return 27 + ((indicator - 27 + 1) % 4)
+    if 31 <= indicator <= 33:
+        return 31 + ((indicator - 31 + 1) % 3)
+    return indicator % NUM_TILES
 
 
 def next_tile(tile: int) -> int:

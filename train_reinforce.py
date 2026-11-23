@@ -1,13 +1,9 @@
 """纯 RL 训练器：REINFORCE + 基线 + 熵正则，自对弈。
 
-铁律（用户明确）：
-- **不使用任何人类打谱、不做行为克隆、不用专家示范**
-- 奖励只来自对局结果（和了/流局/点数差），不含任何牌效先验
-- 观测不含对手手牌与牌山顺序
-
-奖励：r = points_delta[i] / 10000（该局该家的点数变化，归一化）
-损失：-E[logp * (R - b)] - entropy_coef * H
-基线 b：同一批次的回报均值（batch mean baseline，不引入人类知识）
+修复记录：
+1. 策略梯度损失改为使用带合法动作 mask 的 `log_softmax`（旧版误用了原始未归一化 `logits`）；
+2. 动作槽位从会 20/20 冲突的 54 槽哈希改为无冲突 47 槽显式映射；
+3. 优势标准化，并屏蔽听牌时的非法主动流局。
 """
 
 from __future__ import annotations
@@ -27,61 +23,58 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong.net import MahjongNet, count_params
-
-N_ACTIONS = 54
-
-
-def slot_of(action):
-    """Action -> 固定槽位（34..53 共 20 个特殊槽）。
-
-    防御：部分动作（如 PASS）tile 为 None，直接参与算术会 TypeError。
-    """
-    t = action.type
-    tile = action.tile if action.tile is not None else -1
-    if t == E.ACT_DISCARD and 0 <= tile < 34:
-        return tile
-    return 34 + ((t * 7 + tile) % 20)
+from train_hanchan import (
+    N_ACTIONS,
+    filter_legal_actions,
+    resolve_action_for_slot,
+    slot_of,
+)
 
 
 class Step:
-    __slots__ = ("vec", "slot")
-    def __init__(self, vec, slot):
+    __slots__ = ("vec", "slot", "legal_slots")
+
+    def __init__(self, vec, slot, legal_slots):
         self.vec = vec
         self.slot = slot
+        self.legal_slots = legal_slots
 
 
-def rollout(model, encoder, seed, device, temperature, greedy=False):
-    """跑一局，收集所有主体的 (观测, 动作槽, 回报) 与结果。"""
+def rollout(model, encoder, seed, device, temperature, greedy=False,
+            allow_ryuukyoku=False):
+    """跑一局，收集所有主体的 (观测, 动作槽, 合法槽位) 与结果。"""
     env = E.MahjongEnv(seed=seed, dealer=seed % 4)
     collected = {i: [] for i in range(4)}
     result = env.start_turn()
     steps = 0
+    model.eval()
     while result is None and steps < 400:
         steps += 1
         actions = {}
         for p in env.pending_players():
             planes, scalar = encoder.encode(env, p)
             vec = np.concatenate([planes.ravel(), scalar]).astype(np.float32)
-            legal = env.legal_actions(p)
+            legal = filter_legal_actions(env.legal_actions(p), allow_ryuukyoku)
             if not legal:
                 actions[p] = E.PASS_ACTION
                 continue
             slots = [slot_of(a) for a in legal]
+            uniq_slots = list(dict.fromkeys(slots))
             with torch.no_grad():
                 x = torch.from_numpy(vec).unsqueeze(0).to(device)
-                logits = model(x)[0]
-            mask = torch.full((N_ACTIONS,), -1e9, dtype=torch.float32)
-            mask[slots] = 0.0
-            logits = logits + mask.to(device)
+                raw_logits = model(x)[0][0]
+            mask = torch.full((N_ACTIONS,), -1e9, dtype=torch.float32, device=device)
+            mask[uniq_slots] = 0.0
+            logits = raw_logits + mask
             if greedy:
-                pick_slot = int(logits.argmax())
+                pick_slot = int(logits.argmax().item())
             else:
                 probs = F.softmax(logits / max(temperature, 1e-6), dim=-1)
-                pick_slot = int(torch.multinomial(probs, 1))
-            if pick_slot not in slots:
-                pick_slot = slots[0]
-            actions[p] = legal[slots.index(pick_slot)]
-            collected[p].append(Step(vec, pick_slot))
+                pick_slot = int(torch.multinomial(probs, 1).item())
+            if pick_slot not in uniq_slots:
+                pick_slot = uniq_slots[0]
+            actions[p] = resolve_action_for_slot(legal, slots, pick_slot, raw_logits)
+            collected[p].append(Step(vec, pick_slot, uniq_slots))
         result = env.step(actions)
     return result, collected
 
@@ -94,6 +87,10 @@ def main():
     ap.add_argument("--entropy", type=float, default=0.01)
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--gamma", type=float, default=0.99)
+    ap.add_argument("--channels", type=int, default=64)
+    ap.add_argument("--blocks", type=int, default=4)
+    ap.add_argument("--per-tile-head", action="store_true")
+    ap.add_argument("--allow-ryuukyoku", action="store_true")
     ap.add_argument("--out", default="checkpoints/riichi_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
     args = ap.parse_args()
@@ -103,7 +100,10 @@ def main():
     random.seed(args.seed0)
     np.random.seed(args.seed0)
 
-    model = MahjongNet().to(device)
+    model = MahjongNet(
+        channels=args.channels, n_blocks=args.blocks,
+        n_actions=N_ACTIONS, per_tile_head=args.per_tile_head,
+    ).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     encoder = O2.ObsEncoder()
     print(f"device={device}  params={count_params(model):,}")
@@ -113,12 +113,13 @@ def main():
 
     for it in range(args.iters):
         opt.zero_grad()
-        all_vecs, all_slots, all_rets = [], [], []
+        all_vecs, all_slots, all_legals, all_rets = [], [], [], []
 
         for g in range(args.games):
             seed = args.seed0 * 7919 + it * 131 + g
             result, collected = rollout(
-                model, encoder, seed, device, args.temperature)
+                model, encoder, seed, device, args.temperature,
+                allow_ryuukyoku=args.allow_ryuukyoku)
             if result is None:
                 continue
             total_games += 1
@@ -136,24 +137,28 @@ def main():
                     ret = adv * (args.gamma ** (n - 1 - k))
                     all_vecs.append(st.vec)
                     all_slots.append(st.slot)
+                    all_legals.append(st.legal_slots)
                     all_rets.append(ret)
 
         if not all_rets:
             continue
 
         rets = torch.tensor(all_rets, dtype=torch.float32, device=device)
-        baseline = rets.mean()
-        adv = rets - baseline
+        adv = (rets - rets.mean()) / rets.std().clamp_min(1e-6)
 
+        model.train()
         x = torch.from_numpy(np.stack(all_vecs)).to(device)
         slots = torch.tensor(all_slots, dtype=torch.long, device=device)
-        logits, values = model(x)
+        mrow = torch.full((len(all_slots), N_ACTIONS), -1e9, device=device)
+        for i, legal_slots in enumerate(all_legals):
+            mrow[i, legal_slots] = 0.0
 
-        chosen = logits.gather(1, slots.unsqueeze(1)).squeeze(1)
-        logp = F.log_softmax(logits, dim=-1)
+        logits, _ = model(x)
+        logp = F.log_softmax(logits + mrow, dim=-1)
+        chosen_logp = logp.gather(1, slots.unsqueeze(1)).squeeze(1)
         ent = -(logp.exp() * logp).sum(-1).mean()
 
-        policy_loss = -(chosen * adv).mean()
+        policy_loss = -(chosen_logp * adv).mean()
         loss = policy_loss - args.entropy * ent
 
         loss.backward()
@@ -171,9 +176,12 @@ def main():
     torch.save({
         "arch": "convformer_v1",
         "state_dict": model.state_dict(),
+        "channels": args.channels,
+        "blocks": args.blocks,
         "n_actions": N_ACTIONS,
         "n_planes": O2.N_PLANES,
         "scalar_dim": O2.SCALAR_DIM,
+        "per_tile_head": bool(args.per_tile_head),
         "iters": args.iters,
     }, args.out)
     print(f"saved {args.out}")

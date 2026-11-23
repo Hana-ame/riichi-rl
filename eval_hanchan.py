@@ -26,25 +26,36 @@ from mahjong import obs2 as O2
 from mahjong import touch as TOUCH
 from mahjong.hanchan import HanchanState
 from mahjong.net import MahjongNet
+from mahjong.dual_net import DualStreamMahjongNet
+from mahjong import event_stream as ES
 from train_hanchan import (encode, slot_of, hand_shanten, N_ACTIONS, SIT_DIM)
 
 
 def load_model(path):
-    """加载半庄线（47 槽）checkpoint。
-
-    2026-11-05 修复：旧版固定按 54 槽 MahjongNet 建网，而默认 glob 选中的
-    `a2c_r*_it*.pt` 是 47 槽半庄模型 → `load_state_dict` 直接
-    size mismatch（47 vs 54），eval_hanchan.py 开箱即崩。
-    """
+    """加载半庄线（47 槽）checkpoint（兼容 CNN 与双流 Transformer）。"""
     ck = torch.load(path, map_location="cpu", weights_only=False)
-    ch = ck.get("channels", 64)
-    nb = ck.get("blocks", 4)
-    model = MahjongNet(channels=ch, n_blocks=nb,
-                       n_actions=N_ACTIONS,
-                       touch_dim=TOUCH.TOUCH_DIM,
-                       extra_scalar=SIT_DIM,
-                       in_planes=ck.get("in_planes", 22),
-                       aux_dim=ck.get("aux_dim", 0))
+    if ck.get("arch") == "dual_stream_v1":
+        model = DualStreamMahjongNet(
+            d_model=ck.get("d_model", 128),
+            n_layers=ck.get("n_layers", 3),
+            n_heads=ck.get("n_heads", 4),
+            n_actions=N_ACTIONS,
+            touch_dim=TOUCH.TOUCH_DIM,
+            extra_scalar=SIT_DIM,
+            in_planes=ck.get("in_planes", 22),
+            aux_dim=ck.get("aux_dim", 0),
+            max_event_len=ck.get("event_len", ES.DEFAULT_EVENT_LEN),
+        )
+    else:
+        ch = ck.get("channels", 64)
+        nb = ck.get("blocks", 4)
+        model = MahjongNet(channels=ch, n_blocks=nb,
+                           n_actions=N_ACTIONS,
+                           touch_dim=TOUCH.TOUCH_DIM,
+                           extra_scalar=SIT_DIM,
+                           in_planes=ck.get("in_planes", 22),
+                           aux_dim=ck.get("aux_dim", 0),
+                           per_tile_head=ck.get("per_tile_head", False))
     model.load_state_dict(ck["state_dict"])
     model.eval()
     return model, ck
@@ -63,16 +74,18 @@ def play_model(model, enc, hstate, seed):
             if not legal:
                 recs[p] = None
                 continue
-            recs[p] = (vec, tf, [slot_of(a) for a in legal], legal)
+            ev = ES.encode_event_stream(e, p, max_len=getattr(model, 'max_event_len', ES.DEFAULT_EVENT_LEN))
+            recs[p] = (vec, tf, ev, [slot_of(a) for a in legal], legal)
         idxs = [p for p in recs if recs[p] is not None]
         acts = {}
         if idxs:
             x = torch.from_numpy(np.stack([recs[p][0] for p in idxs]))
             tx = torch.from_numpy(np.stack([recs[p][1] for p in idxs]))
+            evx = torch.from_numpy(np.stack([recs[p][2] for p in idxs]))
             with torch.no_grad():
-                lg, _ = model(x, tx)
+                lg, _ = (model(x, tx, evx) if isinstance(model, DualStreamMahjongNet) else model(x, tx))
             for k, p in enumerate(idxs):
-                _, _, slots, legal = recs[p]
+                _, _, _, slots, legal = recs[p]
                 m = torch.full((N_ACTIONS,), -1e9)
                 m[slots] = 0.0
                 acts[p] = legal[slots.index(int((lg[k] + m).argmax()))]

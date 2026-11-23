@@ -27,12 +27,15 @@ from mahjong.situation import Situation, assess, deserves_give_up
 
 
 # 奖励权重（默认，可在训练脚本里覆盖）
-W_POINT = 1.0        # 分差
-W_SHAPE = 0.5        # 手牌完整性（向听不增）
-W_DEAL_BASE = 1.0    # 放铳基础惩罚
-W_DEAL_DEFENSE = 2.5 # 有人立直时的放铳惩罚倍数
-W_DEAL_LAST = 1.5    # 末局搏命时放铳反而无害 -> 降低惩罚
-W_SURVIVE = 0.8      # 弃听局里「没输钱」的奖励
+# 注：r_point = delta / 10000 已经完整包含放铳失分与和牌得分；
+# 过大的额外放铳惩罚(w_deal)与弃听保命奖(w_survive=0.8)会把 RL 推向极度消极弃和，
+# 因此默认归零，仅在显式调参时启用轻度塑形。
+W_POINT = 1.0        # 真实点数变化（主目标）
+W_SHAPE = 0.0        # 向听塑形（从 BC 起步建议为 0）
+W_DEAL_BASE = 0.0    # 额外放铳惩罚（默认 0，避免与 r_point 双重扣分）
+W_DEAL_DEFENSE = 1.5 # 有人立直时的放铳惩罚倍数
+W_DEAL_LAST = 1.5    # 末局搏命时降低额外放铳惩罚
+W_SURVIVE = 0.0      # 弃听局保命奖（默认 0，避免奖励消极弃和）
 
 
 class ScenarioFlags:

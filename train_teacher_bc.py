@@ -25,6 +25,8 @@ import torch.nn.functional as F
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from mahjong.net import MahjongNet, count_params
+from mahjong.dual_net import DualStreamMahjongNet
+from mahjong import event_stream as ES
 from mahjong.touch import TOUCH_DIM
 from train_hanchan import N_ACTIONS, SIT_DIM
 
@@ -55,6 +57,11 @@ def main():
                     help="响应 PASS 样本权重（最简单、占比最高，压低）")
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
+    ap.add_argument("--per-tile-head", action="store_true", help="使用逐牌切牌头")
+    ap.add_argument("--arch", default="cnn", choices=["cnn", "dual_stream"])
+    ap.add_argument("--d-model", type=int, default=128)
+    ap.add_argument("--n-layers", type=int, default=3)
+    ap.add_argument("--n-heads", type=int, default=4)
     ap.add_argument("--init", default="", help="从已有 ckpt 继续训练")
     ap.add_argument("--dora-aux-weight", type=float, default=0.0,
                     help="dora aux 任务 BCE 权重（0=关闭）")
@@ -66,6 +73,7 @@ def main():
     TF = torch.from_numpy(d["tf"]).float()
     M = torch.from_numpy(d["mask"])
     Y = torch.from_numpy(d["y"]).long()
+    EV = torch.from_numpy(d["events"]).long() if "events" in d else None
     n = len(X)
     print(f"样本 {n}  obs={X.shape[1]}  touch={TF.shape[1]}  "
           f"权重 discard={args.discard_weight} pass={args.pass_weight} "
@@ -89,9 +97,17 @@ def main():
             aux_labels = aux_labels[:len(Y)]
     print(f"[debug] aux_labels len={None if aux_labels is None else len(aux_labels)}", flush=True)
     aux_dim = 1 if (args.dora_aux_weight > 0 and aux_labels is not None) else 0
-    model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
-                       n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
-                       extra_scalar=SIT_DIM, in_planes=_in_planes, aux_dim=aux_dim)
+    if args.arch == "dual_stream":
+        event_len = int(EV.shape[1]) if EV is not None else ES.DEFAULT_EVENT_LEN
+        model = DualStreamMahjongNet(
+            d_model=args.d_model, n_layers=args.n_layers, n_heads=args.n_heads,
+            n_actions=N_ACTIONS, touch_dim=TOUCH_DIM, extra_scalar=SIT_DIM,
+            in_planes=_in_planes, aux_dim=aux_dim, max_event_len=event_len,
+        )
+    else:
+        model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
+                           n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
+                           extra_scalar=SIT_DIM, in_planes=_in_planes, aux_dim=aux_dim, per_tile_head=args.per_tile_head)
     obs_order = _in_planes > 22
     print(f"obs planes={_in_planes} obs_order={obs_order}", flush=True)
     if args.init:
@@ -119,7 +135,11 @@ def main():
         tot_loss = 0.0
         for i in range(0, len(tr), args.bs):
             b = tr[p[i:i + args.bs]]
-            if aux_dim:
+            ev_b = EV[b] if EV is not None else None
+            if args.arch == "dual_stream":
+                logits, _ = model(X[b], TF[b], ev_b)
+                auxl = None
+            elif aux_dim:
                 logits, _, auxl = model.forward_aux(X[b], TF[b])
             else:
                 logits, _ = model(X[b], TF[b])
@@ -127,7 +147,7 @@ def main():
             ce = F.cross_entropy(logits, Y[b], reduction="none")
             w = sample_weight(Y[b])
             loss = (ce * w).sum() / w.sum()
-            if aux_dim:
+            if aux_dim and auxl is not None:
                 # b 已经是全局样本索引（来自 tr），直接索引即可
                 auxb = torch.from_numpy(aux_labels[b.numpy()])
                 loss = loss + args.dora_aux_weight * F.binary_cross_entropy_with_logits(
@@ -139,7 +159,8 @@ def main():
 
         model.eval()
         with torch.no_grad():
-            lv, _ = model(X[va], TF[va])
+            ev_va = EV[va] if EV is not None else None
+            lv, _ = model(X[va], TF[va], ev_va) if args.arch == "dual_stream" else model(X[va], TF[va])
             lv = lv.masked_fill(~M[va], -1e9)
             v_loss = float(F.cross_entropy(lv, yva, reduction="none").mean())
             v_acc = accuracy(lv, yva)
@@ -152,6 +173,11 @@ def main():
             best = v_acc
             os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
             torch.save({
+                "arch": "dual_stream_v1" if args.arch == "dual_stream" else "cnn",
+                "d_model": int(args.d_model),
+                "n_layers": int(args.n_layers),
+                "n_heads": int(args.n_heads),
+                "event_len": int(EV.shape[1]) if EV is not None else ES.DEFAULT_EVENT_LEN,
                 "state_dict": model.state_dict(),
                 "channels": args.channels,
                 "blocks": args.blocks,
@@ -159,6 +185,7 @@ def main():
                 "in_planes": int(_in_planes),
                 "obs_order": bool(obs_order),
                 "aux_dim": int(aux_dim),
+                "per_tile_head": bool(args.per_tile_head),
                 "touch_dim": TOUCH_DIM,
                 "extra_scalar": SIT_DIM,
                 "iter": ep + 1,

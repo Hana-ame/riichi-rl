@@ -1,18 +1,10 @@
-"""纯 RL 训练器：批量 rollout + REINFORCE + 熵正则。
+"""纯 RL 训练器：批量 rollout + 策略梯度 + 熵正则。
 
-性能关键：不做逐决策点推理。整局跑完收集所有 (观测, 合法槽位)，
-再用 GPU 一次性批量前向，最后一次性算 log-prob 与反向。
-单次前向从 17.2ms（bs=1）降到亚毫秒（bs=200）。
-
-奖励（训练用，与规则分离）
---------------------------
-    r = terminal(points_delta / points_scale) * discount        # 最终点数（主）
-      + shanten_weight * (shanten_before - shanten_after) * discount  # 向听下降
-
-规则层（hand/scoring/ruleset）已对照 MahjongRepository/mahjong 2.0.0 核验，
-奖励只是塑形，不改变规则。
-
-铁律：不用人类打谱、不做行为克隆、不注入牌效先验。
+修复记录：
+1. 替换原 54 槽哈希 slot_of 为无冲突 47 槽显式映射；
+2. 修正向听数奖励符号 `(sb - sa)`（旧版 `sa - sb` 写反，在奖励拆牌）；
+3. 默认屏蔽听牌时的主动流局动作，防止奖励作弊；
+4. 标准化 advantage 并按 chunk 数量归一化梯度。
 """
 
 from __future__ import annotations
@@ -33,16 +25,14 @@ from mahjong import env as E
 from mahjong import obs2 as O2
 from mahjong import shanten_ref as SR
 from mahjong.net import MahjongNet, count_params
+from train_hanchan import (
+    N_ACTIONS,
+    filter_legal_actions,
+    resolve_action_for_slot,
+    slot_of,
+)
 
-N_ACTIONS = 54
 VALID_SIZES = (1, 2, 4, 5, 7, 8, 10, 11, 13, 14)
-
-
-def slot_of(action):
-    t = action.type
-    if t == E.ACT_DISCARD and 0 <= action.tile < 34:
-        return action.tile
-    return 34 + ((t * 7 + action.tile) % 20)
 
 
 def hand_shanten(env, p_idx):
@@ -69,10 +59,10 @@ class Pending:
 
 
 def rollout(model, encoder, seed, device, temperature, shanten_weight,
-            points_scale):
-    """跑一局。决策时不推理（只记录），返回所有待决策点与结果。"""
+            points_scale, allow_ryuukyoku=False):
+    """跑一局，记录所有待决策点与结果。"""
     env = E.MahjongEnv(seed=seed, dealer=seed % 4)
-    steps_info = []          # [(Pending, chosen_slot)]
+    steps_info = []
     result = env.start_turn()
     guard = 0
     while result is None and guard < 400:
@@ -82,14 +72,13 @@ def rollout(model, encoder, seed, device, temperature, shanten_weight,
             sb = hand_shanten(env, p) if env.phase == E.Phase.DISCARD else 8
             planes, scalar = encoder.encode(env, p)
             vec = np.concatenate([planes.ravel(), scalar]).astype(np.float32)
-            legal = env.legal_actions(p)
+            legal = filter_legal_actions(env.legal_actions(p), allow_ryuukyoku)
             if not legal:
                 pend[p] = None
                 continue
             slots = [slot_of(a) for a in legal]
             pend[p] = (vec, slots, legal, sb, p)
 
-        # 批量前向：把本步所有主体的观测堆在一起
         idxs = [p for p in pend if pend[p] is not None]
         logits_by_p = {}
         if idxs:
@@ -105,26 +94,28 @@ def rollout(model, encoder, seed, device, temperature, shanten_weight,
                 actions[p] = E.PASS_ACTION
                 continue
             vec, slots, legal, sb, _ = info
+            uniq_slots = list(dict.fromkeys(slots))
             mask = torch.full((N_ACTIONS,), -1e9, device=device)
-            mask[slots] = 0.0
+            mask[uniq_slots] = 0.0
             logits = logits_by_p[p] + mask
             probs = F.softmax(logits / max(temperature, 1e-6), dim=-1)
-            pick = int(torch.multinomial(probs, 1))
-            if pick not in slots:
-                pick = slots[0]
-            actions[p] = legal[slots.index(pick)]
+            pick = int(torch.multinomial(probs, 1).item())
+            if pick not in uniq_slots:
+                pick = uniq_slots[0]
+            act = resolve_action_for_slot(legal, slots, pick, logits_by_p[p])
+            actions[p] = act
 
             sa = 8
             if env.phase == E.Phase.DISCARD:
                 pl = env.players[p]
-                tile = legal[slots.index(pick)].tile
+                tile = act.tile
                 if tile >= 0 and tile in pl.hand:
                     pl.hand.remove(tile)
                     pl.hand.sort()
                     sa = hand_shanten(env, p)
                     pl.hand.append(tile)
                     pl.hand.sort()
-            steps_info.append((vec, slots, pick, sb, sa, p))
+            steps_info.append((vec, uniq_slots, pick, sb, sa, p))
 
         result = env.step(actions)
     return result, steps_info
@@ -145,6 +136,8 @@ def main():
     ap.add_argument("--log-every", type=int, default=10)
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
+    ap.add_argument("--per-tile-head", action="store_true")
+    ap.add_argument("--allow-ryuukyoku", action="store_true")
     ap.add_argument("--device", default="auto")
     args = ap.parse_args()
 
@@ -158,7 +151,10 @@ def main():
     random.seed(args.seed0)
     np.random.seed(args.seed0)
 
-    model = MahjongNet(channels=args.channels, n_blocks=args.blocks).to(device)
+    model = MahjongNet(
+        channels=args.channels, n_blocks=args.blocks,
+        n_actions=N_ACTIONS, per_tile_head=args.per_tile_head,
+    ).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
     encoder = O2.ObsEncoder()
     print(f"device={device} params={count_params(model):,} "
@@ -171,12 +167,14 @@ def main():
     for it in range(args.iters):
         opt.zero_grad()
         vecs, slots, rets = [], [], []
+        model.eval()
 
         for g in range(args.games):
             seed = args.seed0 * 7919 + it * 131 + g
-            result, info = rollout(model, encoder, seed, device,
-                                   args.temperature, args.shanten_weight,
-                                   args.points_scale)
+            result, info = rollout(
+                model, encoder, seed, device,
+                args.temperature, args.shanten_weight,
+                args.points_scale, allow_ryuukyoku=args.allow_ryuukyoku)
             if result is None:
                 continue
             total += 1
@@ -185,7 +183,6 @@ def main():
             else:
                 wins += 1
 
-            # 按玩家分组，算折扣奖励
             by_player = {}
             for vec, legal_slots, pick, sb, sa, p in info:
                 by_player.setdefault(p, []).append((vec, legal_slots,
@@ -193,43 +190,47 @@ def main():
             for p, lst in by_player.items():
                 terminal = result.points_delta[p] / args.points_scale
                 n = len(lst)
-                for k, (vec, legal_slots, pick, sb, sa) in enumerate(lst):
-                    disc = args.gamma ** (n - 1 - k)
-                    r = terminal * disc
+                running_ret = terminal
+                step_rets = [0.0] * n
+                for k in range(n - 1, -1, -1):
+                    _, _, _, sb, sa = lst[k]
+                    sh_r = 0.0
                     if args.shanten_weight > 0 and sb < 8 and sa < 8:
-                        r += args.shanten_weight * (sa - sb) * disc
+                        sh_r = args.shanten_weight * (sb - sa)
+                    running_ret = sh_r + (args.gamma * running_ret if k < n - 1 else terminal)
+                    step_rets[k] = running_ret
+                for k, (vec, legal_slots, pick, sb, sa) in enumerate(lst):
                     vecs.append(vec)
                     slots.append((pick, legal_slots))
-                    rets.append(r)
+                    rets.append(step_rets[k])
 
         if not rets:
             continue
         rt = torch.tensor(rets, dtype=torch.float32, device=device)
-        adv = (rt - rt.mean())
+        adv = (rt - rt.mean()) / rt.std().clamp_min(1e-6)
 
-        # 分块前向 + 立刻反向，避免一次性把几千个样本的激活图留在显存里
+        model.train()
         opt.zero_grad()
         pol_sum = 0.0
         ent_sum = 0.0
         CH = 256
+        n_chunks = max(1, (len(vecs) + CH - 1) // CH)
         for start in range(0, len(vecs), CH):
             sl = slots[start:start + CH]
             adv_chunk = adv[start:start + CH]
             x = torch.from_numpy(np.stack(vecs[start:start + CH])).to(device)
             logits, _ = model(x)
-            chosen_l, ent_l = [], []
-            for i, (pick, legal_slots) in enumerate(sl):
-                mask = torch.full((N_ACTIONS,), -1e9, device=device)
-                mask[legal_slots] = 0.0
-                lp = F.log_softmax(logits[i] + mask, dim=-1)
-                chosen_l.append(lp[pick])
-                ent_l.append(-(lp.exp() * lp).sum())
-            chosen_t = torch.stack(chosen_l)
-            ent_t = torch.stack(ent_l).mean()
+            mrow = torch.full((len(sl), N_ACTIONS), -1e9, device=device)
+            for i, (_, legal_slots) in enumerate(sl):
+                mrow[i, legal_slots] = 0.0
+            pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long, device=device)
+            logp = F.log_softmax(logits + mrow, dim=-1)
+            chosen_t = logp.gather(1, pick_t.unsqueeze(1)).squeeze(1)
+            ent_t = -(logp.exp() * logp).sum(-1).mean()
             chunk_pol = -(chosen_t * adv_chunk).mean()
-            (chunk_pol - args.entropy * ent_t).backward()
-            pol_sum += chunk_pol.item()
-            ent_sum += ent_t.item()
+            ((chunk_pol - args.entropy * ent_t) / n_chunks).backward()
+            pol_sum += chunk_pol.item() / n_chunks
+            ent_sum += ent_t.item() / n_chunks
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         pol_val, ent_val = pol_sum, ent_sum
@@ -246,9 +247,12 @@ def main():
     torch.save({
         "arch": "convformer_v1",
         "state_dict": model.state_dict(),
+        "channels": args.channels,
+        "blocks": args.blocks,
         "n_actions": N_ACTIONS,
         "n_planes": O2.N_PLANES,
         "scalar_dim": O2.SCALAR_DIM,
+        "per_tile_head": bool(args.per_tile_head),
         "iters": args.iters,
         "reward": (f"points({args.points_scale}) + "
                    f"shanten({args.shanten_weight})"),

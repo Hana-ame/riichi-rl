@@ -7,7 +7,10 @@
 本实现按他们的结论选型：
 - 观测重构成 (C, 34) 二维张量，卷积能捕捉「牌种之间的关系」
 - 参数量控制在 2M 量级（bc49 证明麻将不需要更大）
-- 动作头用 slot 分类 + mask，不用逐张 softmax
+- 动作头支持两种模式：
+  - per_tile_head=False（默认，与旧 checkpoint 完全兼容）
+  - per_tile_head=True（推荐新训练使用）：34 个切牌槽直接由逐张牌特征图
+    (B, C, 34) 融合全局上下文输出，避免 AdaptiveAvgPool1d(4) 丢掉单张牌位置信息。
 
 本文件只定义网络与编码，不含任何人类麻将知识。
 """
@@ -68,7 +71,8 @@ class MahjongNet(nn.Module):
     """
 
     def __init__(self, channels=160, n_blocks=6, n_actions=54,
-                 touch_dim=0, extra_scalar=0, in_planes=None, aux_dim=0):
+                 touch_dim=0, extra_scalar=0, in_planes=None, aux_dim=0,
+                 per_tile_head=False):
         super().__init__()
         self.aux_dim = int(aux_dim or 0)
         self.aux_head = nn.Linear(256, self.aux_dim) if self.aux_dim else None
@@ -77,6 +81,8 @@ class MahjongNet(nn.Module):
         self.scalar_dim = OBS.SCALAR_DIM
         self.touch_dim = touch_dim
         self.in_scalar = self.scalar_dim + touch_dim + extra_scalar
+        self.n_actions = int(n_actions)
+        self.per_tile_head = bool(per_tile_head)
 
         self.embed = nn.Conv1d(self.n_planes, channels, kernel_size=1)
         self.blocks = nn.Sequential(*[ResBlock(channels) for _ in range(n_blocks)])
@@ -90,10 +96,17 @@ class MahjongNet(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(inplace=True),
         )
-        self.policy = nn.Linear(256, n_actions)
+        if self.per_tile_head:
+            # 逐牌切牌头：保留 (B, C, 34) 空间分辨率，再注入全局局势上下文
+            self.tile_ctx = nn.Linear(256, channels)
+            self.tile_policy = nn.Conv1d(channels, 1, kernel_size=1)
+            self.special_policy = nn.Linear(256, self.n_actions - NUM_TILES)
+            self.policy = None
+        else:
+            self.policy = nn.Linear(256, self.n_actions)
         self.value = nn.Linear(256, 1)
 
-    def _trunk(self, obs, touch=None):
+    def _encode_trunk(self, obs, touch=None):
         B = obs.shape[0]
         planes = obs[:, : self.n_planes * PLANE_SIZE].view(B, self.n_planes, PLANE_SIZE)
         scalars = obs[:, self.n_planes * PLANE_SIZE:]
@@ -105,35 +118,32 @@ class MahjongNet(nn.Module):
         seg = self.segpool(h).flatten(1)
         glob = h.amax(-1)
         z = torch.cat([seg, glob, scalars], dim=1)
+        return h, z
+
+    def _trunk(self, obs, touch=None):
+        _, z = self._encode_trunk(obs, touch)
         return z
 
+    def _policy_logits(self, h, z_fc):
+        if self.per_tile_head:
+            ctx = self.tile_ctx(z_fc).unsqueeze(-1)
+            discard_logits = self.tile_policy(F.relu(h + ctx)).squeeze(1)
+            special_logits = self.special_policy(z_fc)
+            return torch.cat([discard_logits, special_logits], dim=1)
+        return self.policy(z_fc)
+
     def forward(self, obs, touch=None):
-        """obs (B, DIM) -> (policy_logits, value)
-
-        touch: 可选的「上一手形状摘要」附加到标量段。
-
-        动机：RL 若只从「输赢」学，需要几百万局才摸到手牌结构。
-        把**自己手牌的形状统计**（听牌数、向听、面子/搭子计数）作为
-        标量特征喂进网络，是把「局面是什么」显式化，不是牌效表——
-        这些量对每个手牌都能算，不含任何「该打哪张」的知识。
-
-        形状：touch_dim 维 float，与 obs 拼接后再进 head_fc。
-        """
-        B = obs.shape[0]
-        planes = obs[:, : self.n_planes * PLANE_SIZE].view(B, self.n_planes, PLANE_SIZE)
-        scalars = obs[:, self.n_planes * PLANE_SIZE:]
-
-        if touch is not None and self.touch_dim > 0:
-            scalars = torch.cat([scalars, touch], dim=1)
-
-        z = self.head_fc(self._trunk(obs, touch))
-        return self.policy(z), self.value(z).squeeze(-1)
+        """obs (B, DIM) -> (policy_logits, value)"""
+        h, z = self._encode_trunk(obs, touch)
+        z_fc = self.head_fc(z)
+        return self._policy_logits(h, z_fc), self.value(z_fc).squeeze(-1)
 
     def forward_aux(self, obs, touch=None):
         """返回 (policy, value, aux_logits)，aux_dim=0 时 aux_logits=None。"""
-        z = self.head_fc(self._trunk(obs, touch))
-        aux = self.aux_head(z) if self.aux_head is not None else None
-        return self.policy(z), self.value(z).squeeze(-1), aux
+        h, z = self._encode_trunk(obs, touch)
+        z_fc = self.head_fc(z)
+        aux = self.aux_head(z_fc) if self.aux_head is not None else None
+        return self._policy_logits(h, z_fc), self.value(z_fc).squeeze(-1), aux
 
 
 def count_params(model):

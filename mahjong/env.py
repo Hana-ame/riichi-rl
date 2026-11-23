@@ -839,7 +839,8 @@ class MahjongEnv:
         p.river.append(tile)
         self.last_discard = tile
         self.last_discard_player = p_idx
-        self.log.append((self.turn, p_idx, "discard", T.tile_name(tile)))
+        _ev_kind = "riichi" if act.type == ACT_RIICHI else ("tsumogiri" if tile == p.last_drawn else "discard")
+        self.log.append((self.turn, p_idx, _ev_kind, T.tile_name(tile)))
 
         # 立直后的一发在任何人动作后失效
         for q in self.players:
@@ -940,6 +941,7 @@ class MahjongEnv:
             p.hand.remove(t)
         p.hand.sort()
         p.melds.append(("chi", start, called_from))
+        self.log.append((self.turn, actor, "chi", T.tile_name(tile)))
         self.last_discard_player = actor
         self.turn_player = actor
         self.phase = Phase.DISCARD
@@ -958,6 +960,7 @@ class MahjongEnv:
         p.hand.sort()
         if removed == 2:
             p.melds.append(("pon", tile, called_from))
+            self.log.append((self.turn, actor, "pon", T.tile_name(tile)))
         else:
             # 手牌不足（含副露时可能发生）：把弃牌放回原牌河，不成立
             src = self.players[called_from]
@@ -995,6 +998,7 @@ class MahjongEnv:
             kind0, t0, frm0 = p.melds[target]
             p.melds[target] = ("addkan", t0, frm0)
         p.hand.sort()
+        self.log.append((self.turn, actor, "kan", T.tile_name(tile)))
         self._flip_dora()          # 杠后翻新宝牌指示牌
         self.last_discard_player = actor
         self.turn_player = actor
@@ -1019,6 +1023,7 @@ class MahjongEnv:
                         p.hand.remove(tile)
                     break
         p.hand.sort()
+        self.log.append((self.turn, actor, "kan", T.tile_name(tile)))
         self._flip_dora()          # 杠后翻新宝牌指示牌
         self._after_claim(actor, need_draw=True)
 
