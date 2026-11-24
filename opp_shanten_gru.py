@@ -77,7 +77,7 @@ class MLP(nn.Module):
 class GRUNet(nn.Module):
     def __init__(self, din, hidden=128):
         super().__init__()
-        self.emb = nn.Embedding(192, 16)  # 4*SEQ=192
+        self.emb = nn.Embedding(N_TILES + 1, 16)  # 4*SEQ=192
         self.gru = nn.GRU(16, hidden, batch_first=True)
         self.net = nn.Sequential(nn.Linear(din + hidden, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU())
         self.sh = nn.Linear(128, 7); self.tp = nn.Linear(128, 1)
@@ -93,7 +93,7 @@ class TransformerNet(nn.Module):
     """Transformer 替代 GRU：多头自注意力捕捉牌河顺序长距离依赖。"""
     def __init__(self, din, hidden=128, nhead=4, nlayers=2):
         super().__init__()
-        self.emb = nn.Embedding(192, 16)  # 4*SEQ=192
+        self.emb = nn.Embedding(N_TILES + 1, 16)  # 4*SEQ=192
         self.pos_emb = nn.Embedding(SEQ, 16)  # 位置编码（SEQ=48）
         enc_layer = nn.TransformerEncoderLayer(
             d_model=16, nhead=4, dim_feedforward=64,
