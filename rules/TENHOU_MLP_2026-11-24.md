@@ -135,3 +135,21 @@ Tenhou MLP 管道跑通但**不可用**。下一步：
   1. eff_wuke_d2 继续跑第 3 轮 DAgger（前两轮 +0.31/+0.22pt）；
   2. 128ch/5blk 大模型从零训（之前 eff_big 失败是 val_acc 0.930 太低）；
   3. obs v3（+牌河顺序平面）从零训。
+
+## DAgger 第 3 轮（2026-11-24 17:14）：14.47% 与第 2 轮持平，DAgger 边际收益归零
+
+- 采集：`dagger_collect.py --ckpt teacher47_eff_wuke_d2.pt --teacher eff_wuke --deals 600`
+  → 139k 样本（`data/dagger_wuke600c.npz`）；
+- 训练：`data/eff_wuke_dagger3.npz`（263.6 万 = d2 249.7 万 + d3 13.9 万）→ `teacher47_eff_wuke_d3.pt`；
+- 800 局门槛（seed 96000）：**和牌 14.47%（463/3200）CI[13.3,15.7]、放铳 11.06%（354）CI[10.0,12.2]**；
+
+| 版本 | DAgger 轮次 | 800 局和牌 | 800 局放铳 |
+|---|---|---|---|
+| teacher47_eff_wuke | 0（基线） | — | — |
+| teacher47_eff_wuke_d | 1 | 14.47% | 11.28% |
+| teacher47_eff_wuke_d2 | 2 | 14.69% | 11.69% |
+| **teacher47_eff_wuke_d3** | **3** | **14.47%** | **11.06%** |
+
+- d1→d2 +0.22pt，**d2→d3 −0.22pt**（持平）→ **DAgger 已饱和**，继续加轮次无益；
+- 当前 best 仍是 eff_wuke_d2（14.69%），三池合并 14.50%；
+- 要突破需换**更强教师**（当前 eff_wuke 16.04% 是上限）或**更大模型**（128ch/5blk）。
