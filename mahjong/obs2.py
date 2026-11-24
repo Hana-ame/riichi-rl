@@ -20,12 +20,15 @@ from __future__ import annotations
 import numpy as np
 
 from mahjong import env as E
+from mahjong import ruleset as RS
 from mahjong import tiles as T
 from mahjong.tiles import NUM_TILES
 
-N_PLANES = 22
+# 22 基础平面 + 3 对手立直平面(22..24) + 3 对手现物安全牌平面(25..27) + 1 赤宝牌平面(28)
+N_PLANES = 29
 PLANE = NUM_TILES
-SCALAR_DIM = 26
+# 26 基础标量 + 3 对手立直标志(26..28) + 3 响应弃牌者相对座位(29..31)
+SCALAR_DIM = 32
 
 
 def _tile_plane():
@@ -131,6 +134,28 @@ class ObsEncoder:
         planes[21] = np.clip(4.0 - seen - np.array(
             p.counts(), dtype=np.float32), 0, 4)
 
+        # 22-24: 三家对手立直标志（相对视角：下家/对家/上家）
+        for opp_i in range(1, 4):
+            q = rel_players[opp_i]
+            if q.riichi:
+                planes[21 + opp_i, :] = 1.0
+
+        # 25-27: 三家对手现物安全牌平面（对手牌河 + 该对手立直后全员弃牌）
+        for opp_i in range(1, 4):
+            q = rel_players[opp_i]
+            safe_tiles = set(q.river)
+            gb = getattr(q, "genbutsu", None)
+            if gb:
+                safe_tiles.update(gb)
+            for t in safe_tiles:
+                if 0 <= t < NUM_TILES:
+                    planes[24 + opp_i, t] = 1.0
+
+        # 28: 自家手牌中的赤宝牌候选（5m/5p/5s）
+        for t in RS.AKA_TILES:
+            if t in p.hand:
+                planes[28, t] = 1.0
+
         # --- 标量 ---
         s = np.zeros(SCALAR_DIM, dtype=np.float32)
         s[0:4] = [q.points / 25000.0 for q in rel_players]
@@ -142,13 +167,23 @@ class ObsEncoder:
                     for t in (27, 28, 29, 30)]
         s[14] = 1.0 if p.furiten else 0.0
         s[15] = 1.0 if p.riichi else 0.0
-        s[16] = min(1.0, (len(env.wall) - env.wall_idx) / 70.0)
+        dead = getattr(env, "dead_wall_size", 0)
+        wall_left = max(0, len(env.wall) - dead - env.wall_idx)
+        s[16] = min(1.0, wall_left / 70.0)
         s[17:21] = [len(q.hand) / 14.0 for q in rel_players]
         s[21] = 1.0 if env.phase == E.Phase.DISCARD else 0.0
         s[22] = 1.0 if env.phase == E.Phase.RESPONSE else 0.0
         s[23] = len(p.melds) / 4.0
         s[24] = 1.0 if env.last_discard is not None else 0.0
         s[25] = 1.0 if env.last_discard_player == p_idx else 0.0
+        # 26-28: 三家对手立直标志（下家/对家/上家）
+        for opp_i in range(1, 4):
+            s[25 + opp_i] = 1.0 if rel_players[opp_i].riichi else 0.0
+        # 29-31: 响应阶段弃牌者相对座位 one-hot（下家/对家/上家）
+        if env.phase == E.Phase.RESPONSE and env.last_discard_player is not None:
+            rel_disc = (env.last_discard_player - p_idx) % 4
+            if 1 <= rel_disc <= 3:
+                s[28 + rel_disc] = 1.0
 
         if self.order:
             for i, q in enumerate(rel_players):

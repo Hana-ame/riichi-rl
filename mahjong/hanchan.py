@@ -94,14 +94,22 @@ class HanchanState:
         self.kyokuten = getattr(result, "kyokuten", 0)
 
         if result.result_type == "ryuukyoku":
-            # 流局：连庄棒 +1，庄家不变，但**场次必须推进**，
-            # 否则半庄永远打不完（kyoku 不变 -> while 死循环）。
+            # 流局：本场 +1；庄家听牌则连庄（不推进局数），不听则轮庄并推进局数。
+            # 兼容无 tenpai 字段的旧测试 stub（视为庄家不听）。
             self.honba += 1
+            tenpai = getattr(result, "tenpai", None)
+            dealer_tenpai = bool(tenpai and 0 <= self.dealer < len(tenpai) and tenpai[self.dealer])
+            if dealer_tenpai and self.honba <= 8:
+                return self.dealer, delta
+            self.dealer = (self.dealer + 1) % 4
             self._advance_round()
             return self.dealer, delta
 
-        # 和了：和了者成为庄家，棒数清零
-        self.dealer = result.winner
+        # 和了：庄家和牌连庄（本场 +1，局数不变）；子家和牌轮庄（下家坐庄，本场清零，局数推进）
+        if result.winner == self.dealer and self.honba < 8:
+            self.honba += 1
+            return self.dealer, delta
+        self.dealer = (self.dealer + 1) % 4
         self.honba = 0
         self._advance_round()
         return self.dealer, delta

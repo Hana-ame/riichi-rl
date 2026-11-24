@@ -93,7 +93,7 @@ def compute_fu(melds, pair_tile, is_menzen, seat_wind, round_wind,
         concealed = len(m) > 2 and m[2]
         if kind == PONG:
             fu += _pon_kan_fu(t, False, not concealed)
-        elif kind == KAN:
+        elif kind in (KAN, "ankan", "minkan", "addkan"):
             fu += _pon_kan_fu(t, True, not concealed)
 
     valued = 0
@@ -122,11 +122,12 @@ def compute_fu(melds, pair_tile, is_menzen, seat_wind, round_wind,
     if is_tsumo and fu > 0:
         fu += 2
 
-    base = 30 if (is_menzen and not is_tsumo) else 20
-    fu += base
-
+    # 副露 0 符（如副露断幺平和形）补 2 符 -> 22 进位至 30 符，必须在加底符前判定
     if is_open_hand and fu == 0:
         fu += 2
+
+    base = 30 if (is_menzen and not is_tsumo) else 20
+    fu += base
 
     # --- 向上取整到 10 ---
     # 注意：门前平和**不需要**再翻到 40。外部核验（2026-10-04，
@@ -147,7 +148,12 @@ YAKU_HAN = {
     "一盃口": 1,
     "平和": 1,
     "一飜": 1,
-    "对对和": 1,
+    "役牌:白": 1,
+    "役牌:发": 1,
+    "役牌:中": 1,
+    "役牌:场风": 1,
+    "役牌:自风": 1,
+    "对对和": 2,
     "三暗刻": 1,
     "三色同顺": 2,
     "三色同刻": 2,
@@ -245,6 +251,21 @@ def _detect_yakus(melds, pair_tile, counts, meld_count, is_menzen,
     else:
         if Y.is_tanyao(melds, pair_tile):
             yakus.append("断幺九")
+        # 役牌（三元牌：白/发/中；场风；自风，连风牌可叠加）
+        for m in melds:
+            mkind, mt = m[0], m[1]
+            if mkind == CHI:
+                continue
+            if mt == 31:
+                yakus.append("役牌:白")
+            elif mt == 32:
+                yakus.append("役牌:发")
+            elif mt == 33:
+                yakus.append("役牌:中")
+            if round_wind is not None and mt == round_wind:
+                yakus.append("役牌:场风")
+            if seat_wind is not None and mt == seat_wind:
+                yakus.append("役牌:自风")
         if all(m[0] != CHI for m in melds):
             yakus.append("对对和")
         if Y.is_iippekou(melds, is_menzen, pair_tile):

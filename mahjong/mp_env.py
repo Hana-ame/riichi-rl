@@ -58,7 +58,12 @@ def _slot_of(action) -> int:
     if t == E.ACT_DISCARD and 0 <= action.tile < 34:
         return action.tile
     if t == E.ACT_CHI:
-        return SLOT_CHI_BASE + (action.tile % 3)
+        # 按被吃牌在顺子中的相对位置映射：0=左吃(吃最小张), 1=中吃(嵌张), 2=右吃(吃最大张)
+        if action.arg is not None and action.arg >= 0:
+            rel = max(0, min(2, int(action.arg) - int(action.tile)))
+        else:
+            rel = int(action.tile) % 3
+        return SLOT_CHI_BASE + rel
     return _SLOTS.get(t, SLOT_PASS)
 
 

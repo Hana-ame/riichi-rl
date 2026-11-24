@@ -98,10 +98,12 @@ def rollout(model, encoder, seed, device, temperature, shanten_weight,
             mask = torch.full((N_ACTIONS,), -1e9, device=device)
             mask[uniq_slots] = 0.0
             logits = logits_by_p[p] + mask
-            probs = F.softmax(logits / max(temperature, 1e-6), dim=-1)
+            logp_all = F.log_softmax(logits / max(temperature, 1e-6), dim=-1)
+            probs = logp_all.exp()
             pick = int(torch.multinomial(probs, 1).item())
             if pick not in uniq_slots:
                 pick = uniq_slots[0]
+            old_lp = float(logp_all[pick].item())
             act = resolve_action_for_slot(legal, slots, pick, logits_by_p[p])
             actions[p] = act
 
@@ -115,10 +117,10 @@ def rollout(model, encoder, seed, device, temperature, shanten_weight,
                     sa = hand_shanten(env, p)
                     pl.hand.append(tile)
                     pl.hand.sort()
-            steps_info.append((vec, uniq_slots, pick, sb, sa, p))
+            steps_info.append((vec, uniq_slots, pick, sb, sa, p, old_lp))
 
         result = env.step(actions)
-    return result, steps_info
+    return env, result, steps_info
 
 
 def main():
@@ -129,7 +131,10 @@ def main():
     ap.add_argument("--entropy", type=float, default=0.01)
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--gamma", type=float, default=0.99)
-    ap.add_argument("--shanten-weight", type=float, default=0.3)
+    ap.add_argument("--shanten-weight", type=float, default=0.0)
+    ap.add_argument("--gae-lambda", type=float, default=0.95)
+    ap.add_argument("--ppo-epochs", type=int, default=2)
+    ap.add_argument("--clip", type=float, default=0.2)
     ap.add_argument("--points-scale", type=float, default=10000.0)
     ap.add_argument("--out", default="checkpoints/riichi_net.pt")
     ap.add_argument("--seed0", type=int, default=0)
@@ -166,12 +171,12 @@ def main():
 
     for it in range(args.iters):
         opt.zero_grad()
-        vecs, slots, rets = [], [], []
+        vecs, slots, old_lps, step_rewards, dones = [], [], [], [], []
         model.eval()
 
         for g in range(args.games):
             seed = args.seed0 * 7919 + it * 131 + g
-            result, info = rollout(
+            env_g, result, info = rollout(
                 model, encoder, seed, device,
                 args.temperature, args.shanten_weight,
                 args.points_scale, allow_ryuukyoku=args.allow_ryuukyoku)
@@ -183,56 +188,84 @@ def main():
             else:
                 wins += 1
 
+            net_deltas = E.net_points(result, env_g.initial_points)
             by_player = {}
-            for vec, legal_slots, pick, sb, sa, p in info:
-                by_player.setdefault(p, []).append((vec, legal_slots,
-                                                    pick, sb, sa))
+            for vec, legal_slots, pick, sb, sa, p, old_lp in info:
+                by_player.setdefault(p, []).append((vec, legal_slots, pick, sb, sa, old_lp))
             for p, lst in by_player.items():
-                terminal = result.points_delta[p] / args.points_scale
+                terminal = net_deltas[p] / args.points_scale
                 n = len(lst)
-                running_ret = terminal
-                step_rets = [0.0] * n
-                for k in range(n - 1, -1, -1):
-                    _, _, _, sb, sa = lst[k]
-                    sh_r = 0.0
+                for k, (vec, legal_slots, pick, sb, sa, old_lp) in enumerate(lst):
+                    sr = 0.0
                     if args.shanten_weight > 0 and sb < 8 and sa < 8:
-                        sh_r = args.shanten_weight * (sb - sa)
-                    running_ret = sh_r + (args.gamma * running_ret if k < n - 1 else terminal)
-                    step_rets[k] = running_ret
-                for k, (vec, legal_slots, pick, sb, sa) in enumerate(lst):
+                        sr += args.shanten_weight * (sb - sa)
+                    if k == n - 1:
+                        sr += terminal
                     vecs.append(vec)
                     slots.append((pick, legal_slots))
-                    rets.append(step_rets[k])
+                    old_lps.append(old_lp)
+                    step_rewards.append(sr)
+                    dones.append(k == n - 1)
 
-        if not rets:
+        if not vecs:
             continue
-        rt = torch.tensor(rets, dtype=torch.float32, device=device)
-        adv = (rt - rt.mean()) / rt.std().clamp_min(1e-6)
+
+        CH = 256
+        with torch.no_grad():
+            vals_list = []
+            for start in range(0, len(vecs), CH):
+                x = torch.from_numpy(np.stack(vecs[start:start + CH])).to(device)
+                _, v = model(x)
+                vals_list.append(v.cpu().numpy())
+            vals_np = np.concatenate(vals_list, axis=0)
+
+        n_total = len(step_rewards)
+        gae_adv = np.zeros(n_total, dtype=np.float32)
+        gae_ret = np.zeros(n_total, dtype=np.float32)
+        gae_run = 0.0
+        for idx_t in range(n_total - 1, -1, -1):
+            next_v = 0.0 if dones[idx_t] or idx_t + 1 >= n_total else float(vals_np[idx_t + 1])
+            mask_nt = 0.0 if dones[idx_t] else 1.0
+            delta_t = float(step_rewards[idx_t]) + args.gamma * next_v * mask_nt - float(vals_np[idx_t])
+            gae_run = delta_t + args.gamma * args.gae_lambda * mask_nt * gae_run
+            gae_adv[idx_t] = gae_run
+            gae_ret[idx_t] = gae_run + float(vals_np[idx_t])
+
+        rt = torch.from_numpy(gae_ret).to(device)
+        adv = torch.from_numpy(gae_adv).to(device)
+        adv = (adv - adv.mean()) / adv.std().clamp_min(1e-6)
+        old_lp_t = torch.tensor(old_lps, dtype=torch.float32, device=device)
 
         model.train()
-        opt.zero_grad()
-        pol_sum = 0.0
-        ent_sum = 0.0
-        CH = 256
+        pol_sum = ent_sum = 0.0
         n_chunks = max(1, (len(vecs) + CH - 1) // CH)
-        for start in range(0, len(vecs), CH):
-            sl = slots[start:start + CH]
-            adv_chunk = adv[start:start + CH]
-            x = torch.from_numpy(np.stack(vecs[start:start + CH])).to(device)
-            logits, _ = model(x)
-            mrow = torch.full((len(sl), N_ACTIONS), -1e9, device=device)
-            for i, (_, legal_slots) in enumerate(sl):
-                mrow[i, legal_slots] = 0.0
-            pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long, device=device)
-            logp = F.log_softmax(logits + mrow, dim=-1)
-            chosen_t = logp.gather(1, pick_t.unsqueeze(1)).squeeze(1)
-            ent_t = -(logp.exp() * logp).sum(-1).mean()
-            chunk_pol = -(chosen_t * adv_chunk).mean()
-            ((chunk_pol - args.entropy * ent_t) / n_chunks).backward()
-            pol_sum += chunk_pol.item() / n_chunks
-            ent_sum += ent_t.item() / n_chunks
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        opt.step()
+        for _ep in range(max(1, args.ppo_epochs)):
+            opt.zero_grad()
+            pol_ep = ent_ep = 0.0
+            for start in range(0, len(vecs), CH):
+                sl = slots[start:start + CH]
+                adv_chunk = adv[start:start + CH]
+                rt_chunk = rt[start:start + CH]
+                old_lp_chunk = old_lp_t[start:start + CH]
+                x = torch.from_numpy(np.stack(vecs[start:start + CH])).to(device)
+                logits, values = model(x)
+                mrow = torch.full((len(sl), N_ACTIONS), -1e9, device=device)
+                for i, (_, legal_slots) in enumerate(sl):
+                    mrow[i, legal_slots] = 0.0
+                pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long, device=device)
+                logp = F.log_softmax(logits + mrow, dim=-1)
+                chosen_t = logp.gather(1, pick_t.unsqueeze(1)).squeeze(1)
+                ent_t = -(logp.exp() * logp).sum(-1).mean()
+                ratio = torch.exp((chosen_t - old_lp_chunk).clamp(-10.0, 10.0))
+                clipped = torch.clamp(ratio, 1.0 - args.clip, 1.0 + args.clip)
+                chunk_pol = -torch.min(ratio * adv_chunk, clipped * adv_chunk).mean()
+                chunk_v = F.mse_loss(values, rt_chunk)
+                ((chunk_pol + 0.5 * chunk_v - args.entropy * ent_t) / n_chunks).backward()
+                pol_ep += chunk_pol.item() / n_chunks
+                ent_ep += ent_t.item() / n_chunks
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
+            opt.step()
+            pol_sum, ent_sum = pol_ep, ent_ep
         pol_val, ent_val = pol_sum, ent_sum
 
         if it % args.log_every == 0 or it == args.iters - 1:

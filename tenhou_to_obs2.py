@@ -15,9 +15,11 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from houou_data import decode_match, ACT_DISCARD, ACT_RIICHI_DISCARD, ACT_CHI, \
     ACT_PON, ACT_KAKAN, ACT_ANKAN, ACT_RON, ACT_TSUMO, ACT_PASS
+from mahjong import obs2 as O2
 from mahjong.obs2 import ObsEncoder
+from mahjong import event_stream as ES
 from mahjong.tiles import NUM_TILES
-from train_hanchan import slot_of, N_ACTIONS, encode, TOUCH
+from train_hanchan import slot_of, N_ACTIONS, SIT_DIM, SLOT_PASS, encode, TOUCH
 from mahjong import env as E
 
 
@@ -40,6 +42,7 @@ class _Player:
         self.is_dealer = is_dealer
         self.seat_wind = seat_wind
         self.furiten = False
+        self.genbutsu = set()
 
     def counts(self):
         """返回 (34,) 手牌计数，供 obs2.encode 使用。"""
@@ -97,6 +100,7 @@ class TenhouPseudoEnv:
             q.melds = [(("chi" if len(m) == 3 else "pon"), m[0], (-1,))
                        for m in d.melds_by[other] if len(m) >= 2]
             q.riichi = bool(d.riichi_flags[other])
+            q.genbutsu = set(q.river)
 
         # dora
         self.dora_indicator = int(d.dora_indicators[0]) - 1 if len(d.dora_indicators) > 0 and d.dora_indicators[0] > 0 else None
@@ -108,8 +112,9 @@ class TenhouPseudoEnv:
         self.honba = d.honba
         self.turn = d.turn
         self.round_wind = d.round_wind
-        wall_left = d.tiles_left
-        self.wall_idx = 136 - wall_left
+        wall_left = int(d.tiles_left)
+        self.dead_wall_size = 14
+        self.wall_idx = max(0, 136 - self.dead_wall_size - wall_left)
         self.wall = [0] * 136  # 占位，encode 只用 wall_idx
 
         # phase
@@ -135,15 +140,30 @@ def decision_to_obs2(d, encoder):
     e_type = act_map[act_type]
     e_tile = tile_base if tile_base is not None and tile_base >= 0 else -1
     e_arg = consumed[0] if len(consumed) > 0 else -1
-    act = E.Action(e_type, e_tile, e_arg)
+    if e_type == E.ACT_CHI and e_tile >= 0 and len(consumed) >= 2:
+        # 统一与 MahjongEnv 约定：act.tile = 顺子起始牌 start，act.arg = 被吃弃牌
+        seq_tiles = [int(e_tile), int(consumed[0]), int(consumed[1])]
+        act = E.Action(e_type, min(seq_tiles), int(e_tile))
+    else:
+        act = E.Action(e_type, e_tile, e_arg)
     slot = slot_of(act)
     if slot < 0 or slot >= N_ACTIONS:
-        return None, None, -1
+        return None, None, None, None, -1
     try:
         vec, sh, sit, give_up, tf = encode(env, encoder, hstate, d.player)
+        ev = ES.encode_event_stream(env, d.player)
     except Exception:
-        return None, None, -1
-    return vec, tf, slot
+        return None, None, None, None, -1
+    # 构造真实合法掩码（替代全 True 假掩码）
+    mask = np.zeros(N_ACTIONS, dtype=bool)
+    if env.phase == E.Phase.DISCARD:
+        for t in set(env.players[d.player].hand):
+            if 0 <= t < 34:
+                mask[t] = True
+    else:
+        mask[SLOT_PASS] = True
+    mask[slot] = True
+    return vec, tf, ev, mask, slot
 
 
 def main():
@@ -163,9 +183,11 @@ def main():
     encoder = ObsEncoder()
 
     cap = args.max_decisions
-    obs_dim = 786  # encode() 输出：planes(748) + scalar(26) + sit_vec(12) = 786
+    obs_dim = O2.OBS_TENSOR_DIM + SIT_DIM
     X = np.empty((cap, obs_dim), dtype=np.float32)
     TF = np.empty((cap, 8), dtype=np.float32)  # touch features
+    EV = np.empty((cap, ES.DEFAULT_EVENT_LEN, 4), dtype=np.int64)
+    M = np.empty((cap, N_ACTIONS), dtype=bool)
     Y = np.empty(cap, dtype=np.int64)
     total = 0
 
@@ -188,21 +210,23 @@ def main():
                     for d in decisions:
                         if total >= cap:
                             break
-                        vec, tf_feat, slot = decision_to_obs2(d, encoder)
+                        vec, tf_feat, ev_feat, m_row, slot = decision_to_obs2(d, encoder)
                         if vec is None:
                             continue
                         X[total] = vec
                         TF[total] = tf_feat
+                        EV[total] = ev_feat
+                        M[total] = m_row
                         Y[total] = slot
                         total += 1
             print(f"  累计 {total}", flush=True)
         except Exception as e:
             print(f"  跳过 {type(e).__name__}:{e}", flush=True)
 
-    X, TF, Y = X[:total], TF[:total], Y[:total]
+    X, TF, EV, M, Y = X[:total], TF[:total], EV[:total], M[:total], Y[:total]
     print(f"最终样本 {len(X)} obs={X.shape[1]} tf={TF.shape[1]} 标签分布 {np.bincount(Y, minlength=N_ACTIONS)[:10]}")
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
-    np.savez_compressed(args.out, x=X, tf=TF, mask=np.ones((len(X), N_ACTIONS), dtype=bool),
+    np.savez_compressed(args.out, x=X, tf=TF, events=EV, mask=M,
                         y=Y, aux=np.zeros(len(X), dtype=np.float32))
     print(f"保存 {args.out}")
 

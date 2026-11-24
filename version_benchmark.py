@@ -80,7 +80,7 @@ class AutoAgent(Agent):
         # 从 head_fc 输入维反推特征模式：26=obs2 标量；46=26+touch8+sit12
         head_in = int(sd["head_fc.0.weight"].shape[1])
         in_scalar = head_in - ch * 5
-        extra_total = in_scalar - 26          # 26 = obs2.SCALAR_DIM
+        extra_total = in_scalar - O2.SCALAR_DIM
         if int(ck.get("touch_dim", 0)) or extra_total > 0:
             touch = int(ck.get("touch_dim", 8))
             extra = int(ck.get("extra_scalar", ck.get("sit_dim", 12)))
@@ -92,7 +92,7 @@ class AutoAgent(Agent):
             self.mode = "obs2"
         self.model = MahjongNet(channels=ch, n_blocks=nb, n_actions=n_actions,
                                 touch_dim=touch, extra_scalar=extra,
-                                in_planes=int(ck.get("in_planes", 22)),
+                                in_planes=int(ck.get("in_planes", O2.N_PLANES)),
                                 aux_dim=int(ck.get("aux_dim", 0)))
         self.model.load_state_dict(sd)
         self.model.eval()

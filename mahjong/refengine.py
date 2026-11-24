@@ -61,33 +61,48 @@ class RefScore:
                 f"han={self.han} fu={self.fu}]")
 
 
+def _counts_to_136(counts34):
+    """把 34 维计数转成无冲突的 136 编号列表（同类牌依次分配 +0,+1,+2,+3）。"""
+    tiles = []
+    for t in range(34):
+        n = int(counts34[t])
+        for k in range(min(4, max(0, n))):
+            tiles.append(t * 4 + k)
+    return tiles
+
+
 def score_hand(counts34, win_tile34, melds=None, seat_wind=None,
                round_wind=None, is_tsumo=False, is_riichi=False,
-               is_ippatsu=False):
+               is_ippatsu=False, is_daburu_riichi=False,
+               dora_indicators=None):
     """用开源实现算分。
 
     counts34: 34 维计数（含和了牌与副露牌）
     win_tile34: 和了的那张牌（34 编号）
     melds: 上游 Meld 列表；None = 门前
     """
-    tiles = []
-    for t in range(34):
-        tiles.extend([to136(t)] * counts34[t])
+    tiles = _counts_to_136(counts34)
 
     if win_tile34 is None:
         win136 = tiles[-1] if tiles else 0
     else:
-        win136 = to136(win_tile34)
+        # 取该牌种在 tiles 中的最后一张 136 编号，保证 win_tile in tiles
+        cands = [x for x in tiles if x // 4 == win_tile34]
+        win136 = cands[-1] if cands else to136(win_tile34)
 
+    dora_136 = [to136(d) for d in dora_indicators] if dora_indicators else None
     config = HandConfig(
         is_tsumo=is_tsumo,
         player_wind=seat_wind if seat_wind is not None else 28,
+        round_wind=round_wind if round_wind is not None else 27,
         is_riichi=is_riichi,
         is_ippatsu=is_ippatsu,
+        is_daburu_riichi=is_daburu_riichi,
     )
     try:
         resp = HandCalculator.estimate_hand_value(
-            tiles=tiles, win_tile=win136, melds=melds, config=config)
+            tiles=tiles, win_tile=win136, melds=melds,
+            dora_indicators=dora_136, config=config)
     except Exception as e:                        # noqa: BLE001
         return RefScore(False, 0, 0, (), error=repr(e))
 

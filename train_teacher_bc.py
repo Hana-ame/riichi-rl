@@ -27,10 +27,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mahjong.net import MahjongNet, count_params
 from mahjong.dual_net import DualStreamMahjongNet
 from mahjong import event_stream as ES
+from mahjong import obs2 as O2
 from mahjong.touch import TOUCH_DIM
 from train_hanchan import N_ACTIONS, SIT_DIM
 
 SPECIAL_SLOTS = (34, 35, 36)      # TSUMO / RON / RIICHI（固定槽）
+CALL_SLOTS = (39, 40, 41, 42, 44, 45, 46)  # PON / MINKAN / ADD_KAN / ANKAN / CHI x3
 
 
 def accuracy(logits, y):
@@ -55,6 +57,9 @@ def main():
                     help="打牌样本权重：PASS 占 75%% 数据，不调权模型只会学 PASS")
     ap.add_argument("--pass-weight", type=float, default=0.1,
                     help="响应 PASS 样本权重（最简单、占比最高，压低）")
+    ap.add_argument("--call-weight", type=float, default=2.0,
+                    help="副露叫牌样本权重（吃/碰/杠）")
+    ap.add_argument("--device", default="auto", choices=["auto", "cpu", "cuda"])
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
     ap.add_argument("--per-tile-head", action="store_true", help="使用逐牌切牌头")
@@ -86,8 +91,8 @@ def main():
     tr = torch.from_numpy(tr); va = torch.from_numpy(va)
 
     _xdim = int(X.shape[1])
-    # x = 平面*34 + 标量26 + 局势12；touch 单独在 tf（不属于 x）
-    _in_planes = (_xdim - 26 - SIT_DIM) // 34
+    # x = 平面*34 + 标量(O2.SCALAR_DIM) + 局势(SIT_DIM)；touch 单独在 tf
+    _in_planes = (_xdim - O2.SCALAR_DIM - SIT_DIM) // 34
     aux_labels = d["aux"].astype(np.float32) if "aux" in d else None
     if aux_labels is not None and len(aux_labels) != len(Y):
         print(f"[warn] aux 长度 {len(aux_labels)} != y 长度 {len(y)}，补零/截断对齐", flush=True)
@@ -108,22 +113,26 @@ def main():
         model = MahjongNet(channels=args.channels, n_blocks=args.blocks,
                            n_actions=N_ACTIONS, touch_dim=TOUCH_DIM,
                            extra_scalar=SIT_DIM, in_planes=_in_planes, aux_dim=aux_dim, per_tile_head=args.per_tile_head)
-    obs_order = _in_planes > 22
+    obs_order = _in_planes > O2.N_PLANES
     print(f"obs planes={_in_planes} obs_order={obs_order}", flush=True)
     if args.init:
         ck = torch.load(args.init, map_location="cpu", weights_only=False)
         model.load_state_dict(ck["state_dict"], strict=False)
         print(f"从 {args.init} 继续训练（val_acc={ck.get('best_val_acc')}）",
               flush=True)
-    print(f"params={count_params(model):,} device=cpu", flush=True)
+    device = ("cuda" if torch.cuda.is_available() else "cpu") if args.device == "auto" else args.device
+    model = model.to(device)
+    print(f"params={count_params(model):,} device={device}", flush=True)
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    yva = Y[va]
+    yva = Y[va].to(device)
 
     def sample_weight(y):
-        w = torch.ones(len(y))
+        w = torch.ones(len(y), device=y.device)
         w[y < 34] = args.discard_weight
         w[y == 43] = args.pass_weight          # PASS
+        for sl in CALL_SLOTS:
+            w[y == sl] = args.call_weight
         for sl in SPECIAL_SLOTS:
             w[y == sl] = args.special_weight
         return w
@@ -135,21 +144,21 @@ def main():
         tot_loss = 0.0
         for i in range(0, len(tr), args.bs):
             b = tr[p[i:i + args.bs]]
-            ev_b = EV[b] if EV is not None else None
+            xb, tfb, mb, yb = X[b].to(device), TF[b].to(device), M[b].to(device), Y[b].to(device)
+            ev_b = EV[b].to(device) if EV is not None else None
             if args.arch == "dual_stream":
-                logits, _ = model(X[b], TF[b], ev_b)
+                logits, _ = model(xb, tfb, ev_b)
                 auxl = None
             elif aux_dim:
-                logits, _, auxl = model.forward_aux(X[b], TF[b])
+                logits, _, auxl = model.forward_aux(xb, tfb)
             else:
-                logits, _ = model(X[b], TF[b])
-            logits = logits.masked_fill(~M[b], -1e9)
-            ce = F.cross_entropy(logits, Y[b], reduction="none")
-            w = sample_weight(Y[b])
+                logits, _ = model(xb, tfb)
+            logits = logits.masked_fill(~mb, -1e9)
+            ce = F.cross_entropy(logits, yb, reduction="none")
+            w = sample_weight(yb)
             loss = (ce * w).sum() / w.sum()
             if aux_dim and auxl is not None:
-                # b 已经是全局样本索引（来自 tr），直接索引即可
-                auxb = torch.from_numpy(aux_labels[b.numpy()])
+                auxb = torch.from_numpy(aux_labels[b.numpy()]).to(device)
                 loss = loss + args.dora_aux_weight * F.binary_cross_entropy_with_logits(
                     auxl.squeeze(-1), auxb)
             opt.zero_grad()
@@ -159,13 +168,14 @@ def main():
 
         model.eval()
         with torch.no_grad():
-            ev_va = EV[va] if EV is not None else None
-            lv, _ = model(X[va], TF[va], ev_va) if args.arch == "dual_stream" else model(X[va], TF[va])
-            lv = lv.masked_fill(~M[va], -1e9)
+            xva, tfva, mva = X[va].to(device), TF[va].to(device), M[va].to(device)
+            ev_va = EV[va].to(device) if EV is not None else None
+            lv, _ = model(xva, tfva, ev_va) if args.arch == "dual_stream" else model(xva, tfva)
+            lv = lv.masked_fill(~mva, -1e9)
             v_loss = float(F.cross_entropy(lv, yva, reduction="none").mean())
             v_acc = accuracy(lv, yva)
             v_special_rec = class_accuracy(
-                lv, yva, torch.tensor([int(v) in SPECIAL_SLOTS for v in yva]))
+                lv, yva, torch.tensor([int(v) in SPECIAL_SLOTS for v in yva.cpu()], device=device))
         print(f"epoch {ep:>2}  train_loss={tot_loss / len(tr):.4f}  "
               f"val_loss={v_loss:.4f}  val_acc={v_acc:.3f}  "
               f"special_recall={v_special_rec:.3f}", flush=True)

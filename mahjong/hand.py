@@ -149,8 +149,8 @@ def enumerate_full(counts, meld_count):
 def enumerate_all_with_melds(concealed_counts, melds):
     """给定暗牌计数与副露列表，枚举所有完整的和了分解（含副露）。
 
-    concealed_counts: 34 维，仅暗牌
-    melds: list of (kind, tile, concealed_bool)  副露单元
+    concealed_counts: 34 维，仅暗牌（含和了牌，不含副露牌）
+    melds: list of (kind, tile, meta) 副露单元
 
     返回 list of (list_of_meld_tuples, pair_tile)
     其中 list_of_meld_tuples 含暗牌分解的 meld + 副露 meld。
@@ -159,16 +159,10 @@ def enumerate_all_with_melds(concealed_counts, melds):
     need = 4 - meld_count
     if need < 0:
         return []
-    # 把副露的牌也并入计数，枚举统一分解
-    merged = list(concealed_counts)
-    for kind, t, concealed in melds:
-        size = 4 if kind == KAN else 3
-        merged[t] += size
-        if kind == CHI:
-            merged[t + 1] += 1
-            merged[t + 2] += 1
+    # 仅对暗牌做 need 组面子 + 1 雀头分解，再拼上已固定的副露组。
+    # 旧实现把副露牌加回 merged 却只拆 need 组，导致 len(melds)>=1 时恒返回 []。
     out = []
-    c = list(merged)
+    c = list(concealed_counts)
     for pair_tile in range(NUM_TILES):
         if c[pair_tile] < 2:
             continue

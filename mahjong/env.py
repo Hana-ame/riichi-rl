@@ -85,7 +85,8 @@ def _chi_starts(tile):
 class Player:
     __slots__ = ("idx", "hand", "melds", "river", "points", "is_dealer",
                  "seat_wind", "riichi", "double_riichi", "ippatsu",
-                 "riichi_turn", "furiten", "just_kan", "last_drawn")
+                 "riichi_turn", "furiten", "just_kan", "last_drawn",
+                 "genbutsu")
 
     def __init__(self, idx, points, seat_wind):
         self.idx = idx
@@ -102,6 +103,7 @@ class Player:
         self.furiten = False
         self.just_kan = False
         self.last_drawn = -1   # 最近一次摸到的牌（自摸和了判定用）
+        self.genbutsu = set()  # 现物集合（自家牌河 + 自家立直后全员弃牌）
 
     def is_menzen(self):
         return len(self.melds) == 0
@@ -308,8 +310,9 @@ class MahjongEnv:
         p.hand.sort()
 
     def _draw_tile(self, p):
-        """从牌山摸一张。牌山耗尽返回 None。"""
-        if self.wall_idx >= len(self.wall):
+        """从牌山摸一张（扣除 14 张王牌死牌山）。牌山耗尽返回 None。"""
+        dead = getattr(self, "dead_wall_size", 0)
+        if self.wall_idx >= len(self.wall) - dead:
             return None
         t = self.wall[self.wall_idx]
         self.wall_idx += 1
@@ -437,18 +440,14 @@ class MahjongEnv:
         """
         p = self.players[p_idx]
         c = p.full_counts()
-        if sum(c) != 14:
+        # 杠牌每组占 4 张，归一化成 3 张做牌型张数校验
+        c_norm = list(c)
+        for kind, t, _ in p.melds:
+            if kind in ("ankan", "minkan", "addkan") and c_norm[t] > 0:
+                c_norm[t] -= 1
+        if sum(c_norm) != 14:
             return False
-        # 和了牌 = 最近摸到的那张（_draw_tile 记录；吃碰后为 -1）
-        win_tile = p.last_drawn
-        if win_tile is None or win_tile < 0 or win_tile >= NUM_TILES:
-            win_tile = max((t for t in range(34) if c[t] > 0), default=None)
-        if win_tile is None:
-            return False
-        # c 是打牌前的 14 张，最后那张即「刚摸的」，所以要剔除一张
-        c2 = list(c)
-        c2[win_tile] -= 1
-        if not REF.can_win_with(c2, win_tile, len(p.melds)):
+        if REF.ref_shanten(c_norm) != -1:
             return False
         score = self._best_score(p_idx, c, len(p.melds), is_tsumo=True,
                                  winning_tile=None, from_player=None)
@@ -481,6 +480,10 @@ class MahjongEnv:
         """
         p = self.players[p_idx]
         c = p.full_counts()
+        # 杠牌每组多 1 张，扣掉 1 张使暗牌+副露归一化回 13/14 张
+        for kind, t, _ in p.melds:
+            if kind in ("ankan", "minkan", "addkan") and c[t] > 0:
+                c[t] -= 1
         meld_count = len(p.melds)
         total = sum(c)
         if total == 14:
@@ -560,14 +563,14 @@ class MahjongEnv:
     def _score_decomposition(self, p_idx, melds, pair_tile, counts,
                              meld_count, is_tsumo):
         p = self.players[p_idx]
-        # 把副露标记为「明」，暗牌部分按门前端处理
+        # 把明副露（chi/pon/minkan/addkan）标记为 concealed=False，暗杠与暗牌分解标记为 True
+        open_pool = [(m[0], m[1]) for m in p.melds if m[0] != "ankan"]
         tagged = []
         for kind, t, *rest in melds:
-            is_melded = (kind, t, None) in [(m[0], m[1], m[2]) for m in p.melds]
-            if is_melded:
+            if (kind, t) in open_pool:
+                open_pool.remove((kind, t))
                 tagged.append((kind, t, False))
             else:
-                # 暗牌分解出来的刻子/杠视为暗
                 tagged.append((kind, t, True))
         is_menzen = p.is_menzen()
         dora_c = self._dora_count(p_idx, tagged, pair_tile)
@@ -624,33 +627,27 @@ class MahjongEnv:
         return out
 
     def _aka_count(self, p_idx):
-        """**和牌者**手里赤牌的张数（每种赤牌最多 1 张，上限 3）。
-
-        2026-11-05 修正：旧实现把四家手牌一起数再 min(...,3)，
-        等于每家和牌都白送 +3 番（任何 1 番牌都变满贯）——这是
-        "要求分最大" 时最不该有的计分错误；且赤牌 id 也写错了
-        （1m/3p/5s -> 5m/5p/5s）。
-        """
+        """**和牌者**手里（含副露）赤牌的张数（每种赤牌最多 1 张，上限 3）。"""
         p = self.players[p_idx]
+        owned = p.owned_tiles()
         n = 0
         for t in RS.AKA_TILES:
-            if p.hand.count(t) >= 1 or any(
-                    (m[1] == t) for m in p.melds):
+            if t in owned:
                 n += 1
         return min(n, 3)
 
     def _dora_count(self, p_idx, melds, pair_tile):
-        """和了牌中的宝牌数（不含副露，简化：按暗牌计）。"""
+        """和了牌中的宝牌数（含手牌与全部副露牌）。"""
         dora = self._dora_set()
         p = self.players[p_idx]
-        return sum(1 for t in p.hand if t in dora)
+        return sum(1 for t in p.owned_tiles() if t in dora)
 
     def _ura_dora_count(self, p_idx, melds, pair_tile):
         p = self.players[p_idx]
         if not p.riichi:
             return 0
         ura = self._ura_set()
-        return sum(1 for t in p.hand if t in ura)
+        return sum(1 for t in p.owned_tiles() if t in ura)
 
     # ------------------------------------------------------------------
     # 响应阶段（RULES.md §5.2）
@@ -698,11 +695,6 @@ class MahjongEnv:
         if p.hand_count_for_meld(tile) >= 3 and len(p.melds) < 4:
             acts.append(Action(ACT_MINKAN, tile))
 
-        # 加杠：自己的 pon + 弃牌是第 4 张
-        for kind, t, _ in p.melds:
-            if kind == "pon" and t == tile:
-                acts.append(Action(ACT_ADD_KAN, tile))
-
         return acts
 
     def _is_furiten_for_tile(self, p_idx, tile):
@@ -734,8 +726,13 @@ class MahjongEnv:
         c = p.full_counts()
         if c[tile] >= 4:
             return False
+        c_norm = list(c)
+        for kind, t, _ in p.melds:
+            if kind in ("ankan", "minkan", "addkan") and c_norm[t] > 0:
+                c_norm[t] -= 1
+        c_norm[tile] += 1
         meld_count = len(p.melds)
-        if not REF.can_win_with(c, tile, meld_count):
+        if sum(c_norm) != 14 or REF.ref_shanten(c_norm) != -1:
             return False
         # 有役检查：否则会生成「牌型成立但无役」的 RON，
         # 策略选中后 _finish_ron 又静默丢弃（实测 21 次选 RON 只结算 1 次）。
@@ -821,6 +818,7 @@ class MahjongEnv:
         if act.type == ACT_RIICHI:
             # 立直宣告：牌由 act.tile 指定（宣告立直后立即打出该牌）。
             p.riichi = True
+            p.genbutsu.update(p.river)
             p.double_riichi = (self.turn >= 3 and len(p.river) == 0)
             p.riichi_turn = self.turn
             p.ippatsu = True
@@ -837,6 +835,11 @@ class MahjongEnv:
         p.hand.remove(tile)
         p.hand.sort()
         p.river.append(tile)
+        p.genbutsu.add(tile)
+        # 立直宣告后全员打出的牌均成为该立直家的现物
+        for q in self.players:
+            if q.riichi:
+                q.genbutsu.add(tile)
         self.last_discard = tile
         self.last_discard_player = p_idx
         _ev_kind = "riichi" if act.type == ACT_RIICHI else ("tsumogiri" if tile == p.last_drawn else "discard")
@@ -866,7 +869,8 @@ class MahjongEnv:
         self.turn += 1
         if self.turn >= RS.MAX_TURNS * N_PLAYERS:
             return self._finish_ryuukyoku(reason="exhaustive")
-        if len(self.wall) - self.wall_idx <= 0:
+        dead = getattr(self, "dead_wall_size", 0)
+        if len(self.wall) - dead - self.wall_idx <= 0:
             return self._finish_ryuukyoku(reason="exhaustive")
         self.turn_player = (self.last_discard_player + 1) % N_PLAYERS
         self.phase = Phase.DISCARD
@@ -886,8 +890,8 @@ class MahjongEnv:
             winner = rons[0]
             return self._finish_ron(winner, discarder, tile)
 
-        # 2. 吃 3. 杠 4. 碰
-        for act_type in (ACT_CHI, ACT_MINKAN, ACT_ADD_KAN, ACT_PON):
+        # 2. 碰 / 明杠优先于吃（标准立直麻将规则）
+        for act_type in (ACT_PON, ACT_MINKAN, ACT_CHI):
             claimants = [i for i in chooser if actions[i].type == act_type]
             if not claimants:
                 continue
@@ -1126,16 +1130,12 @@ class MahjongEnv:
         delta = [0, 0, 0, 0]
         n_tenpai = sum(tenpai)
         if 0 < n_tenpai < N_PLAYERS:
-            # 天凤规则：每个未听牌者向每个听牌者支付 1000 点。
-            # 3 听 1 不听 → 不听者付 3000、3 家听者各 +1000；
-            # 1 听 3 不听 → 3 家各付 1000、听者 +3000。
-            # （旧实现按 300 且带 seat_wind 比较，漏付且方向错误）
-            notenpai = [i for i in range(N_PLAYERS) if not tenpai[i]]
-            tenpai_list = [i for i in range(N_PLAYERS) if tenpai[i]]
-            for j in notenpai:
-                for i in tenpai_list:
-                    delta[i] += 1000
-                    delta[j] -= 1000
+            # 标准立直麻将不听罚符（总池恒为 3000）：
+            # 1 听 3 不听：+3000 / -1000；2 听 2 不听：+1500 / -1500；3 听 1 不听：+1000 / -3000
+            gain = 3000 // n_tenpai
+            loss = 3000 // (N_PLAYERS - n_tenpai)
+            for i in range(N_PLAYERS):
+                delta[i] = gain if tenpai[i] else -loss
         result = self._settle("ryuukyoku", None, None, delta, None,
                               tenpai=tenpai, reason=reason)
         return result
