@@ -240,8 +240,8 @@ def build_participants():
 
 # ---------- 对局与 Elo ----------
 
-def play_one(agents, seed, env_cls=HanchanState):
-    h = env_cls(dealer=seed % 4)
+def play_one(agents, seed, env_cls=HanchanState, east_only=False):
+    h = env_cls(dealer=seed % 4, east_only=east_only)
     env = h.new_env(seed=seed)
     seats = list(range(4))
     for i, a in enumerate(agents):
@@ -372,6 +372,8 @@ def main():
                     help="每 N 局重新选员（保留 Elo 前一半 + 随机几个替换）")
     ap.add_argument("--random-fill", type=int, default=3,
                     help="选员时从落选者里随机替换几个进参赛名单")
+    ap.add_argument("--mode", default="hanchan", choices=["hanchan", "east"],
+                    help="hanchan=半庄 E1-S4，east=东风战 E1-E4")
     args = ap.parse_args()
 
     from cpu_only import set_inference_threads
@@ -411,7 +413,8 @@ def main():
         pool = active if len(active) >= 4 else list(range(len(agents)))
         sel = rng.sample(pool, 4)
         picked = [agents[i] for i in sel]
-        out = play_one(picked, seed=args.seed * 7919 + g * 131)
+        out = play_one(picked, seed=args.seed * 7919 + g * 131,
+                       east_only=(args.mode == "east"))
         if out is None:
             continue
         delta, winner, aux_bonus, aux_done, dealin = out
