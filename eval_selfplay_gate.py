@@ -48,6 +48,8 @@ def main():
     ap.add_argument("--dora-lam", type=float, default=1.0)
     ap.add_argument("--model-choice-ckpt", default="",
                     help="模型自己决定立直（去掉规则强制立直）")
+    ap.add_argument("--tenhou-ckpt", default="",
+                    help="Tenhou 离线 MLP（tenhou_agent.TenhouMLPAgent）")
     ap.add_argument("--dora-keep", action="store_true", help="宝牌保值：压低打宝牌的 logit")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
@@ -56,7 +58,10 @@ def main():
     if a.ensemble:
         ens_paths = [os.path.join("checkpoints", n if n.endswith(".pt") else n + ".pt")
                      for n in a.ensemble.split(",")]
-    if a.model_choice_ckpt:
+    if a.tenhou_ckpt:
+        path = a.tenhou_ckpt if a.tenhou_ckpt.endswith(".pt") else os.path.join("checkpoints", a.tenhou_ckpt + ".pt")
+        label = f"{os.path.basename(path).replace('.pt','')}"
+    elif a.model_choice_ckpt:
         path = os.path.join("checkpoints", a.model_choice_ckpt if a.model_choice_ckpt.endswith(".pt")
                             else a.model_choice_ckpt + ".pt")
         label = f"{os.path.basename(path).replace('.pt','')}_modelchoice"
@@ -95,7 +100,10 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        if a.model_choice_ckpt:
+        if a.tenhou_ckpt:
+            from tenhou_agent import TenhouMLPAgent
+            ags = [TenhouMLPAgent(label, path) for _ in range(4)]
+        elif a.model_choice_ckpt:
             from model_choice_agent import ModelChoiceAgent
             ags = [ModelChoiceAgent(label, path) for _ in range(4)]
         elif a.dora_ckpt:
