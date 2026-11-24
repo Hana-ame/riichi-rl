@@ -44,6 +44,10 @@ def main():
                     help="只在有对手立直时才施加危险惩罚")
     ap.add_argument("--call-head", default="", help="副露二分类头 ckpt（模型决定叫/不叫）")
     ap.add_argument("--call-thr", type=float, default=0.5)
+    ap.add_argument("--post-call", action="store_true",
+                    help="启用方案 1A：Post-Call State Value 叫后前瞻副露决策器")
+    ap.add_argument("--post-call-margin", type=float, default=0.02,
+                    help="Post-Call V(call)-V(pass) 最小正收益阈值")
     ap.add_argument("--dora-ckpt", default="", help="宝牌策略模型（aux 头驱动立牌价值）")
     ap.add_argument("--dora-lam", type=float, default=1.0)
     ap.add_argument("--model-choice-ckpt", default="",
@@ -92,7 +96,7 @@ def main():
         label = "ens_" + "+".join(os.path.basename(p).replace(".pt", "") for p in ens_paths)
     elif a.ckpt:
         path = a.ckpt if a.ckpt.endswith(".pt") else os.path.join("checkpoints", a.ckpt + ".pt")
-        label = os.path.basename(path).replace(".pt", "")
+        label = os.path.basename(path).replace(".pt", "") + ("_postcall" if a.post_call else "")
     elif a.policy:
         label = a.policy
         agents = [POL.make_policy(a.policy, seed=i) for i in range(4)]
@@ -101,6 +105,8 @@ def main():
     seat_w = [0] * 4; seat_d = [0] * 4; ryu = 0; ten = 0; nten = 0
     act_cnt = {"discard": 0, "riichi": 0, "chi": 0, "pon": 0, "kan": 0,
                "tsumo": 0, "ron": 0, "pass": 0}
+    if a.deals < 400:
+        print(f"[warn] deals={a.deals} < 400：小样本下 Wilson 95% CI 较宽，建议 400-600 局评测硬门槛", flush=True)
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4, east_only=(a.mode == "east"))
@@ -118,6 +124,9 @@ def main():
             from dora_agent import DoraValueAgent
             ags = [DoraValueAgent(label, path, lam=a.dora_lam, keep=a.dora_keep)
                    for _ in range(4)]
+        elif a.post_call:
+            from post_call_agent import PostCallValueAgent
+            ags = [PostCallValueAgent(path, margin=a.post_call_margin) for _ in range(4)]
         elif a.call_head:
             from call_head import CallHeadAgent
             ags = [CallHeadAgent(label, path, a.call_head, thr=a.call_thr)

@@ -248,19 +248,21 @@ class MahjongEnv:
             p.is_dealer = (i == self.dealer)
             self.players.append(p)
 
-        # 牌山：136 张洗牌
+        # 牌山：136 张洗牌，末尾 14 张 wall[122:136] 严格作为王牌（死牌山）：
+        #   122..126: 表宝牌指示牌（最多 5 张）
+        #   127..131: 里宝牌指示牌（最多 5 张，与表宝牌 1-to-1 对应）
+        #   132..135: 岭上补牌（最多 4 杠）
         self.wall = [t for t in range(NUM_TILES) for _ in range(4)]
         self.rng.shuffle(self.wall)
         self.wall_idx = 0
+        self.dead_wall_size = 14 if (self.wall_dead or RS.USE_WARIBASHI) else 0
+        self.kan_count = 0                  # 本局累计开杠次数（上限 4，每次杠活牌尾前移 1）
+        self.rinshan_drawn = 0              # 已从王牌岭上摸出的张数
         self.dora_indicator = None          # 第一张（兼容旧接口）
         self.dora_indicators = []           # 全部宝牌指示牌（初始 1 张，每次杠 +1）
         self.ura_dora_indicator = None
         self.ura_dora_indicators = []
         self._set_dora_indicator()
-
-        # 死牌山：剩余 70 张切四份（US-AR1）
-        if self.wall_dead or RS.USE_WARIBASHI:
-            self._apply_waribashi()
 
         # 配牌
         for p in self.players:
@@ -290,32 +292,47 @@ class MahjongEnv:
         self._flip_dora()
 
     def _flip_dora(self):
-        """翻一张宝牌指示牌：初始 1 张，每次杠后 +1，最多 5 张（规则上限）。"""
-        if len(self.dora_indicators) >= 5:
+        """从王牌（wall[122..126]）翻一张表宝牌指示牌：初始 1 张，每次杠 +1，最多 5 张。"""
+        idx = len(self.dora_indicators)
+        if idx >= 5:
             return
-        if self.wall_idx >= len(self.wall):
+        pos = len(self.wall) - 14 + idx
+        if pos < 0 or pos >= len(self.wall):
             return
-        t = self.wall[self.wall_idx]
-        self.wall_idx += 1
+        t = self.wall[pos]
         self.dora_indicators.append(t)
         self.dora_indicator = self.dora_indicators[0]
 
-    def _apply_waribashi(self):
-        """死牌山：剩余牌切成 14/17/17/17，从末尾取牌。"""
-        remaining = len(self.wall) - self.wall_idx
-        # 简单实现：确定死牌长度，不改变取牌顺序
-        self.dead_wall_size = 14
+    def _live_wall_end(self):
+        """活牌山可摸末尾下标：136 - 14(王牌) - kan_count(每次杠补岭上，尾端前移 1)。"""
+        dead = getattr(self, "dead_wall_size", 0)
+        return max(0, len(self.wall) - dead - getattr(self, "kan_count", 0))
+
+    def _drawable_left(self):
+        """当前活牌山剩余可摸张数（0 杠起手 = 70）。"""
+        return max(0, self._live_wall_end() - self.wall_idx)
 
     def _sort_hand(self, p):
         p.hand.sort()
 
     def _draw_tile(self, p):
-        """从牌山摸一张（扣除 14 张王牌死牌山）。牌山耗尽返回 None。"""
-        dead = getattr(self, "dead_wall_size", 0)
-        if self.wall_idx >= len(self.wall) - dead:
+        """从活牌山摸一张。活牌山耗尽返回 None。"""
+        if self.wall_idx >= self._live_wall_end():
             return None
         t = self.wall[self.wall_idx]
         self.wall_idx += 1
+        p.hand.append(t)
+        p.last_drawn = t
+        return t
+
+    def _draw_rinshan(self, p):
+        """开杠后从王牌岭上（wall[132..135]）补摸一张。"""
+        if self.rinshan_drawn >= 4:
+            return None
+        pos = len(self.wall) - 4 + self.rinshan_drawn
+        t = self.wall[pos]
+        self.rinshan_drawn += 1
+        self.kan_count += 1
         p.hand.append(t)
         p.last_drawn = t
         return t
@@ -334,14 +351,10 @@ class MahjongEnv:
             n = len(p.river)
             total += n
             detail[f"river{p.idx}"] = n
-        # 牌山剩
-        wall_left = len(self.wall) - self.wall_idx
+        # 牌山未摸部分（活牌山未摸 + 14 张王牌扣除已摸岭上牌；指示牌仍在王牌内不重复计）
+        wall_left = len(self.wall) - self.wall_idx - getattr(self, "rinshan_drawn", 0)
         total += wall_left
         detail["wall"] = wall_left
-        # 王牌指示牌在牌山外（已从 wall_idx 前取走），
-        # 里宝牌指示牌也单算
-        total += len(getattr(self, "dora_indicators", []))
-        total += len(getattr(self, "ura_dora_indicators", []))
         return total == NUM_TOTAL_TILES, total, detail
 
     def visible_counts(self):
@@ -414,14 +427,12 @@ class MahjongEnv:
             acts.append(Action(ACT_RYUUKYOKU))
             acts.append(Action(ACT_NAGASHI))
 
-        # 暗杠：手上 4 张
-        if not p.riichi:
+        # 暗杠/加杠：非立直 + 全局杠数 < 4 + 活牌山仍有可摸牌
+        can_kan_now = (not p.riichi and self.kan_count < 4 and self._drawable_left() > 0)
+        if can_kan_now:
             for t in seen:
                 if hand.count(t) == 4:
                     acts.append(Action(ACT_ANKAN, t))
-
-        # 加杠：自己的 pon + 手上有第 4 张
-        if not p.riichi:
             for kind, t, _ in p.melds:
                 if kind == "pon" and p.hand_count_for_meld(t) >= 1:
                     acts.append(Action(ACT_ADD_KAN, t))
@@ -622,7 +633,11 @@ class MahjongEnv:
 
     def _ura_set(self):
         out = set()
-        if self.ura_dora_indicator is not None:
+        inds = getattr(self, "ura_dora_indicators", None)
+        if inds:
+            for ind in inds:
+                out.add(T.dora_from_indicator(ind))
+        elif self.ura_dora_indicator is not None:
             out.add(T.dora_from_indicator(self.ura_dora_indicator))
         return out
 
@@ -691,8 +706,9 @@ class MahjongEnv:
         if p.hand_count_for_meld(tile) >= 2 and len(p.melds) < 4:
             acts.append(Action(ACT_PON, tile))
 
-        # 明杠：手牌里必须有 3 张
-        if p.hand_count_for_meld(tile) >= 3 and len(p.melds) < 4:
+        # 明杠：手牌里必须有 3 张 + 全局杠数 < 4 + 活牌山仍有可摸牌
+        if (p.hand_count_for_meld(tile) >= 3 and len(p.melds) < 4
+                and self.kan_count < 4 and self._drawable_left() > 0):
             acts.append(Action(ACT_MINKAN, tile))
 
         return acts
@@ -869,8 +885,7 @@ class MahjongEnv:
         self.turn += 1
         if self.turn >= RS.MAX_TURNS * N_PLAYERS:
             return self._finish_ryuukyoku(reason="exhaustive")
-        dead = getattr(self, "dead_wall_size", 0)
-        if len(self.wall) - dead - self.wall_idx <= 0:
+        if self._drawable_left() <= 0:
             return self._finish_ryuukyoku(reason="exhaustive")
         self.turn_player = (self.last_discard_player + 1) % N_PLAYERS
         self.phase = Phase.DISCARD
@@ -1039,9 +1054,9 @@ class MahjongEnv:
             if q.riichi:
                 q.ippatsu = False
         if need_draw:
-            t = self._draw_tile(p)
+            t = self._draw_rinshan(p)
             if t is None:
-                return
+                return self._finish_ryuukyoku(reason="wall_empty")
             p.hand.sort()
         self.pending = [actor]
         self.phase = Phase.DISCARD
@@ -1117,10 +1132,13 @@ class MahjongEnv:
         return self._settle("ron", winner, from_player, delta, score)
 
     def _set_ura_dora(self):
-        if self.ura_dora_indicator is not None:
+        if self.ura_dora_indicators:
             return
-        if self.wall_idx < len(self.wall):
-            self.ura_dora_indicator = self.wall[-1]
+        n_dora = max(1, min(5, len(self.dora_indicators)))
+        base = len(self.wall) - 14 + 5  # wall[127..131]
+        self.ura_dora_indicators = [self.wall[base + k] for k in range(n_dora) if 0 <= base + k < len(self.wall)]
+        if self.ura_dora_indicators:
+            self.ura_dora_indicator = self.ura_dora_indicators[0]
 
     def _finish_ryuukyoku(self, reason):
         """流局结算：听牌罚符 + 连棒。"""

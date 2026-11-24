@@ -167,8 +167,11 @@ class ObsEncoder:
                     for t in (27, 28, 29, 30)]
         s[14] = 1.0 if p.furiten else 0.0
         s[15] = 1.0 if p.riichi else 0.0
-        dead = getattr(env, "dead_wall_size", 0)
-        wall_left = max(0, len(env.wall) - dead - env.wall_idx)
+        if hasattr(env, "_drawable_left"):
+            wall_left = env._drawable_left()
+        else:
+            dead = getattr(env, "dead_wall_size", 0)
+            wall_left = max(0, len(env.wall) - dead - env.wall_idx)
         s[16] = min(1.0, wall_left / 70.0)
         s[17:21] = [len(q.hand) / 14.0 for q in rel_players]
         s[21] = 1.0 if env.phase == E.Phase.DISCARD else 0.0

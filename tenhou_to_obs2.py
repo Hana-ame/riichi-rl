@@ -117,6 +117,18 @@ class TenhouPseudoEnv:
         self.wall_idx = max(0, 136 - self.dead_wall_size - wall_left)
         self.wall = [0] * 136  # 占位，encode 只用 wall_idx
 
+        # 还原真实公开事件流（含手切/摸切/立直/副露）并据此精确计算各立直家现物
+        self.log = list(getattr(d, "history_events", None) or [])
+        riichi_seen = [False, False, False, False]
+        for _turn, _actor, _kind, _tile in self.log:
+            if 0 <= _actor < 4 and 0 <= _tile < NUM_TILES:
+                self.players[_actor].genbutsu.add(_tile)
+                if _kind == "riichi":
+                    riichi_seen[_actor] = True
+                for _q_idx in range(4):
+                    if riichi_seen[_q_idx]:
+                        self.players[_q_idx].genbutsu.add(_tile)
+
         # phase
         self.phase = E.Phase.RESPONSE if d.trigger_type == 1 else E.Phase.DISCARD
         self.last_discard = d.trigger_tile if d.trigger_type == 1 else None
@@ -148,22 +160,33 @@ def decision_to_obs2(d, encoder):
         act = E.Action(e_type, e_tile, e_arg)
     slot = slot_of(act)
     if slot < 0 or slot >= N_ACTIONS:
-        return None, None, None, None, -1
+        return None, None, None, None, -1, 0.0
     try:
         vec, sh, sit, give_up, tf = encode(env, encoder, hstate, d.player)
         ev = ES.encode_event_stream(env, d.player)
     except Exception:
-        return None, None, None, None, -1
-    # 构造真实合法掩码（替代全 True 假掩码）
+        return None, None, None, None, -1, 0.0
+    # 从 houou_data.Decision.legal 构造 100% 真实的 47 槽合法动作掩码
     mask = np.zeros(N_ACTIONS, dtype=bool)
-    if env.phase == E.Phase.DISCARD:
-        for t in set(env.players[d.player].hand):
-            if 0 <= t < 34:
-                mask[t] = True
-    else:
-        mask[SLOT_PASS] = True
+    for l_type, l_tile, l_cons in getattr(d, "legal", ()):
+        if l_type not in act_map:
+            continue
+        le_type = act_map[l_type]
+        le_tile = l_tile if l_tile is not None and l_tile >= 0 else -1
+        if le_type == E.ACT_CHI and le_tile >= 0 and len(l_cons) >= 2:
+            seq_t = [int(le_tile), int(l_cons[0]), int(l_cons[1])]
+            la = E.Action(le_type, min(seq_t), int(le_tile))
+        else:
+            le_arg = l_cons[0] if len(l_cons) > 0 else -1
+            la = E.Action(le_type, le_tile, le_arg)
+        ls = slot_of(la)
+        if 0 <= ls < N_ACTIONS:
+            mask[ls] = True
     mask[slot] = True
-    return vec, tf, ev, mask, slot
+    # 离线 Value 监督目标：局内净得分 + 终局顺位 Uma 混合归一化
+    rank_uma = {0: 1.0, 1: 0.33, 2: -0.33, 3: -1.0}.get(int(getattr(d, "final_rank", 1)), 0.0)
+    val_target = float(np.clip(getattr(d, "score_delta", 0) / 10000.0, -3.0, 3.0) + 0.5 * rank_uma)
+    return vec, tf, ev, mask, slot, val_target
 
 
 def main():
@@ -183,12 +206,13 @@ def main():
     encoder = ObsEncoder()
 
     cap = args.max_decisions
-    obs_dim = O2.OBS_TENSOR_DIM + SIT_DIM  # 动态获取
+    obs_dim = O2.OBS_TENSOR_DIM + SIT_DIM
     X = np.empty((cap, obs_dim), dtype=np.float32)
     TF = np.empty((cap, 8), dtype=np.float32)  # touch features
     EV = np.empty((cap, ES.DEFAULT_EVENT_LEN, 4), dtype=np.int64)
     M = np.empty((cap, N_ACTIONS), dtype=bool)
     Y = np.empty(cap, dtype=np.int64)
+    V = np.empty(cap, dtype=np.float32)
     total = 0
 
     for path in paths:
@@ -210,24 +234,28 @@ def main():
                     for d in decisions:
                         if total >= cap:
                             break
-                        vec, tf_feat, ev_feat, m_row, slot = decision_to_obs2(d, encoder)
+                        vec, tf_feat, ev_feat, m_row, slot, val_t = decision_to_obs2(d, encoder)
                         if vec is None:
+                            continue
+                        # 跳过仅有单一合法动作（如唯一 PASS）的零信息样本
+                        if int(m_row.sum()) <= 1:
                             continue
                         X[total] = vec
                         TF[total] = tf_feat
                         EV[total] = ev_feat
                         M[total] = m_row
                         Y[total] = slot
+                        V[total] = val_t
                         total += 1
             print(f"  累计 {total}", flush=True)
         except Exception as e:
             print(f"  跳过 {type(e).__name__}:{e}", flush=True)
 
-    X, TF, EV, M, Y = X[:total], TF[:total], EV[:total], M[:total], Y[:total]
+    X, TF, EV, M, Y, V = X[:total], TF[:total], EV[:total], M[:total], Y[:total], V[:total]
     print(f"最终样本 {len(X)} obs={X.shape[1]} tf={TF.shape[1]} 标签分布 {np.bincount(Y, minlength=N_ACTIONS)[:10]}")
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     np.savez_compressed(args.out, x=X, tf=TF, events=EV, mask=M,
-                        y=Y, aux=np.zeros(len(X), dtype=np.float32))
+                        y=Y, value=V, aux=np.zeros(len(X), dtype=np.float32))
     print(f"保存 {args.out}")
 
 

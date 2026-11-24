@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import io
 import tarfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 
@@ -106,6 +106,7 @@ class Decision:
     score_delta: int               # 该玩家本局最终点数变化（终局标签）
     final_rank: int
     steps_to_done: int
+    history_events: list = field(default_factory=list)  # [(turn, actor, kind, tile_id), ...] 含真实手切/摸切
 
 
 #: 各动作 type 的 `legal_tiles` 行里有意义的牌数字段个数。
@@ -192,19 +193,33 @@ def decode_match(data) -> list:
         ha = int(dh[int(dhref[i])])
         hb_ = ha + int(dhlen[i])
         turn = 0
+        hist_events = []
+        pending_riichi_actor = -1
         for k2 in range(ha, hb_):
             ty = int(dht[k2])
+            ac = int(dhact[k2])
             tiles = [tile_base(int(x)) for x in dhti[k2] if x > 0]
             if ty == 0:            # tsumo
                 turn += 1
-            elif ty == 1:          # dahai
-                ac = int(dhact[k2])
+            elif ty == 1:          # dahai（区分手切 discard 与摸切 tsumogiri）
                 if tiles:
-                    discards[ac, tiles[0]] += 1
-            elif ty == 2:          # riichi
-                riichi[int(dhact[k2])] = 1
+                    t0 = tiles[0]
+                    discards[ac, t0] += 1
+                    is_tsumogiri = bool(int(hs[k2])) if k2 < len(hs) else False
+                    if pending_riichi_actor == ac:
+                        ev_kind = "riichi"
+                        pending_riichi_actor = -1
+                    else:
+                        ev_kind = "tsumogiri" if is_tsumogiri else "discard"
+                    hist_events.append((turn, ac, ev_kind, t0))
+            elif ty == 2:          # riichi 宣告（下一张弃牌标为 riichi 宣言牌）
+                riichi[ac] = 1
+                pending_riichi_actor = ac
             elif ty in (3, 4, 5, 6, 7, 8):
-                melds[int(dhact[k2])].append(tuple(tiles))
+                melds[ac].append(tuple(tiles))
+                if tiles:
+                    m_kind = "chi" if ty == 3 else ("pon" if ty == 4 else "kan")
+                    hist_events.append((turn, ac, m_kind, tiles[0]))
 
         out.append(Decision(
             player=int(player[i]), trigger_type=int(tt[i]),
@@ -219,6 +234,7 @@ def decode_match(data) -> list:
             turn=turn, legal=legal, expert=legal[k],
             score_delta=int(sdelta[i]), final_rank=int(frank[0]),
             steps_to_done=int(std[i]),
+            history_events=hist_events,
         ))
     return out
 

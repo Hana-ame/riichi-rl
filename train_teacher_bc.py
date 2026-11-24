@@ -70,6 +70,8 @@ def main():
     ap.add_argument("--init", default="", help="从已有 ckpt 继续训练")
     ap.add_argument("--dora-aux-weight", type=float, default=0.0,
                     help="dora aux 任务 BCE 权重（0=关闭）")
+    ap.add_argument("--value-weight", type=float, default=0.5,
+                    help="离线 Value 塔回归权重（当 npz 含 value 字段时启用，支撑 Post-Call Value 与 PPO 热启动）")
     ap.add_argument("--out", default="checkpoints/teacher47_v1.pt")
     args = ap.parse_args()
 
@@ -79,6 +81,7 @@ def main():
     M = torch.from_numpy(d["mask"])
     Y = torch.from_numpy(d["y"]).long()
     EV = torch.from_numpy(d["events"]).long() if "events" in d else None
+    VAL = torch.from_numpy(d["value"]).float() if "value" in d else None
     n = len(X)
     print(f"样本 {n}  obs={X.shape[1]}  touch={TF.shape[1]}  "
           f"权重 discard={args.discard_weight} pass={args.pass_weight} "
@@ -147,16 +150,19 @@ def main():
             xb, tfb, mb, yb = X[b].to(device), TF[b].to(device), M[b].to(device), Y[b].to(device)
             ev_b = EV[b].to(device) if EV is not None else None
             if args.arch == "dual_stream":
-                logits, _ = model(xb, tfb, ev_b)
+                logits, v_pred = model(xb, tfb, ev_b)
                 auxl = None
             elif aux_dim:
-                logits, _, auxl = model.forward_aux(xb, tfb)
+                logits, v_pred, auxl = model.forward_aux(xb, tfb)
             else:
-                logits, _ = model(xb, tfb)
+                logits, v_pred = model(xb, tfb)
             logits = logits.masked_fill(~mb, -1e9)
             ce = F.cross_entropy(logits, yb, reduction="none")
             w = sample_weight(yb)
             loss = (ce * w).sum() / w.sum()
+            if VAL is not None and args.value_weight > 0:
+                vb = VAL[b].to(device)
+                loss = loss + args.value_weight * F.smooth_l1_loss(v_pred, vb)
             if aux_dim and auxl is not None:
                 auxb = torch.from_numpy(aux_labels[b.numpy()]).to(device)
                 loss = loss + args.dora_aux_weight * F.binary_cross_entropy_with_logits(
