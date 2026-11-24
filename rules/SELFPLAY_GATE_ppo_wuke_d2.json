@@ -1,0 +1,43 @@
+{
+ "label": "ppo_wuke_d2",
+ "deals": 800,
+ "seat_deals": 3200,
+ "seat_wins": 14,
+ "seat_win_rate": 0.4375,
+ "seat_win_ci": [
+  0.26079049131415605,
+  0.7330663835076205
+ ],
+ "seat_dealins": 7,
+ "seat_deal_in_rate": 0.21875,
+ "seat_deal_in_ci": [
+  0.10600217588341934,
+  0.4508792879192856
+ ],
+ "win_pass": false,
+ "deal_in_pass": false,
+ "ryuukyoku": 786,
+ "tenpai_at_end": 1.84375,
+ "per_seat_wins": [
+  2,
+  3,
+  5,
+  4
+ ],
+ "per_seat_dealins": [
+  1,
+  4,
+  2,
+  0
+ ],
+ "action_counts": {
+  "discard": 57160,
+  "riichi": 59,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 7,
+  "ron": 7,
+  "pass": 171650
+ }
+}
