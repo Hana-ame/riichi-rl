@@ -34,7 +34,7 @@ from mahjong.mp_env import ParallelDealPool
 from mahjong import aux_tasks as AUX
 from mahjong import scenarios as SC
 from mahjong import touch as TOUCH
-from mahjong.hanchan import HanchanState
+from mahjong.hanchan import HanchanState, placement_bonus
 from mahjong.net import MahjongNet, count_params
 from mahjong.dual_net import DualStreamMahjongNet
 from mahjong import event_stream as ES
@@ -84,7 +84,12 @@ def slot_of(action):
     if t == E.ACT_DISCARD and 0 <= action.tile < 34:
         return action.tile
     if t == E.ACT_CHI:
-        return SLOT_CHI_BASE + (action.tile % 3)
+        # 按被吃牌在顺子中的相对位置映射：0=左吃(吃最小张), 1=中吃(嵌张), 2=右吃(吃最大张)
+        if action.arg is not None and action.arg >= 0:
+            rel = max(0, min(2, int(action.arg) - int(action.tile)))
+        else:
+            rel = int(action.tile) % 3
+        return SLOT_CHI_BASE + rel
     return SLOTS.get(t, SLOT_PASS)
 
 
@@ -314,6 +319,10 @@ def main():
     ap.add_argument("--entropy", type=float, default=0.005)
     ap.add_argument("--temperature", type=float, default=1.0)
     ap.add_argument("--gamma", type=float, default=0.99)
+    ap.add_argument("--gae-lambda", type=float, default=0.95,
+                    help="GAE(lambda) 优势估计衰减系数（默认 0.95，替代高方差 MC 回报）")
+    ap.add_argument("--uma-weight", type=float, default=1.0,
+                    help="半庄终局顺位点（Uma）回传权重（默认 1.0，提供避四/保顺位激励）")
     ap.add_argument("--shanten-weight", type=float, default=0.0,
                     help="向听塑形权重（已修复为 sb - sa；从 BC 起步建议 0.0）")
     ap.add_argument("--deal-weight", type=float, default=0.0,
@@ -485,7 +494,8 @@ def main():
         in_warmup = it < critic_warmup
         _set_policy_trainable(model, not in_warmup)
 
-        vecs, slots, rets, touches, old_lps, evs = [], [], [], [], [], []
+        # 按 (半庄, 玩家) 收集完整轨迹，便于半庄终局 Uma 回传与 GAE(lambda) 优势估计
+        hc_trajs = [{p: [] for p in range(4)} for _ in range(args.hanchans)]
         hstates = [HanchanState(dealer=random.randrange(4), start_points=25000)
                    for _ in range(args.hanchans)]
         deal_counters = [args.seed0 * 104729 + it * 257 + hc
@@ -527,57 +537,71 @@ def main():
                     if gu:
                         give_up_seen += 1
 
+                # 使用含立直棒成本的真实净点差 net_points
+                net_deltas = E.net_points(result, env.initial_points)
                 by_player = {}
                 for rec in info:
                     by_player.setdefault(rec[5], []).append(rec)
                 for p, lst in by_player.items():
-                    n = len(lst)
                     r_term = SC.reward_for_result(
                         p, result, _sit_stub(lst[-1][6]),
                         hstate, give_up_flag=lst[-1][7],
                         w_deal=args.deal_weight,
                         w_survive=args.survive_weight)
+                    # 补齐立直 1000 点真实成本差
+                    r_term += (net_deltas[p] - result.points_delta[p]) / 10000.0
                     if args.aux_bonus_weight > 0:
                         _w = _parse_aux_weights(args.aux_weights)
                         _, _aux = AUX.deal_bonus(env, result, p, weights=_w)
                         r_term += args.aux_bonus_weight * _aux / 1000.0
 
-                    # 正确的折扣累计回报：每步向听变化为 (sb - sa)
-                    # （打好牌向听不变=0，拆牌导致向听上升 -> 负奖励）
-                    running_ret = r_term
-                    step_rets = [0.0] * n
-                    for k in range(n - 1, -1, -1):
-                        _, _, _, sb, sa, _, _, _, _, _, _ = lst[k]
-                        sh_r = 0.0
-                        if args.shanten_weight > 0 and sb < 8 and sa < 8:
-                            sh_r = args.shanten_weight * (sb - sa)
-                        running_ret = sh_r + (args.gamma * running_ret if k < n - 1 else r_term)
-                        step_rets[k] = running_ret
-
+                    n = len(lst)
                     for k, (vec, legal_slots, pick, sb, sa, _, label, gu, tf, old_lp, ev) \
                             in enumerate(lst):
-                        vecs.append(vec)
-                        touches.append(tf)
-                        evs.append(ev)
-                        slots.append((pick, legal_slots))
-                        rets.append(step_rets[k])
-                        old_lps.append(old_lp)
+                        step_r = 0.0
+                        if args.shanten_weight > 0 and sb < 8 and sa < 8:
+                            step_r += args.shanten_weight * (sb - sa)
+                        if k == n - 1:
+                            step_r += r_term
+                        done_flag = (k == n - 1)
+                        hc_trajs[i][p].append((vec, legal_slots, pick, tf, old_lp, ev, step_r, done_flag))
                 hstate.advance(result)
 
-        if not rets:
+        # 半庄结束后回传终局顺位点（Uma）到该玩家在本半庄最后一步
+        vecs, slots, touches, old_lps, evs, step_rewards, dones = [], [], [], [], [], [], []
+        for i, hstate in enumerate(hstates):
+            uma_map = placement_bonus(hstate.final_placement(), hanchan=not hstate.east_only)
+            for p in range(4):
+                traj = hc_trajs[i][p]
+                if not traj:
+                    continue
+                uma_r = args.uma_weight * (uma_map[p] / 30000.0)
+                for k, (vec, legal_slots, pick, tf, old_lp, ev, sr, dn) in enumerate(traj):
+                    if k == len(traj) - 1:
+                        sr = sr + uma_r
+                        dn = True
+                    else:
+                        dn = False
+                    vecs.append(vec)
+                    slots.append((pick, legal_slots))
+                    touches.append(tf)
+                    old_lps.append(old_lp)
+                    evs.append(ev)
+                    step_rewards.append(sr)
+                    dones.append(dn)
+
+        if not vecs:
             continue
 
-        rt = torch.tensor(rets, dtype=torch.float32, device=device)
         old_lp_t = torch.tensor(old_lps, dtype=torch.float32, device=device)
 
         CH = 2048
-        chunks = []
+        raw_chunks = []
         for start in range(0, len(vecs), CH):
             sl = slots[start:start + CH]
             x = torch.from_numpy(np.stack(vecs[start:start + CH])).to(device)
             tx = torch.from_numpy(np.stack(touches[start:start + CH])).to(device)
             evx = torch.from_numpy(np.stack(evs[start:start + CH])).to(device)
-            rt_chunk = rt[start:start + CH]
             old_lp_chunk = old_lp_t[start:start + CH]
             bsz = len(sl)
             mrow = torch.full((bsz, N_ACTIONS), -1e9, device=device)
@@ -585,23 +609,43 @@ def main():
                 for s in legal_slots:
                     mrow[idx_row, s] = 0.0
             pick_t = torch.tensor([p for (p, _) in sl], dtype=torch.long, device=device)
-            chunks.append((x, tx, evx, rt_chunk, mrow, pick_t, old_lp_chunk))
+            raw_chunks.append((x, tx, evx, mrow, pick_t, old_lp_chunk))
 
-        # 用当前 Critic 计算全局标准化优势（跨 chunk 统计均值/方差）
+        # 用当前 Critic 计算 V(s) 与 GAE(lambda) 优势及回报目标
         model.eval()
-        all_adv = []
+        all_vals = []
         ref_logps = []
         with torch.no_grad():
-            for x, tx, evx, rt_chunk, mrow, pick_t, _ in chunks:
+            for x, tx, evx, mrow, pick_t, _ in raw_chunks:
                 _, values = (model(x, tx, evx) if isinstance(model, DualStreamMahjongNet) else model(x, tx))
-                all_adv.append(rt_chunk - values)
+                all_vals.append(values.cpu().numpy())
                 if ref_model is not None:
                     r_logits, _ = (ref_model(x, tx, evx) if isinstance(ref_model, DualStreamMahjongNet) else ref_model(x, tx))
                     ref_logps.append(F.log_softmax(r_logits + mrow, dim=-1))
-        adv_cat = torch.cat(all_adv, dim=0)
-        adv_mean = adv_cat.mean()
-        adv_std = adv_cat.std().clamp_min(1e-6)
-        adv_chunks = [(a - adv_mean) / adv_std for a in all_adv]
+        vals_np = np.concatenate(all_vals, axis=0)
+        n_total = len(step_rewards)
+        gae_adv = np.zeros(n_total, dtype=np.float32)
+        gae_ret = np.zeros(n_total, dtype=np.float32)
+        gae_running = 0.0
+        lam = float(args.gae_lambda)
+        for idx_t in range(n_total - 1, -1, -1):
+            next_v = 0.0 if dones[idx_t] or idx_t + 1 >= n_total else float(vals_np[idx_t + 1])
+            mask_nonterm = 0.0 if dones[idx_t] else 1.0
+            delta_t = float(step_rewards[idx_t]) + args.gamma * next_v * mask_nonterm - float(vals_np[idx_t])
+            gae_running = delta_t + args.gamma * lam * mask_nonterm * gae_running
+            gae_adv[idx_t] = gae_running
+            gae_ret[idx_t] = gae_running + float(vals_np[idx_t])
+
+        rt = torch.from_numpy(gae_ret).to(device)
+        adv_all = torch.from_numpy(gae_adv).to(device)
+        adv_all = (adv_all - adv_all.mean()) / adv_all.std().clamp_min(1e-6)
+        chunks = []
+        adv_chunks = []
+        for ci, (x, tx, evx, mrow, pick_t, old_lp_chunk) in enumerate(raw_chunks):
+            start = ci * CH
+            end = start + len(pick_t)
+            chunks.append((x, tx, evx, rt[start:end], mrow, pick_t, old_lp_chunk))
+            adv_chunks.append(adv_all[start:end])
 
         model.train()
         _pol_acc = _v_acc = _ent_acc = _kl_acc = 0.0
