@@ -1,0 +1,43 @@
+{
+ "label": "tenhou_big128",
+ "deals": 800,
+ "seat_deals": 3200,
+ "seat_wins": 126,
+ "seat_win_rate": 3.9375,
+ "seat_win_ci": [
+  3.317016915652783,
+  4.668446535474139
+ ],
+ "seat_dealins": 87,
+ "seat_deal_in_rate": 2.71875,
+ "seat_deal_in_ci": [
+  2.20945217189129,
+  3.341433989272234
+ ],
+ "win_pass": false,
+ "deal_in_pass": false,
+ "ryuukyoku": 674,
+ "tenpai_at_end": 18.0,
+ "per_seat_wins": [
+  28,
+  32,
+  39,
+  27
+ ],
+ "per_seat_dealins": [
+  16,
+  15,
+  33,
+  23
+ ],
+ "action_counts": {
+  "discard": 59225,
+  "riichi": 297,
+  "chi": 4736,
+  "pon": 115,
+  "kan": 6,
+  "tsumo": 39,
+  "ron": 87,
+  "pass": 173628
+ }
+}
