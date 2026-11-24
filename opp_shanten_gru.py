@@ -25,7 +25,7 @@ def collect(deals=40, seed=2026):
     Xs, seqs, Ysh, Ytp = [], [], [], []
     for g in range(deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=seed + g * 131)
-        pols = {i: POL.make_policy("greedy_tenpai", seed=seed + g * 97 + i) for i in range(4)}
+        pols = {i: POL.make_policy("eff_wuke", seed=seed + g * 97 + i) for i in range(4)}
         r = env.start_turn(); steps = 0
         while r is None and steps < 500:
             steps += 1
