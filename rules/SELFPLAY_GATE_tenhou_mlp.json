@@ -1,43 +1,43 @@
 {
  "label": "tenhou_mlp",
- "deals": 20,
- "seat_deals": 80,
- "seat_wins": 0,
- "seat_win_rate": 0.0,
+ "deals": 800,
+ "seat_deals": 3200,
+ "seat_wins": 3,
+ "seat_win_rate": 0.09375,
  "seat_win_ci": [
-  -3.3104778076311656e-16,
-  4.58197362645751
+  0.03188789070827622,
+  0.27529333822638774
  ],
- "seat_dealins": 0,
- "seat_deal_in_rate": 0.0,
+ "seat_dealins": 2,
+ "seat_deal_in_rate": 0.0625,
  "seat_deal_in_ci": [
-  -3.3104778076311656e-16,
-  4.58197362645751
+  0.017141069068413905,
+  0.22761510114923977
  ],
  "win_pass": false,
  "deal_in_pass": false,
- "ryuukyoku": 20,
- "tenpai_at_end": 0.0,
+ "ryuukyoku": 797,
+ "tenpai_at_end": 0.125,
  "per_seat_wins": [
+  1,
+  1,
   0,
-  0,
-  0,
-  0
+  1
  ],
  "per_seat_dealins": [
   0,
   0,
-  0,
-  0
+  1,
+  1
  ],
  "action_counts": {
-  "discard": 1443,
+  "discard": 57667,
   "riichi": 0,
   "chi": 0,
-  "pon": 3,
-  "kan": 1,
-  "tsumo": 0,
-  "ron": 0,
-  "pass": 4326
+  "pon": 149,
+  "kan": 89,
+  "tsumo": 1,
+  "ron": 2,
+  "pass": 172850
  }
 }

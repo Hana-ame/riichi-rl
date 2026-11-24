@@ -52,3 +52,28 @@ $PY data/houou/dl_small.sh  # 下载 2024 chunk 00008-17（约 230MB）
 $PY tenhou_offline_bc.py --max-shards 6 --max-decisions 200000 \
     --epochs 8 --bs 512 --lr 1e-3 --out checkpoints/tenhou_mlp.pt
 ```
+
+## 800 局门槛评测（`eval_selfplay_gate.py --tenhou-ckpt --deals 800 --seed0 96000`）
+
+| 指标 | 读数 | 门槛 | 判定 |
+|---|---|---|---|
+| 每座位和牌 | **0.09%**（3/3200） | 15–25% | FAIL |
+| 每座位放铳 | **0.06%**（2/3200） | 9–20% | FAIL |
+| 流局 | **99.6%**（797/800） | — | — |
+| 终局听牌 | 0.1% | — | — |
+| 动作计数 | discard 57667 / riichi 0 / chi 0 / pon 149 / kan 89 / pass 172850 | — | pass 占 75% |
+
+## 判读
+
+MLP（560 粗特征）+ val_acc 0.59 **只能做分类，不能做对局决策**：
+- 立直 0 次、自摸 1 次、荣和 2 次——几乎不会主动和牌；
+- pass 占 75%（模型倾向选 PASS 槽 43，因为 Tenhou 数据里响应类 pass 多）；
+- 99.6% 流局、终局听牌 0.1%——完全不懂得推进牌型；
+- 根因：560 维粗特征丢失了**手牌结构/听牌/攻防**信息，MLP 容量也不够。
+
+## 结论
+
+Tenhou MLP 管道跑通但**不可用**。下一步：
+- 方案 A：把 Tenhou 数据转 obs2(786)（需完整 MahjongEnv 回放，成本高）；
+- 方案 B：Tenhou MLP 蒸馏到主模型（需对齐 obs2 特征，同样成本高）；
+- 方案 C：用 Tenhou **统计特征**（弃牌分布/立直频率）辅助现有主模型，而非替换。
