@@ -1,0 +1,43 @@
+{
+ "label": "ens_teacher47_eff_wuke_d2+teacher47_eff_wuke_d3+tenhou_big128",
+ "deals": 800,
+ "seat_deals": 3200,
+ "seat_wins": 492,
+ "seat_win_rate": 15.375,
+ "seat_win_ci": [
+  14.166784461553979,
+  16.66625047999869
+ ],
+ "seat_dealins": 382,
+ "seat_deal_in_rate": 11.9375,
+ "seat_deal_in_ci": [
+  10.859488656680254,
+  13.106789826001284
+ ],
+ "win_pass": true,
+ "deal_in_pass": true,
+ "ryuukyoku": 308,
+ "tenpai_at_end": 55.1875,
+ "per_seat_wins": [
+  103,
+  126,
+  140,
+  123
+ ],
+ "per_seat_dealins": [
+  115,
+  91,
+  92,
+  84
+ ],
+ "action_counts": {
+  "discard": 45124,
+  "riichi": 1766,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 110,
+  "ron": 386,
+  "pass": 140284
+ }
+}
