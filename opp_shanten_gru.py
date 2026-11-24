@@ -77,7 +77,7 @@ class MLP(nn.Module):
 class GRUNet(nn.Module):
     def __init__(self, din, hidden=128):
         super().__init__()
-        self.emb = nn.Embedding(N_TILES + 1, 16)
+        self.emb = nn.Embedding(192, 16)  # 4*SEQ=192
         self.gru = nn.GRU(16, hidden, batch_first=True)
         self.net = nn.Sequential(nn.Linear(din + hidden, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU())
         self.sh = nn.Linear(128, 7); self.tp = nn.Linear(128, 1)
@@ -93,7 +93,7 @@ class TransformerNet(nn.Module):
     """Transformer 替代 GRU：多头自注意力捕捉牌河顺序长距离依赖。"""
     def __init__(self, din, hidden=128, nhead=4, nlayers=2):
         super().__init__()
-        self.emb = nn.Embedding(N_TILES + 1, 16)
+        self.emb = nn.Embedding(192, 16)  # 4*SEQ=192
         self.pos_emb = nn.Embedding(SEQ, 16)  # 位置编码（SEQ=48）
         enc_layer = nn.TransformerEncoderLayer(
             d_model=16, nhead=4, dim_feedforward=64,
@@ -102,10 +102,14 @@ class TransformerNet(nn.Module):
         self.net = nn.Sequential(nn.Linear(din + 16, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU())
         self.sh = nn.Linear(128, 7); self.tp = nn.Linear(128, 1)
     def forward(self, x, seq):
-        e = self.emb(seq)  # (B, SEQ, 16)
-        pos = torch.arange(seq.shape[1], device=seq.device).unsqueeze(0)
+        # seq: (B, 4*SEQ) → reshape 为 (B, 4, SEQ)
+        B = seq.shape[0]
+        seq = seq.view(B, 4, -1)  # (B, 4, SEQ)
+        e = self.emb(seq)  # (B, 4, SEQ, 16)
+        e = e.reshape(B, 4 * seq.shape[2], 16)  # (B, 4*SEQ, 16)
+        pos = torch.arange(e.shape[1], device=e.device).unsqueeze(0)
         e = e + self.pos_emb(pos)
-        z = self.transformer(e)  # (B, SEQ, 16)
+        z = self.transformer(e)  # (B, 4*SEQ, 16)
         z = z.mean(dim=1)  # (B, 16)
         z = self.net(torch.cat([x, z], dim=1))
         return self.sh(z), self.tp(z).squeeze(-1)
