@@ -1,0 +1,12108 @@
+{
+ "meta": {
+  "ckpt": "teacher47_eff_wuke_d2.pt",
+  "seed": 7101
+ },
+ "initial": {
+  "wall": 83,
+  "turn": 0,
+  "dora": [
+   "4p"
+  ],
+  "players": [
+   {
+    "seat": 30,
+    "dealer": false,
+    "points": 25000,
+    "hand": [
+     "5m",
+     "8m",
+     "8m",
+     "3p",
+     "4p",
+     "7p",
+     "8p",
+     "8p",
+     "9p",
+     "4s",
+     "E",
+     "W",
+     "F"
+    ],
+    "river": [],
+    "melds": [],
+    "riichi": false
+   },
+   {
+    "seat": 27,
+    "dealer": true,
+    "points": 25000,
+    "hand": [
+     "3m",
+     "3m",
+     "5m",
+     "8m",
+     "1p",
+     "4p",
+     "6p",
+     "7p",
+     "9p",
+     "3s",
+     "4s",
+     "F",
+     "C"
+    ],
+    "river": [],
+    "melds": [],
+    "riichi": false
+   },
+   {
+    "seat": 28,
+    "dealer": false,
+    "points": 25000,
+    "hand": [
+     "3m",
+     "4m",
+     "6m",
+     "6m",
+     "8m",
+     "9m",
+     "9m",
+     "3p",
+     "6s",
+     "6s",
+     "6s",
+     "E",
+     "F"
+    ],
+    "river": [],
+    "melds": [],
+    "riichi": false
+   },
+   {
+    "seat": 29,
+    "dealer": false,
+    "points": 25000,
+    "hand": [
+     "1m",
+     "2m",
+     "2m",
+     "6m",
+     "7m",
+     "7m",
+     "9m",
+     "2p",
+     "3p",
+     "3p",
+     "5p",
+     "1s",
+     "4s"
+    ],
+    "river": [],
+    "melds": [],
+    "riichi": false
+   }
+  ],
+  "round": {
+   "wind": "E",
+   "kyoku": 1,
+   "honba": 0
+  }
+ },
+ "steps": [
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "F",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 82,
+    "turn": 0,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "E",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "2m",
+       "2m",
+       "6m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 1,
+    "seat": 1,
+    "tile": "F",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 14,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 81,
+    "turn": 1,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "E",
+       "N",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "2m",
+       "2m",
+       "6m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "E",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 81,
+    "turn": 1,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "2m",
+       "2m",
+       "6m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 3,
+    "seat": 2,
+    "tile": "E",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 16,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 80,
+    "turn": 2,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "6m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "6m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 80,
+    "turn": 2,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 5,
+    "seat": 3,
+    "tile": "6m",
+    "intent": "进攻",
+    "reason": "二向听，持续推进",
+    "shanten_after": 2,
+    "uke_count": 5,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 5.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 79,
+    "turn": 3,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "E",
+       "W",
+       "F"
+      ],
+      "river": [],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "E",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 79,
+    "turn": 3,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 7,
+    "seat": 0,
+    "tile": "E",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 15,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 7.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 78,
+    "turn": 4,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "C",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 78,
+    "turn": 4,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 9,
+    "seat": 1,
+    "tile": "C",
+    "intent": "进攻",
+    "reason": "二向听，持续推进",
+    "shanten_after": 2,
+    "uke_count": 11,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 77,
+    "turn": 5,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "N",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "N",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 77,
+    "turn": 5,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 11,
+    "seat": 2,
+    "tile": "N",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 18,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 76,
+    "turn": 6,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "9m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "9m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 76,
+    "turn": 6,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 13,
+    "seat": 3,
+    "tile": "9m",
+    "intent": "进攻",
+    "reason": "二向听，持续推进",
+    "shanten_after": 2,
+    "uke_count": 5,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 5.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 75,
+    "turn": 7,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "W",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "W",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 75,
+    "turn": 7,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 15,
+    "seat": 0,
+    "tile": "W",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 15,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 74,
+    "turn": 8,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "5m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 74,
+    "turn": 8,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 17,
+    "seat": 1,
+    "tile": "5m",
+    "intent": "进攻",
+    "reason": "自己1向听（一向听），推进牌型",
+    "shanten_after": 1,
+    "uke_count": 2,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 5.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 73,
+    "turn": 9,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "P",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "P",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 73,
+    "turn": 9,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 19,
+    "seat": 2,
+    "tile": "P",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 18,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 6.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 72,
+    "turn": 10,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "2p",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "2p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 72,
+    "turn": 10,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 21,
+    "seat": 3,
+    "tile": "2p",
+    "intent": "进攻",
+    "reason": "二向听，持续推进",
+    "shanten_after": 2,
+    "uke_count": 5,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 5.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 71,
+    "turn": 11,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "F",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "F",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 71,
+    "turn": 11,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 23,
+    "seat": 0,
+    "tile": "F",
+    "intent": "中立",
+    "reason": "3向听，整理牌型",
+    "shanten_after": 3,
+    "uke_count": 17,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 7.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 70,
+    "turn": 12,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "1p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "RIICHI",
+     "tile": "1p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 70,
+    "turn": 12,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 69,
+    "turn": 13,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s",
+       "F"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "F",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 69,
+    "turn": 13,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 27,
+    "seat": 2,
+    "tile": "F",
+    "intent": "防守",
+    "reason": "对手立直+自己3向听+第13巡，弃和保命",
+    "shanten_after": 3,
+    "uke_count": 22,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 6.4
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 68,
+    "turn": 14,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "5p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "5p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 68,
+    "turn": 14,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 29,
+    "seat": 3,
+    "tile": "5p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第14巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 5,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 67,
+    "turn": 15,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "1p",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "1p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 67,
+    "turn": 15,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 31,
+    "seat": 0,
+    "tile": "1p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第15巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 66,
+    "turn": 16,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "2s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 66,
+    "turn": 16,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 33,
+    "seat": 1,
+    "tile": "2s",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 5.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 65,
+    "turn": 17,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "6p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 65,
+    "turn": 17,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 35,
+    "seat": 2,
+    "tile": "6p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第17巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 7,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 64,
+    "turn": 18,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "C",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 64,
+    "turn": 18,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 37,
+    "seat": 3,
+    "tile": "C",
+    "intent": "进攻",
+    "reason": "自己1向听（一向听），推进牌型",
+    "shanten_after": 1,
+    "uke_count": 3,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 5.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 63,
+    "turn": 19,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "8p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 63,
+    "turn": 19,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 39,
+    "seat": 0,
+    "tile": "8p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第19巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 62,
+    "turn": 20,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s",
+       "W"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "W",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 62,
+    "turn": 20,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 41,
+    "seat": 1,
+    "tile": "W",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 7.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 61,
+    "turn": 21,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "4s",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "4s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 61,
+    "turn": 21,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 43,
+    "seat": 2,
+    "tile": "4s",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第21巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 7,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 60,
+    "turn": 22,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "4s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "4s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 60,
+    "turn": 22,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 45,
+    "seat": 3,
+    "tile": "4s",
+    "intent": "进攻",
+    "reason": "自己1向听（一向听），推进牌型",
+    "shanten_after": 1,
+    "uke_count": 3,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 59,
+    "turn": 23,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "9p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 59,
+    "turn": 23,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 47,
+    "seat": 0,
+    "tile": "9p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第23巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 58,
+    "turn": 24,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "5p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 58,
+    "turn": 24,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 49,
+    "seat": 1,
+    "tile": "5p",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 6.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 57,
+    "turn": 25,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "7s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "7s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 57,
+    "turn": 25,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 51,
+    "seat": 2,
+    "tile": "7s",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第25巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 7,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 56,
+    "turn": 26,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "7s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s"
+      ],
+      "melds": [],
+      "riichi": false
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "RIICHI",
+     "tile": "7s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 56,
+    "turn": 26,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 55,
+    "turn": 27,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "9p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 55,
+    "turn": 27,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 55,
+    "seat": 0,
+    "tile": "9p",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第27巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 54,
+    "turn": 28,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "2p",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "2p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 54,
+    "turn": 28,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 57,
+    "seat": 1,
+    "tile": "2p",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 53,
+    "turn": 29,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "3m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 53,
+    "turn": 29,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 59,
+    "seat": 2,
+    "tile": "3m",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第29巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 11,
+    "waits": [],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 52,
+    "turn": 30,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "5s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "5s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 52,
+    "turn": 30,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 61,
+    "seat": 3,
+    "tile": "5s",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "8s"
+    ],
+    "han_potential": 0.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 51,
+    "turn": 31,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "7s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "7s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 51,
+    "turn": 31,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 63,
+    "seat": 0,
+    "tile": "7s",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第31巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 5.4
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 50,
+    "turn": 32,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s",
+       "N"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "N",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 50,
+    "turn": 32,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 65,
+    "seat": 1,
+    "tile": "N",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 5.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 49,
+    "turn": 33,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "9m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 49,
+    "turn": 33,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 67,
+    "seat": 2,
+    "tile": "9m",
+    "intent": "进攻",
+    "reason": "自己1向听（一向听），推进牌型",
+    "shanten_after": 1,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 48,
+    "turn": 34,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "8p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 3,
+     "kind": "DISCARD",
+     "tile": "8p",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 48,
+    "turn": 34,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 69,
+    "seat": 3,
+    "tile": "8p",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "8s"
+    ],
+    "han_potential": 0.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 47,
+    "turn": 35,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "DISCARD",
+     "tile": "2s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 47,
+    "turn": 35,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 71,
+    "seat": 0,
+    "tile": "2s",
+    "intent": "防守",
+    "reason": "对手立直+自己2向听+第35巡，弃和保命",
+    "shanten_after": 2,
+    "uke_count": 5,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 4.2
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 46,
+    "turn": 36,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "5m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 1,
+     "kind": "DISCARD",
+     "tile": "5m",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 46,
+    "turn": 36,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 73,
+    "seat": 1,
+    "tile": "5m",
+    "intent": "进攻",
+    "reason": "自己0向听（听牌），推进牌型",
+    "shanten_after": 0,
+    "uke_count": 1,
+    "waits": [
+     "7m"
+    ],
+    "han_potential": 1.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 2,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 45,
+    "turn": 37,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "8s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 2,
+     "kind": "DISCARD",
+     "tile": "8s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 45,
+    "turn": 37,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m",
+       "8s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 24000,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   },
+   "annot": {
+    "step": 75,
+    "seat": 2,
+    "tile": "8s",
+    "intent": "进攻",
+    "reason": "自己1向听（一向听），推进牌型",
+    "shanten_after": 1,
+    "uke_count": 4,
+    "waits": [],
+    "han_potential": 1.5,
+    "safety": 3.0
+   }
+  },
+  {
+   "events": [
+    {
+     "seat": 0,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 1,
+     "kind": "PASS",
+     "tile": null,
+     "is_call": false
+    },
+    {
+     "seat": 3,
+     "kind": "RON",
+     "tile": "8s",
+     "is_call": false
+    }
+   ],
+   "snap": {
+    "wall": 45,
+    "turn": 37,
+    "dora": [
+     "4p"
+    ],
+    "players": [
+     {
+      "seat": 30,
+      "dealer": false,
+      "points": 25000,
+      "hand": [
+       "3m",
+       "5m",
+       "8m",
+       "8m",
+       "3p",
+       "4p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "4s",
+       "5s",
+       "C"
+      ],
+      "river": [
+       "E",
+       "W",
+       "F",
+       "1p",
+       "8p",
+       "9p",
+       "9p",
+       "7s",
+       "2s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 27,
+      "dealer": true,
+      "points": 24000,
+      "hand": [
+       "3m",
+       "3m",
+       "8m",
+       "9m",
+       "4p",
+       "5p",
+       "6p",
+       "7p",
+       "8p",
+       "9p",
+       "2s",
+       "3s",
+       "4s"
+      ],
+      "river": [
+       "F",
+       "C",
+       "5m",
+       "1p",
+       "2s",
+       "W",
+       "5p",
+       "2p",
+       "N",
+       "5m"
+      ],
+      "melds": [],
+      "riichi": true
+     },
+     {
+      "seat": 28,
+      "dealer": false,
+      "points": 21800,
+      "hand": [
+       "4m",
+       "6m",
+       "6m",
+       "8m",
+       "9m",
+       "2p",
+       "3p",
+       "4p",
+       "6s",
+       "6s",
+       "6s",
+       "S",
+       "S"
+      ],
+      "river": [
+       "E",
+       "N",
+       "P",
+       "F",
+       "6p",
+       "4s",
+       "7s",
+       "3m",
+       "9m",
+       "8s"
+      ],
+      "melds": [],
+      "riichi": false
+     },
+     {
+      "seat": 29,
+      "dealer": false,
+      "points": 29200,
+      "hand": [
+       "1m",
+       "1m",
+       "2m",
+       "2m",
+       "7m",
+       "7m",
+       "3p",
+       "3p",
+       "7p",
+       "7p",
+       "1s",
+       "1s",
+       "8s"
+      ],
+      "river": [
+       "6m",
+       "9m",
+       "2p",
+       "5p",
+       "C",
+       "4s",
+       "7s",
+       "5s",
+       "8p"
+      ],
+      "melds": [],
+      "riichi": true
+     }
+    ],
+    "round": {
+     "wind": "E",
+     "kyoku": 1,
+     "honba": 0
+    }
+   }
+  }
+ ],
+ "result": {
+  "type": "ron",
+  "winner": 3,
+  "from": 2,
+  "dora_count": 0,
+  "aka": 0,
+  "ura": 0,
+  "yaku": [
+   "立直",
+   "七对子"
+  ],
+  "han": 3
+ },
+ "annotations": [
+  {
+   "step": 1,
+   "seat": 1,
+   "tile": "F",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 14,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 6.0
+  },
+  {
+   "step": 3,
+   "seat": 2,
+   "tile": "E",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 16,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 6.0
+  },
+  {
+   "step": 5,
+   "seat": 3,
+   "tile": "6m",
+   "intent": "进攻",
+   "reason": "二向听，持续推进",
+   "shanten_after": 2,
+   "uke_count": 5,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 5.0
+  },
+  {
+   "step": 7,
+   "seat": 0,
+   "tile": "E",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 15,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 7.2
+  },
+  {
+   "step": 9,
+   "seat": 1,
+   "tile": "C",
+   "intent": "进攻",
+   "reason": "二向听，持续推进",
+   "shanten_after": 2,
+   "uke_count": 11,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 6.0
+  },
+  {
+   "step": 11,
+   "seat": 2,
+   "tile": "N",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 18,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 6.0
+  },
+  {
+   "step": 13,
+   "seat": 3,
+   "tile": "9m",
+   "intent": "进攻",
+   "reason": "二向听，持续推进",
+   "shanten_after": 2,
+   "uke_count": 5,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 5.0
+  },
+  {
+   "step": 15,
+   "seat": 0,
+   "tile": "W",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 15,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 6.0
+  },
+  {
+   "step": 17,
+   "seat": 1,
+   "tile": "5m",
+   "intent": "进攻",
+   "reason": "自己1向听（一向听），推进牌型",
+   "shanten_after": 1,
+   "uke_count": 2,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 5.0
+  },
+  {
+   "step": 19,
+   "seat": 2,
+   "tile": "P",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 18,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 6.0
+  },
+  {
+   "step": 21,
+   "seat": 3,
+   "tile": "2p",
+   "intent": "进攻",
+   "reason": "二向听，持续推进",
+   "shanten_after": 2,
+   "uke_count": 5,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 5.0
+  },
+  {
+   "step": 23,
+   "seat": 0,
+   "tile": "F",
+   "intent": "中立",
+   "reason": "3向听，整理牌型",
+   "shanten_after": 3,
+   "uke_count": 17,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 7.2
+  },
+  {
+   "step": 27,
+   "seat": 2,
+   "tile": "F",
+   "intent": "防守",
+   "reason": "对手立直+自己3向听+第13巡，弃和保命",
+   "shanten_after": 3,
+   "uke_count": 22,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 6.4
+  },
+  {
+   "step": 29,
+   "seat": 3,
+   "tile": "5p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第14巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 5,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 31,
+   "seat": 0,
+   "tile": "1p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第15巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 4.2
+  },
+  {
+   "step": 33,
+   "seat": 1,
+   "tile": "2s",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 5.0
+  },
+  {
+   "step": 35,
+   "seat": 2,
+   "tile": "6p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第17巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 7,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 37,
+   "seat": 3,
+   "tile": "C",
+   "intent": "进攻",
+   "reason": "自己1向听（一向听），推进牌型",
+   "shanten_after": 1,
+   "uke_count": 3,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 5.2
+  },
+  {
+   "step": 39,
+   "seat": 0,
+   "tile": "8p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第19巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 3.0
+  },
+  {
+   "step": 41,
+   "seat": 1,
+   "tile": "W",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 7.2
+  },
+  {
+   "step": 43,
+   "seat": 2,
+   "tile": "4s",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第21巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 7,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 45,
+   "seat": 3,
+   "tile": "4s",
+   "intent": "进攻",
+   "reason": "自己1向听（一向听），推进牌型",
+   "shanten_after": 1,
+   "uke_count": 3,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 4.2
+  },
+  {
+   "step": 47,
+   "seat": 0,
+   "tile": "9p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第23巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 3.0
+  },
+  {
+   "step": 49,
+   "seat": 1,
+   "tile": "5p",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 6.2
+  },
+  {
+   "step": 51,
+   "seat": 2,
+   "tile": "7s",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第25巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 7,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 55,
+   "seat": 0,
+   "tile": "9p",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第27巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 3.0
+  },
+  {
+   "step": 57,
+   "seat": 1,
+   "tile": "2p",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 4.2
+  },
+  {
+   "step": 59,
+   "seat": 2,
+   "tile": "3m",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第29巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 11,
+   "waits": [],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 61,
+   "seat": 3,
+   "tile": "5s",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "8s"
+   ],
+   "han_potential": 0.5,
+   "safety": 3.0
+  },
+  {
+   "step": 63,
+   "seat": 0,
+   "tile": "7s",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第31巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 5.4
+  },
+  {
+   "step": 65,
+   "seat": 1,
+   "tile": "N",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 5.2
+  },
+  {
+   "step": 67,
+   "seat": 2,
+   "tile": "9m",
+   "intent": "进攻",
+   "reason": "自己1向听（一向听），推进牌型",
+   "shanten_after": 1,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 4.2
+  },
+  {
+   "step": 69,
+   "seat": 3,
+   "tile": "8p",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "8s"
+   ],
+   "han_potential": 0.5,
+   "safety": 4.2
+  },
+  {
+   "step": 71,
+   "seat": 0,
+   "tile": "2s",
+   "intent": "防守",
+   "reason": "对手立直+自己2向听+第35巡，弃和保命",
+   "shanten_after": 2,
+   "uke_count": 5,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 4.2
+  },
+  {
+   "step": 73,
+   "seat": 1,
+   "tile": "5m",
+   "intent": "进攻",
+   "reason": "自己0向听（听牌），推进牌型",
+   "shanten_after": 0,
+   "uke_count": 1,
+   "waits": [
+    "7m"
+   ],
+   "han_potential": 1.5,
+   "safety": 3.0
+  },
+  {
+   "step": 75,
+   "seat": 2,
+   "tile": "8s",
+   "intent": "进攻",
+   "reason": "自己1向听（一向听），推进牌型",
+   "shanten_after": 1,
+   "uke_count": 4,
+   "waits": [],
+   "han_potential": 1.5,
+   "safety": 3.0
+  }
+ ]
+}
