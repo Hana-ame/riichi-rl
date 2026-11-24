@@ -219,15 +219,22 @@ def build_participants():
         except Exception as e:
             print(f"[skip] {name} 加载失败: {e}", flush=True)
 
-    add(V1Agent, "riichi_net(纯RL)", "riichi_net.pt")
-    add(V1Agent, "from_games_v1(蒸馏)", "from_games_v1.pt")
-    add(V1Agent, "from_games_v2(蒸馏)", "from_games_v2.pt")
+    # V1Agent 是 54 槽旧架构，与本 arena 47 槽模型不兼容（logits 54 vs 47），
+    # 2026-11-24 实测触发 ValueError。需要时用独立 54 槽 arena。
+    # add(V1Agent, "riichi_net(纯RL)", "riichi_net.pt")
+    # add(V1Agent, "from_games_v1(蒸馏)", "from_games_v1.pt")
+    # add(V1Agent, "from_games_v2(蒸馏)", "from_games_v2.pt")
     add(HanchanAgent, "a2c_r10(半庄A2C)", "a2c_r10_it25.pt")
     add(HanchanAgent, "dagger(半庄DAgger)", "dagger_it120.pt")
     add(HanchanAgent, "hc(半庄HC)", "hc_r13_it55.pt")
     add(HanchanAgent, "teacher47_v3(加权BC)", "teacher47_v3.pt")
     add(HanchanAgent, "teacher47_100h_v2(最优BC)", "teacher47_100h_v2.pt")
-    add(BCAgent, "bc_v1(人类牌谱教师)", "bc_v1_last.pt")
+    # bc_v1 是 54 槽旧架构，与本 arena 其他 47 槽模型不兼容（logits 54 vs 47），
+    # 2026-11-24 实测触发 ValueError，已剔除。需要时用独立 54 槽 arena。
+    # add(BCAgent, "bc_v1(人类牌谱教师)", "bc_v1_last.pt")
+    # 新增：eff_uke 系（2026-11-06 牌效教师线）
+    add(HanchanAgent, "eff_wuke_d2(牌效d2)", "teacher47_eff_wuke_d2.pt")
+    add(HanchanAgent, "tenhou_bc(Tenhou人类)", "tenhou_bc.pt")
     return P
 
 
