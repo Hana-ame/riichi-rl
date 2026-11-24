@@ -17,7 +17,7 @@ from mahjong.hanchan import HanchanState
 from mahjong import policies as POL
 from opponent_model import IN_DIM, N_TILES, build_features
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SEQ = 24
+SEQ = 48
 PAD = 34
 
 
