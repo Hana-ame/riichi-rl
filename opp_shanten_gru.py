@@ -89,6 +89,28 @@ class GRUNet(nn.Module):
         return self.sh(z), self.tp(z).squeeze(-1)
 
 
+class TransformerNet(nn.Module):
+    """Transformer 替代 GRU：多头自注意力捕捉牌河顺序长距离依赖。"""
+    def __init__(self, din, hidden=128, nhead=4, nlayers=2):
+        super().__init__()
+        self.emb = nn.Embedding(N_TILES + 1, 16)
+        self.pos_emb = nn.Embedding(SEQ, 16)  # 位置编码（SEQ=48）
+        enc_layer = nn.TransformerEncoderLayer(
+            d_model=16, nhead=4, dim_feedforward=64,
+            batch_first=True, dropout=0.1)
+        self.transformer = nn.TransformerEncoder(enc_layer, num_layers=nlayers)
+        self.net = nn.Sequential(nn.Linear(din + 16, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU())
+        self.sh = nn.Linear(128, 7); self.tp = nn.Linear(128, 1)
+    def forward(self, x, seq):
+        e = self.emb(seq)  # (B, SEQ, 16)
+        pos = torch.arange(seq.shape[1], device=seq.device).unsqueeze(0)
+        e = e + self.pos_emb(pos)
+        z = self.transformer(e)  # (B, SEQ, 16)
+        z = z.mean(dim=1)  # (B, 16)
+        z = self.net(torch.cat([x, z], dim=1))
+        return self.sh(z), self.tp(z).squeeze(-1)
+
+
 def auc(scores, labels):
     order = np.argsort(scores); ranks = np.empty_like(order); ranks[order] = np.arange(len(scores))
     npos = labels.sum(); nneg = len(labels) - npos
@@ -106,7 +128,8 @@ def run(deals=40, epochs=10):
     Xt = torch.from_numpy(X[tr]); St = torch.from_numpy(S[tr]); Sht = torch.from_numpy(Ysh[tr]); Tpt = torch.from_numpy(Ytp[tr])
     Xv = torch.from_numpy(X[va]); Sv = torch.from_numpy(S[va]); Shv = torch.from_numpy(Ysh[va]); Tpv = torch.from_numpy(Ytp[va])
     for name, build, use_seq in (("mlp_base108", lambda d: MLP(d), False),
-                                  ("gru_order", lambda d: GRUNet(d), True)):
+                                  ("gru_order", lambda d: GRUNet(d), True),
+                                  ("transformer_order", lambda d: TransformerNet(d), True)):
         net = build(IN_DIM); opt = torch.optim.Adam(net.parameters(), 1e-3)
         for ep in range(epochs):
             perm = torch.randperm(len(Xt))
@@ -127,8 +150,11 @@ def run(deals=40, epochs=10):
         res[name] = {"mae": round(mae, 3), "tenpai_auc": round(auc_t, 3)}
         print(name, res[name], flush=True)
     gain = res["mlp_base108"]["mae"] - res["gru_order"]["mae"]
+    gain_tf = res["mlp_base108"]["mae"] - res["transformer_order"]["mae"]
     res["mae_gain_order_vs_base"] = round(gain, 3)
+    res["mae_gain_transformer_vs_base"] = round(gain_tf, 3)
     print(f"顺序 GRU 相对无顺序 MLP：MAE 降低 {gain:.3f}（验收线 0.2）", flush=True)
+    print(f"顺序 Transformer 相对无顺序 MLP：MAE 降低 {gain_tf:.3f}（验收线 0.2）", flush=True)
     with open(os.path.join(ROOT, "rules", "OPP_SHANTEN_GRU_2026-11-05.json"), "w") as f:
         json.dump(res, f, ensure_ascii=False, indent=1)
     return res
