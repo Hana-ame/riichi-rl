@@ -183,7 +183,7 @@ def main():
     encoder = ObsEncoder()
 
     cap = args.max_decisions
-    obs_dim = O2.OBS_TENSOR_DIM + SIT_DIM
+    obs_dim = O2.OBS_TENSOR_DIM + SIT_DIM  # 动态获取
     X = np.empty((cap, obs_dim), dtype=np.float32)
     TF = np.empty((cap, 8), dtype=np.float32)  # touch features
     EV = np.empty((cap, ES.DEFAULT_EVENT_LEN, 4), dtype=np.int64)
