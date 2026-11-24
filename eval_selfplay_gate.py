@@ -50,6 +50,8 @@ def main():
                     help="模型自己决定立直（去掉规则强制立直）")
     ap.add_argument("--tenhou-ckpt", default="",
                     help="Tenhou 离线 MLP（tenhou_agent.TenhouMLPAgent）")
+    ap.add_argument("--hybrid-call", default="",
+                    help="HybridCallAgent：叫牌用此 ckpt，弃牌用 --ckpt")
     ap.add_argument("--dora-keep", action="store_true", help="宝牌保值：压低打宝牌的 logit")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
@@ -100,10 +102,13 @@ def main():
     t0 = time.time()
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
-        if a.tenhou_ckpt:
-            from tenhou_agent import TenhouMLPAgent
-            ags = [TenhouMLPAgent(label, path) for _ in range(4)]
-        elif a.model_choice_ckpt:
+        if a.hybrid_call:
+            from hybrid_call_agent import HybridCallAgent
+            call_p = a.hybrid_call if a.hybrid_call.endswith(".pt") else os.path.join("checkpoints", a.hybrid_call + ".pt")
+            disc_p = a.ckpt if a.ckpt.endswith(".pt") else os.path.join("checkpoints", a.ckpt + ".pt")
+            label = f"hybrid_call_{os.path.basename(call_p).replace('.pt','')}"
+            ags = [HybridCallAgent(label, call_p, disc_p) for _ in range(4)]
+        elif a.tenhou_ckpt:
             from model_choice_agent import ModelChoiceAgent
             ags = [ModelChoiceAgent(label, path) for _ in range(4)]
         elif a.dora_ckpt:

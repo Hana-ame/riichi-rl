@@ -59,3 +59,20 @@ $PY train_teacher_bc.py --data data/hybrid_lmcall60.npz --init checkpoints/teach
     --out checkpoints/teacher47_eff_calllm.pt
 $PY eval_selfplay_gate.py --ckpt teacher47_eff_calllm --deals 120 --seed0 92000
 ```
+
+## Hybrid 副露 240 局（2026-11-24 18:00）：叫牌多了 40 倍但和牌降 7pt
+
+`eval_selfplay_gate.py --hybrid-call tenhou_bc --ckpt teacher47_eff_wuke_d2 --deals 240 --seed0 92000`：
+
+| 配置 | 局数 | 每座位和牌 | 每座位放铳 | 流局 | chi/pon/kan |
+|---|---|---|---|---|---|
+| eff_wuke_d2（不叫） | 240 | **16.46%**（79/480） | 11.46% | 34.2% | 0/0/0 |
+| **hybrid_call_tenhou_bc（叫）** | 240 | **9.58%**（92/960） | 7.29%（70/960） | 61.7% | **1036/361/11** |
+
+- 叫牌 1408 次（vs 不叫 0），和牌 **−6.88pt**、放铳 −4.17pt、流局 +27.5pt；
+- 结论：**Tenhou BC 叫牌在本引擎下是负收益**（叫了但没和），与之前规则 call-teacher
+  （12.5%→10.0%）、LM 叫牌（15.62%→10.83%）方向一致；
+- **副露模型化的核心困难**：47 槽 BC 学不会（1 次/120 局）、独立二分类头
+  （val_acc 0.857）叫太多反崩、Hybrid LM/BC 叫了不转化——所有路径都负收益；
+- 结论：**副露模型化需要改动作空间表示**（把 chi/pon 做成独立头并平衡采样），
+  或需要**改本引擎的叫牌收益**（当前引擎结构下叫牌天然不如门清推进）。
