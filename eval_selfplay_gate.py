@@ -52,6 +52,8 @@ def main():
                     help="Tenhou 离线 MLP（tenhou_agent.TenhouMLPAgent）")
     ap.add_argument("--hybrid-call", default="",
                     help="HybridCallAgent：叫牌用此 ckpt，弃牌用 --ckpt")
+    ap.add_argument("--mode", default="hanchan", choices=["hanchan", "east"],
+                    help="hanchan=半庄 E1-S4，east=东风战 E1-E4")
     ap.add_argument("--dora-keep", action="store_true", help="宝牌保值：压低打宝牌的 logit")
     ap.add_argument("--deals", type=int, default=60)
     ap.add_argument("--seed0", type=int, default=91000)
@@ -101,7 +103,8 @@ def main():
                "tsumo": 0, "ron": 0, "pass": 0}
     t0 = time.time()
     for g in range(a.deals):
-        h = HanchanState(dealer=g % 4); env = h.new_env(seed=a.seed0 + g)
+        h = HanchanState(dealer=g % 4, east_only=(a.mode == "east"))
+        env = h.new_env(seed=a.seed0 + g)
         if a.hybrid_call:
             from hybrid_call_agent import HybridCallAgent
             call_p = a.hybrid_call if a.hybrid_call.endswith(".pt") else os.path.join("checkpoints", a.hybrid_call + ".pt")
