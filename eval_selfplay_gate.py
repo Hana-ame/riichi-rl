@@ -54,6 +54,8 @@ def main():
                     help="模型自己决定立直（去掉规则强制立直）")
     ap.add_argument("--tenhou-ckpt", default="",
                     help="Tenhou 离线 MLP（tenhou_agent.TenhouMLPAgent）")
+    ap.add_argument("--dual-stream-ckpt", default="",
+                    help="DualStreamMahjongNet（dual_stream_agent.DualStreamAgent）")
     ap.add_argument("--hybrid-call", default="",
                     help="HybridCallAgent：叫牌用此 ckpt，弃牌用 --ckpt")
     ap.add_argument("--mode", default="hanchan", choices=["hanchan", "east"],
@@ -111,7 +113,12 @@ def main():
     for g in range(a.deals):
         h = HanchanState(dealer=g % 4, east_only=(a.mode == "east"))
         env = h.new_env(seed=a.seed0 + g)
-        if a.hybrid_call:
+        if a.dual_stream_ckpt:
+            from dual_stream_agent import DualStreamAgent
+            ds_p = a.dual_stream_ckpt if a.dual_stream_ckpt.endswith(".pt") else os.path.join("checkpoints", a.dual_stream_ckpt + ".pt")
+            label = f"{os.path.basename(ds_p).replace('.pt','')}"
+            ags = [DualStreamAgent(label, ds_p) for _ in range(4)]
+        elif a.hybrid_call:
             from hybrid_call_agent import HybridCallAgent
             call_p = a.hybrid_call if a.hybrid_call.endswith(".pt") else os.path.join("checkpoints", a.hybrid_call + ".pt")
             disc_p = a.ckpt if a.ckpt.endswith(".pt") else os.path.join("checkpoints", a.ckpt + ".pt")

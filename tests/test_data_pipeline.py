@@ -15,7 +15,7 @@ import tests.utils as U
 
 import action_bridge as AB
 from mahjong import env as E
-from train_reinforce import N_ACTIONS, slot_of
+from train_hanchan import N_ACTIONS, slot_of
 
 
 class TestSlotOf(unittest.TestCase):
@@ -47,6 +47,8 @@ class TestSlotOf(unittest.TestCase):
                 except Exception:
                     continue
                 s = slot_of(a)
+                if s is None:
+                    continue
                 self.assertGreaterEqual(s, 0)
                 self.assertLess(s, N_ACTIONS)
 

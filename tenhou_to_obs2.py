@@ -55,17 +55,10 @@ class _Player:
     def full_counts(self):
         """返回 (34,) 手牌+副露合并计数，供 hand_shanten 使用。"""
         c = self.counts()
-        for kind, t, consumed in self.melds:
-            if kind == "chi":
-                for dt in range(3):
-                    if t + dt < NUM_TILES:
-                        c[t + dt] += 1
-            elif kind == "pon":
-                if t < NUM_TILES:
-                    c[t] += 3
-            elif kind in ("ankan", "minkan", "addkan"):
-                if t < NUM_TILES:
-                    c[t] += 4
+        for meld in self.melds:
+            for t in meld:
+                if 0 <= t < NUM_TILES:
+                    c[t] += 1
         return c
 
 
@@ -84,9 +77,16 @@ class TenhouPseudoEnv:
         self.players[me].hand = [t for t in range(34) for _ in range(int(d.hand_counts[t]))]
         # 自己弃牌（river）
         self.players[me].river = [t for t in range(34) for _ in range(int(d.discards[t]))]
-        # 自己副露
-        self.players[me].melds = [(("chi" if len(m) == 3 else "pon"), m[0], (-1,))
-                                  for m in d.melds_by[me] if len(m) >= 2]
+        # 自己副露（melds_by 是 [[t1,t2,t3],...] 列表的列表，转成 (kind, tile, meta) 格式）
+        self.players[me].melds = []
+        for m in d.melds_by[me]:
+            if len(m) == 3:
+                kind = "chi"
+            elif len(m) == 4:
+                kind = "pon"
+            else:
+                kind = "kan"
+            self.players[me].melds.append((kind, m[0], (-1,)))
         # 自己立直
         self.players[me].riichi = bool(d.riichi_flags[me])
 
@@ -97,8 +97,15 @@ class TenhouPseudoEnv:
             for t in range(34):
                 cnt = int(d.discards_by[other, t])
                 q.river.extend([t] * cnt)
-            q.melds = [(("chi" if len(m) == 3 else "pon"), m[0], (-1,))
-                       for m in d.melds_by[other] if len(m) >= 2]
+            q.melds = []
+            for m in d.melds_by[other]:
+                if len(m) == 3:
+                    kind = "chi"
+                elif len(m) == 4:
+                    kind = "pon"
+                else:
+                    kind = "kan"
+                q.melds.append((kind, m[0], (-1,)))
             q.riichi = bool(d.riichi_flags[other])
             q.genbutsu = set(q.river)
 
