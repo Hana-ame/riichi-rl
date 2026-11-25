@@ -407,3 +407,22 @@ rules/SELFPLAY_GATE_ens3_east480.json），池 2 待补。
 - Tenhou big128 v2 **远低于门槛**（和牌 3.25% vs eff_wuke_d2 15.97%，差 12.7pt）；
 - 根因：Tenhou 人类数据（鳳凰卓玩家混合策略）标签熵高，128ch/5blk 模型容量不足；
 - 结论：Tenhou 数据只能作辅助，不能作为主训练数据源。
+
+## Tenhou BC v3（64ch/4blk，obs2 29平面）800 局门槛：2.41%/1.53%（远低于门槛）
+
+`train_teacher_bc.py --data tenhou_obs2.npz --channels 64 --blocks 4 --epochs 6`
+→ `checkpoints/tenhou_bc_v3.pt`（val_acc 0.358）
+
+800 局门槛（`eval_selfplay_gate.py --ckpt tenhou_bc_v3 --mode hanchan --deals 800 --seed0 96000`）：
+
+| 指标 | 读数（3200 座位·局） | CI | 门槛 | 判定 |
+|---|---|---|---|---|
+| 每座位和牌 | **2.41%**（77/3200） | [1.93, 3.00] | 15–25% | FAIL |
+| 每座位放铳 | **1.53%**（49/3200） | [1.16, 2.02] | 9–20% | FAIL |
+| 流局 | 723/800 = 90.4% | — | — | — |
+| 终局听牌 | 10.7% | — | — | — |
+| 分座位和牌 | [17, 19, 18, 23] | — | — | — |
+
+- Tenhou BC v3 **远低于门槛**（和牌 2.41% vs eff_wuke_d2 15.81%，差 13.4pt）；
+- 根因：Tenhou 人类数据（鳳凰卓玩家混合策略）标签熵高，64ch/4blk 模型容量不足；
+- 结论：Tenhou 数据只能作辅助，不能作为主训练数据源。
