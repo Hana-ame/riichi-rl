@@ -213,9 +213,11 @@ def main():
     W = sum(seat_w); D = sum(seat_d)
     wr = 100 * W / N_deal; dr = 100 * D / N_deal
     wci = wilson(W, N_deal); dci = wilson(D, N_deal)
-    # 每手有 4 个座位，故每座位·手分母 = total_hands × 4
-    hwr = 100 * hand_wins / N if N else 0.0    # 每手（每座位·手）和牌率
-    hdr = 100 * hand_dealins / N if N else 0.0  # 每手（每座位·手）放铳率
+    # 每手口径：和了手数/总手数、放铳手数/总手数（每手至多 1 家和牌/1 家放铳，
+    # 分母用总手数，CI 与显示一致——不要改成 N=4*hands 的座位·手分母，否则
+    # 会与下面的 Wilson CI(n=total_hands) 自相矛盾）。
+    hwr = 100 * hand_wins / total_hands if total_hands else 0.0     # 每手和牌率
+    hdr = 100 * hand_dealins / total_hands if total_hands else 0.0  # 每手放铳率
     hwci = wilson(hand_wins, total_hands); hdci = wilson(hand_dealins, total_hands)
     print(f"=== 4 席自对弈硬门槛：{label}  {a.deals} 场半庄 / {total_hands} 手 "
           f"({N_deal} 座位·场, {N} 座位·手) {time.time()-t0:.0f}s ===")
