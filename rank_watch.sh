@@ -3,10 +3,10 @@
 # 用法: setsid nohup bash rank_watch.sh > /tmp/rank_watch.log 2>&1 &
 PY=/home/lumin/miniconda3/bin/python
 CKDIR=/mnt/e/riichi-rl/checkpoints
+PATTERN="ppo_rank_v2_it*.pt"
 LAST=""
 while true; do
-  # 找最新的 ppo_rank_v1_itNN.pt（排除中间 _itN.pt 单数位）
-  NEW=$(ls -t $CKDIR/ppo_rank_v1_it*.pt 2>/dev/null | grep -E "it[0-9]+\.pt$" | head -1)
+  NEW=$(ls -t $CKDIR/$PATTERN 2>/dev/null | grep -E "it[0-9]+\.pt$" | head -1)
   if [ -n "$NEW" ] && [ "$NEW" != "$LAST" ]; then
     BASE=$(basename "$NEW" .pt)
     echo "=== [$(date +%H:%M:%S)] 新 ckpt: $BASE -> Elo 300局"
