@@ -224,6 +224,9 @@ def build_participants(extra_ckpts=None):
         ("call_first", None),
         ("yaochu_first", None),
         ("dest_prob_v3", "dest_prob_v3(非ML进张概率)"),
+        ("pon_only", "pon_only(独立碰)"),
+        ("kan_only", "kan_only(独立杠)"),
+        ("chi_only", "chi_only(独立吃)"),
     ]
     for n, label in rule_agents:
         P.append(RuleAgent(n, label))
