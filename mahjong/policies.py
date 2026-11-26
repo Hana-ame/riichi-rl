@@ -480,6 +480,73 @@ class DiscardYaochuFirst(Policy):
         return self.rng.choice(rest)
 
 
+class PonOnly(Policy):
+    """碰优先策略（审阅第3项：独立碰策略）。
+
+    响应阶段只做碰（PON），其他副露（吃/杠）全部 pass。
+    和了最优先，其余按打牌阶段随机。
+    """
+    name = "pon_only"
+
+    def choose(self, env, p_idx, legal):
+        if env.phase == E.Phase.RESPONSE:
+            for wt in (E.ACT_TSUMO, E.ACT_RON):
+                ws = [a for a in legal if a.type == wt]
+                if ws:
+                    return ws[0]
+            pons = [a for a in legal if a.type == E.ACT_PON]
+            if pons:
+                return pons[0]
+            return self.rng.choice(legal)
+        disc = [a for a in legal if a.type == E.ACT_DISCARD]
+        return self.rng.choice(disc) if disc else legal[0]
+
+
+class KanOnly(Policy):
+    """杠优先策略（审阅第3项：独立杠策略）。
+
+    响应阶段只做杠（MINKAN/ADD_KAN/ANKAN），其他副露（吃/碰）全部 pass。
+    和了最优先，其余按打牌阶段随机。
+    """
+    name = "kan_only"
+
+    def choose(self, env, p_idx, legal):
+        if env.phase == E.Phase.RESPONSE:
+            for wt in (E.ACT_TSUMO, E.ACT_RON):
+                ws = [a for a in legal if a.type == wt]
+                if ws:
+                    return ws[0]
+            kans = [a for a in legal if a.type in (
+                E.ACT_MINKAN, E.ACT_ADD_KAN, E.ACT_ANKAN)]
+            if kans:
+                return kans[0]
+            return self.rng.choice(legal)
+        disc = [a for a in legal if a.type == E.ACT_DISCARD]
+        return self.rng.choice(disc) if disc else legal[0]
+
+
+class ChiOnly(Policy):
+    """吃优先策略（审阅第3项：独立吃策略）。
+
+    响应阶段只做吃（CHI），其他副露（碰/杠）全部 pass。
+    和了最优先，其余按打牌阶段随机。
+    """
+    name = "chi_only"
+
+    def choose(self, env, p_idx, legal):
+        if env.phase == E.Phase.RESPONSE:
+            for wt in (E.ACT_TSUMO, E.ACT_RON):
+                ws = [a for a in legal if a.type == wt]
+                if ws:
+                    return ws[0]
+            chis = [a for a in legal if a.type == E.ACT_CHI]
+            if chis:
+                return chis[0]
+            return self.rng.choice(legal)
+        disc = [a for a in legal if a.type == E.ACT_DISCARD]
+        return self.rng.choice(disc) if disc else legal[0]
+
+
 #: 策略注册表
 POLICIES = {
     "random": RandomLegal,
@@ -491,6 +558,9 @@ POLICIES = {
     "riichi_ev": GreedyRiichiEV,         # 按点数期望
     "call_first": CallFirst,
     "yaochu_first": DiscardYaochuFirst,
+    "pon_only": PonOnly,                 # 独立碰策略（审阅第3项）
+    "kan_only": KanOnly,                 # 独立杠策略（审阅第3项）
+    "chi_only": ChiOnly,                 # 独立吃策略（审阅第3项）
 }
 
 
