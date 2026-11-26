@@ -31,6 +31,13 @@ from mahjong.hanchan import HanchanState
 from mahjong import event_stream as ES
 from train_hanchan import (encode, slot_of, hand_shanten, N_ACTIONS, SIT_DIM)
 
+# 注册 dest_prob_v3（若作为教师）
+try:
+    import dest_prob_v3 as _DPV3
+    _DPV3.register_policy("dest_prob_v3")
+except Exception:
+    pass
+
 
 def run_hanchan(enc, h, teacher, seed0, event_len=ES.DEFAULT_EVENT_LEN):
     """跑一个半庄，返回 (vecs, touches, masks, labels, aux, events)。"""
