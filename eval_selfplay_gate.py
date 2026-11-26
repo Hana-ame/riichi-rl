@@ -208,11 +208,13 @@ def main():
                 for ag in ags:
                     if hasattr(ag, "set_game"):
                         ag.set_game(env, h)
-    N_deal = 4 * a.deals            # 原口径分母：座位·场（向后兼容）
-    N = 4 * total_hands             # 新口径分母：座位·手（审阅要求）
+    N_deal = 4 * a.deals            # 旧口径分母：座位·场（仅向后兼容，一场多手时会>100%）
+    N = 4 * total_hands             # 正确分母：座位·手（审阅要求，每手4座位）
     W = sum(seat_w); D = sum(seat_d)
-    wr = 100 * W / N_deal; dr = 100 * D / N_deal
-    wci = wilson(W, N_deal); dci = wilson(D, N_deal)
+    # 每座位每手和牌率/放铳率：seat_wins 是 4 座位合计和牌次数，
+    # 每座位打了 total_hands 手，故每座位每手和牌率 = seat_wins/(4×total_hands)
+    wr = 100 * W / N; dr = 100 * D / N
+    wci = wilson(W, N); dci = wilson(D, N)
     # 每手口径：和了手数/总手数、放铳手数/总手数（每手至多 1 家和牌/1 家放铳，
     # 分母用总手数，CI 与显示一致——不要改成 N=4*hands 的座位·手分母，否则
     # 会与下面的 Wilson CI(n=total_hands) 自相矛盾）。
@@ -221,14 +223,14 @@ def main():
     hwci = wilson(hand_wins, total_hands); hdci = wilson(hand_dealins, total_hands)
     print(f"=== 4 席自对弈硬门槛：{label}  {a.deals} 场半庄 / {total_hands} 手 "
           f"({N_deal} 座位·场, {N} 座位·手) {time.time()-t0:.0f}s ===")
-    print(f"[口径A=每座位（审阅验收口径，分母 {N_deal} 座位·场）]")
-    print(f"  每座位和牌 {W}/{N_deal} = {wr:.2f}%  CI[{wci[0]:.1f},{wci[1]:.1f}]  "
+    print(f"[审阅验收口径=每座位每手（分母 {N} 座位·手）]")
+    print(f"  每座位每手和牌 {W}/{N} = {wr:.2f}%  CI[{wci[0]:.1f},{wci[1]:.1f}]  "
           f"门槛 15–25% -> {'PASS' if 15 <= wr <= 25 else 'FAIL'}")
-    print(f"  每座位放铳 {D}/{N_deal} = {dr:.2f}%  CI[{dci[0]:.1f},{dci[1]:.1f}]  "
+    print(f"  每座位每手放铳 {D}/{N} = {dr:.2f}%  CI[{dci[0]:.1f},{dci[1]:.1f}]  "
           f"门槛 9–20%  -> {'PASS' if 9 <= dr <= 20 else 'FAIL'}")
-    print(f"[口径B=每手（补充信息，分母 {total_hands} 手）]")
-    print(f"  每手有人和牌 {hand_wins}/{total_hands} = {hwr:.2f}%（每手至少1家和牌的比率）")
-    print(f"  每手有人放铳 {hand_dealins}/{total_hands} = {hdr:.2f}%（每手至少1家放铳的比率）")
+    print(f"[补充口径=每手有人和牌（分母 {total_hands} 手，非验收指标）]")
+    print(f"  每手至少1家和牌 {hand_wins}/{total_hands} = {hwr:.2f}%")
+    print(f"  每手至少1家放铳 {hand_dealins}/{total_hands} = {hdr:.2f}%")
     print(f"  流局 {ryu}/{total_hands} = {100*ryu/total_hands:.1f}%（手口径）"
           f"  终局听牌 {100*ten/nten:.1f}%  场均手数 {total_hands/a.deals:.2f}")
     print(f"  分座位和牌 {seat_w}  分座位放铳 {seat_d}")

@@ -1,61 +1,61 @@
 {
  "label": "teacher47_eff_wuke_d2",
- "deals": 4,
- "total_hands": 103,
- "hands_per_deal": 25.75,
- "seat_deals": 16,
- "seat_wins": 82,
- "seat_win_rate": 512.5,
+ "deals": 8,
+ "total_hands": 179,
+ "hands_per_deal": 22.375,
+ "seat_deals": 32,
+ "seat_wins": 118,
+ "seat_win_rate": 16.480446927374302,
  "seat_win_ci": [
-  100.0,
-  100.0
+  13.943142188207327,
+  19.375521251082652
  ],
- "seat_dealins": 60,
- "seat_deal_in_rate": 375.0,
+ "seat_dealins": 90,
+ "seat_deal_in_rate": 12.569832402234637,
  "seat_deal_in_ci": [
-  100.0,
-  100.0
+  10.339592293237832,
+  15.199581880635979
  ],
- "win_pass": false,
- "deal_in_pass": false,
- "hand_denom": 412,
- "hand_wins": 82,
- "hand_win_rate": 19.902912621359224,
+ "win_pass": true,
+ "deal_in_pass": true,
+ "hand_denom": 716,
+ "hand_wins": 118,
+ "hand_win_rate": 65.92178770949721,
  "hand_win_ci": [
-  70.8335898916394,
-  86.26027616802276
+  58.70889006446941,
+  72.46563477014153
  ],
- "hand_dealins": 60,
- "hand_deal_in_rate": 14.563106796116505,
+ "hand_dealins": 90,
+ "hand_deal_in_rate": 50.279329608938546,
  "hand_deal_in_ci": [
-  48.59998631563654,
-  67.31141897967913
+  43.026065706306625,
+  57.52085578201989
  ],
- "hand_win_pass": true,
- "hand_deal_in_pass": true,
- "ryuukyoku": 21,
- "ryuukyoku_hand_rate": 20.388349514563107,
- "tenpai_at_end": 46.601941747572816,
+ "hand_win_pass": false,
+ "hand_deal_in_pass": false,
+ "ryuukyoku": 61,
+ "ryuukyoku_hand_rate": 34.07821229050279,
+ "tenpai_at_end": 47.06703910614525,
  "per_seat_wins": [
-  46,
-  19,
-  13,
-  4
+  53,
+  25,
+  31,
+  9
  ],
  "per_seat_dealins": [
-  13,
-  1,
   15,
-  31
+  12,
+  20,
+  43
  ],
  "action_counts": {
-  "discard": 5076,
-  "riichi": 154,
+  "discard": 9320,
+  "riichi": 290,
   "chi": 0,
   "pon": 0,
   "kan": 0,
-  "tsumo": 22,
-  "ron": 61,
-  "pass": 15629
+  "tsumo": 28,
+  "ron": 91,
+  "pass": 28739
  }
 }
