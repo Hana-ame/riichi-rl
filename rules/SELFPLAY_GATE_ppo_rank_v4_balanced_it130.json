@@ -1,0 +1,61 @@
+{
+ "label": "ppo_rank_v4_balanced_it130",
+ "deals": 200,
+ "total_hands": 3812,
+ "hands_per_deal": 19.06,
+ "seat_deals": 800,
+ "seat_wins": 2628,
+ "seat_win_rate": 17.23504721930745,
+ "seat_win_ci": [
+  16.64383259493851,
+  17.8427673707994
+ ],
+ "seat_dealins": 1890,
+ "seat_deal_in_rate": 12.395068205666316,
+ "seat_deal_in_ci": [
+  11.881475988316165,
+  12.9276041164759
+ ],
+ "win_pass": true,
+ "deal_in_pass": true,
+ "hand_denom": 15248,
+ "hand_wins": 2628,
+ "hand_win_rate": 68.9401888772298,
+ "hand_win_ci": [
+  67.45275874477174,
+  70.38948292479861
+ ],
+ "hand_dealins": 1890,
+ "hand_deal_in_rate": 49.580272822665265,
+ "hand_deal_in_ci": [
+  47.994284723529184,
+  51.16710604279613
+ ],
+ "hand_win_pass": false,
+ "hand_deal_in_pass": false,
+ "ryuukyoku": 1184,
+ "ryuukyoku_hand_rate": 31.0598111227702,
+ "tenpai_at_end": 39.78226652675761,
+ "per_seat_wins": [
+  636,
+  668,
+  654,
+  670
+ ],
+ "per_seat_dealins": [
+  475,
+  419,
+  484,
+  512
+ ],
+ "action_counts": {
+  "discard": 198675,
+  "riichi": 5218,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 738,
+  "ron": 1906,
+  "pass": 609773
+ }
+}
