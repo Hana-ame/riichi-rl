@@ -16,13 +16,28 @@ CALL = {"CHI","PON","ANKAN","MINKAN","ADD_KAN"}
 
 
 def compact(log):
-    """只保留渲染必需的字段，把每步压成轻量事件。"""
+    """只保留渲染必需的字段，把每步压成轻量事件。
+
+    关键映射（bug 修复）：events 里的 seat 是玩家索引 0-3；
+    而 snap 里每家只有 seat_wind（27=东 28=南 29=西 30=北）。
+    env.py: seat_wind = 27 + ((i - dealer) % 4)。按此反推每个玩家索引的风位码。
+    """
     init = log["initial"]
+    by_wind = {p["seat"]: p for p in init["players"]}
+    # 找庄家的玩家索引：dealer=True 的那家
+    dealer_idx = 0
+    for i in range(4):
+        w = 27 + ((i - dealer_idx) % 4)
+        if by_wind.get(w, {}).get("dealer"):
+            dealer_idx = i
+            break
     players0 = []
-    for s in SEAT_ORDER:
-        p = next((pp for pp in init["players"] if pp["seat"] == s), {})
+    for i in range(4):
+        wind = 27 + ((i - dealer_idx) % 4)
+        p = by_wind.get(wind, {})
         players0.append({
-            "seat": s,
+            "idx": i,                                   # = 事件里的 seat
+            "wind": wind,                               # 27-30，决定东/南/西/北
             "hand": sorted(p.get("hand", [])),
             "river": [],
             "melds": [],
@@ -34,7 +49,7 @@ def compact(log):
     for st in log["steps"]:
         for e in st["events"]:
             events.append({
-                "seat": e["seat"],
+                "seat": e["seat"],                      # 玩家索引 0-3
                 "kind": e["kind"],
                 "tile": e.get("tile"),
             })

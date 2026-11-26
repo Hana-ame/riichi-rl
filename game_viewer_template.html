@@ -97,7 +97,10 @@ function tileH(n,cls){if(!n)return'<span class="tile none">?</span>';
 
 function freshState(){return JSON.parse(JSON.stringify(D.players0));}
 
-function describe(e){const s=SL[e.seat]||e.seat;
+function windLabel(w){return{27:"东",28:"南",29:"西",30:"北"}[w]||w;}
+
+function describe(e){const p=D.players0[e.seat];
+  const s=windLabel(p?p.wind:e.seat);
   switch(e.kind){
     case"DISCARD":return`${s}家 切 ${e.tile}`;
     case"PASS":return`${s}家 pass`;
