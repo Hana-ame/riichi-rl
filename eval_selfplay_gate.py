@@ -221,16 +221,14 @@ def main():
     hwci = wilson(hand_wins, total_hands); hdci = wilson(hand_dealins, total_hands)
     print(f"=== 4 席自对弈硬门槛：{label}  {a.deals} 场半庄 / {total_hands} 手 "
           f"({N_deal} 座位·场, {N} 座位·手) {time.time()-t0:.0f}s ===")
-    print(f"[口径=每座位·手（审阅要求，分母 {N}）]")
-    print(f"  每手和牌 {hand_wins}/{total_hands} = {hwr:.2f}%  CI[{hwci[0]:.1f},{hwci[1]:.1f}]  "
-          f"门槛 15–25% -> {'PASS' if 15 <= hwr <= 25 else 'FAIL'}")
-    print(f"  每手放铳 {hand_dealins}/{total_hands} = {hdr:.2f}%  CI[{hdci[0]:.1f},{hdci[1]:.1f}]  "
-          f"门槛 9–20%  -> {'PASS' if 9 <= hdr <= 20 else 'FAIL'}")
-    print(f"[口径=每座位·场（向后兼容，分母 {N_deal}）]")
+    print(f"[口径A=每座位（审阅验收口径，分母 {N_deal} 座位·场）]")
     print(f"  每座位和牌 {W}/{N_deal} = {wr:.2f}%  CI[{wci[0]:.1f},{wci[1]:.1f}]  "
           f"门槛 15–25% -> {'PASS' if 15 <= wr <= 25 else 'FAIL'}")
     print(f"  每座位放铳 {D}/{N_deal} = {dr:.2f}%  CI[{dci[0]:.1f},{dci[1]:.1f}]  "
           f"门槛 9–20%  -> {'PASS' if 9 <= dr <= 20 else 'FAIL'}")
+    print(f"[口径B=每手（补充信息，分母 {total_hands} 手）]")
+    print(f"  每手有人和牌 {hand_wins}/{total_hands} = {hwr:.2f}%（每手至少1家和牌的比率）")
+    print(f"  每手有人放铳 {hand_dealins}/{total_hands} = {hdr:.2f}%（每手至少1家放铳的比率）")
     print(f"  流局 {ryu}/{total_hands} = {100*ryu/total_hands:.1f}%（手口径）"
           f"  终局听牌 {100*ten/nten:.1f}%  场均手数 {total_hands/a.deals:.2f}")
     print(f"  分座位和牌 {seat_w}  分座位放铳 {seat_d}")
