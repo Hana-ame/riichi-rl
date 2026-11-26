@@ -205,7 +205,7 @@ class BCAgent(Agent):
 
 # ---------- 参赛者注册 ----------
 
-def build_participants():
+def build_participants(extra_ckpts=None):
     P = []
     # 立直策略族：全部在同一批对局里比点数（用户要求「不同立直策略/默听策略，
     # 要求分最大」——由 Elo 和平均点数直接判谁点最多）。
@@ -248,6 +248,17 @@ def build_participants():
     # 新增：eff_uke 系（2026-11-06 牌效教师线）
     add(HanchanAgent, "eff_wuke_d2(牌效d2)", "teacher47_eff_wuke_d2.pt")
     add(HanchanAgent, "tenhou_bc(Tenhou人类)", "tenhou_bc.pt")
+    # 可选：外部传入的额外 ckpt（如 PPO 在训 checkpoint），用于排位追踪
+    for p in extra_ckpts or []:
+        p = p.strip()
+        nm = os.path.basename(p).replace(".pt", "")
+        # 绝对路径直接用；相对名才拼 CKPT 目录
+        path = p if os.path.isabs(p) else os.path.join(CKPT, p)
+        try:
+            P.append(HanchanAgent(f"{nm}(PPO在训)", path))
+            print(f"[load] {nm}(PPO在训) <- {path}", flush=True)
+        except Exception as e:
+            print(f"[skip] {nm}(PPO在训) 加载失败: {e}", flush=True)
     return P
 
 
@@ -376,6 +387,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--games", type=int, default=300)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--extra-ckpt", default="",
+                    help="额外参赛 ckpt（如 PPO 在训 checkpoint 的绝对路径），逗号分隔")
     ap.add_argument("--out", default=os.path.join(ROOT, "rules", "ELO.md"))
     ap.add_argument("--aux-weight", type=float, default=1.0,
                     help="额外任务奖励计入排名/Elo 的权重（0=不计）")
@@ -383,8 +396,7 @@ def main():
                     help="先全体参赛热身 N 局，之后按「前一半+随机替换」选员")
     ap.add_argument("--reselect-every", type=int, default=100,
                     help="每 N 局重新选员（保留 Elo 前一半 + 随机几个替换）")
-    ap.add_argument("--random-fill", type=int, default=3,
-                    help="选员时从落选者里随机替换几个进参赛名单")
+    ap.add_argument("--random-fill", type=int, default=3,                    help="选员时从落选者里随机替换几个进参赛名单")
     ap.add_argument("--mode", default="hanchan", choices=["hanchan", "east"],
                     help="hanchan=半庄 E1-S4，east=东风战 E1-E4")
     args = ap.parse_args()
@@ -392,7 +404,8 @@ def main():
     from cpu_only import set_inference_threads
     set_inference_threads(2)
     rng = random.Random(args.seed)
-    agents = build_participants()
+    extra = [p.strip() for p in args.extra_ckpt.split(",") if p.strip()]
+    agents = build_participants(extra_ckpts=extra)
     names = [a.name for a in agents]
     ratings = {i: 1500.0 for i in range(len(agents))}
     games_played = {i: 0 for i in range(len(agents))}
