@@ -56,3 +56,4 @@ external/
 # arena/gate 运行时副产物（可再生，不入库）
 rules/ELO.json
 rules/SELFPLAY_GATE_*.json
+rules/OPP_SHANTEN_LEAK_*.json
