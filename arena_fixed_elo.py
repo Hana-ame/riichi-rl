@@ -67,15 +67,13 @@ def main():
             continue
         delta, winner, aux_bonus, aux_done, deal_in_flag, tenhou, scores = r
         order = sorted(range(4), key=lambda p: scores[p], reverse=True)
-        # 逐对零和 Elo 更新（按最终点数排名）
+        # 逐对零和 Elo 更新（标准 Elo：按最终点数排名，1位全胜/末位全负，不看顺位gap倍数）
         for a_idx in range(4):
             for b_idx in range(a_idx + 1, 4):
                 ia, ib = seats[order[a_idx]], seats[order[b_idx]]
                 ea = 1.0 / (1.0 + 10 ** ((ratings[ib] - ratings[ia]) / 400.0))
                 sa = 1.0 if a_idx < b_idx else 0.0
-                # 顺位差越大更新越大
-                gap = (b_idx - a_idx)
-                d = K * gap * (sa - ea)
+                d = K * (sa - ea)
                 ratings[ia] += d
                 ratings[ib] -= d
         for rank, pos in enumerate(order):
