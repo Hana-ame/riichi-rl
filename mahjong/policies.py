@@ -547,9 +547,51 @@ class ChiOnly(Policy):
         return self.rng.choice(disc) if disc else legal[0]
 
 
+class PureShanten(Policy):
+    """纯向听最小化策略（审阅：纯向听策略未对战过）。
+
+    每次打牌只选「打完后向听数最小」的牌，不考虑：
+      - 立直（从不立直）
+      - 待牌种数/有效牌数（不 tie-break）
+      - 防守/危险张（不判断放铳风险）
+      - 副露（不吃碰杠）
+    这是「纯向听」基线——只关心向听数下降，其他一概不管。
+    与 eff_uke/eff_wuke（向听+ukeire）和 greedy_tenpai（待牌数+立直）区分。
+    """
+    name = "pure_shanten"
+
+    def choose(self, env, p_idx, legal):
+        # 和牌最优先
+        for wt in (E.ACT_TSUMO, E.ACT_RON):
+            ws = [a for a in legal if a.type == wt]
+            if ws:
+                return ws[0]
+        # 响应阶段全 pass（不副露）
+        if env.phase == E.Phase.RESPONSE:
+            return E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
+        disc = [a for a in legal if a.type == E.ACT_DISCARD]
+        if not disc:
+            return legal[0]
+        # 选打完后向听数最小的牌（不 tie-break，先到先得）
+        pl = env.players[p_idx]
+        best = None
+        best_sh = 99
+        for a in disc:
+            pl.hand.remove(a.tile)
+            pl.hand.sort()
+            sh = REF.ref_shanten(tuple(pl.full_counts()))
+            pl.hand.append(a.tile)
+            pl.hand.sort()
+            if sh < best_sh:
+                best_sh = sh
+                best = a
+        return best if best is not None else self.rng.choice(disc)
+
+
 #: 策略注册表
 POLICIES = {
     "random": RandomLegal,
+    "pure_shanten": PureShanten,         # 纯向听最小化（审阅：纯向听策略未对战过）
     "greedy_tenpai": GreedyTenpai,       # 立直优先（旧默认）
     "eff_uke": EfficiencyUke,            # 牌效（向听+有效牌种数 tie-break）
     "eff_wuke": EfficiencyWUke,          # 牌效 v2（向听+有效牌**剩余枚数** tie-break）

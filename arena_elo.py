@@ -227,6 +227,7 @@ def build_participants(extra_ckpts=None):
         ("pon_only", "pon_only(独立碰)"),
         ("kan_only", "kan_only(独立杠)"),
         ("chi_only", "chi_only(独立吃)"),
+        ("pure_shanten", "pure_shanten(纯向听)"),
     ]
     for n, label in rule_agents:
         P.append(RuleAgent(n, label))
