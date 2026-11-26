@@ -36,6 +36,8 @@ data/houou/*.tar
 data/houou/*.tar.part
 # build_cache.py 的编译产物（~585M，从 *.tar 编译）
 data/cache/*.npz
+# 可再生训练 npz 数据集（>100MB 超 GitHub 单文件硬限制，用 build_all.sh 重建）
+data/*.npz
 # 下载 / 编译残留
 data/*.part
 data/*.tmp
