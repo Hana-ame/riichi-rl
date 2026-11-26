@@ -10,6 +10,8 @@ from mahjong.tiles import NUM_TILES
 from mahjong.dual_net import DualStreamMahjongNet
 from mahjong import obs2 as O2
 from mahjong import event_stream as ES
+from mahjong import scenarios as SC
+from mahjong import refengine as REF
 from train_hanchan import slot_of, N_ACTIONS
 
 
@@ -57,14 +59,19 @@ class DualStreamAgent:
         if not ds:
             return E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
         planes, scalar = self.encoder.encode(env, p)
-        obs = np.concatenate([planes.ravel(), scalar]).astype(np.float32)
+        # 补 extra_scalar=12 维场况特征（sit_vec）：sit_proj 期望
+        # in_scalar = scalar(32) + touch(8) + extra_scalar(12) = 52，
+        # 之前漏了 sit_vec 只喂 40 -> forward shape mismatch（DualStream 从未跑通）。
+        sh = REF.ref_shanten(list(env.players[p].full_counts())) if hasattr(env.players[p], "full_counts") else 0
+        sit_vec, sit, give_up = SC.situation_features(env, self.hstate, p, sh)
         tf_feat = np.zeros(8, dtype=np.float32)  # touch features
+        obs = np.concatenate([planes.ravel(), scalar, sit_vec]).astype(np.float32)
         ev = ES.encode_event_stream(env, p, max_len=getattr(self.model, "max_event_len", ES.DEFAULT_EVENT_LEN))
         with torch.no_grad():
             logits = self.model(
                 torch.from_numpy(obs).float()[None],
                 torch.from_numpy(tf_feat).float()[None],
-                ev,
+                torch.from_numpy(ev).long()[None],
             )[0].numpy()
         mask = np.full(N_ACTIONS, -1e9, dtype=np.float32)
         slots = [slot_of(a) for a in ds]

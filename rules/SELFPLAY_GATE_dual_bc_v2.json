@@ -1,0 +1,43 @@
+{
+ "label": "dual_bc_v2",
+ "deals": 24,
+ "seat_deals": 96,
+ "seat_wins": 1,
+ "seat_win_rate": 1.0416666666666667,
+ "seat_win_ci": [
+  0.18411228184366354,
+  5.666755492711232
+ ],
+ "seat_dealins": 0,
+ "seat_deal_in_rate": 0.0,
+ "seat_deal_in_ci": [
+  0.0,
+  3.8476947484815955
+ ],
+ "win_pass": false,
+ "deal_in_pass": false,
+ "ryuukyoku": 23,
+ "tenpai_at_end": 1.0416666666666667,
+ "per_seat_wins": [
+  1,
+  0,
+  0,
+  0
+ ],
+ "per_seat_dealins": [
+  0,
+  0,
+  0,
+  0
+ ],
+ "action_counts": {
+  "discard": 1679,
+  "riichi": 0,
+  "chi": 0,
+  "pon": 0,
+  "kan": 0,
+  "tsumo": 1,
+  "ron": 0,
+  "pass": 5037
+ }
+}
