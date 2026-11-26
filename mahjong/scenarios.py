@@ -68,6 +68,8 @@ def reward_for_result(player, result, sit_before, hstate_before=None,
     r_point = w_point * (delta / 10000.0)
 
     # 1.5 顺位 pt（天凤排位目标）：按最终点数排名次
+    #   量级：原始顺位 pt(±30) 远大于点数 reward(±2)，会让 critic 目标方差爆炸
+    #   （vloss 从 0.5 涨到 11+）。归一化 /10 -> ±3/±1，顺位仍主导但 value 可学。
     r_place = 0.0
     if w_place > 0:
         scores = getattr(result, "scores", None)
@@ -75,7 +77,7 @@ def reward_for_result(player, result, sit_before, hstate_before=None,
             scores = [result.points_delta[i] for i in range(4)]
         my = scores[player]
         rank = sum(1 for s in scores if s > my)  # 0=1位
-        r_place = w_place * (30.0, 10.0, -10.0, -30.0)[min(rank, 3)]
+        r_place = w_place * (30.0, 10.0, -10.0, -30.0)[min(rank, 3)] / 10.0
 
     # 2. 放铳惩罚
     r_deal = 0.0
