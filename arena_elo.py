@@ -256,6 +256,14 @@ def build_participants(extra_ckpts=None):
     # 新增：eff_uke 系（2026-11-06 牌效教师线）
     add(HanchanAgent, "eff_wuke_d2(牌效d2)", "teacher47_eff_wuke_d2.pt")
     add(HanchanAgent, "tenhou_bc(Tenhou人类)", "tenhou_bc.pt")
+    # dora 保留版策略（审阅第3项要求）：用 best ckpt + 宝牌保留加权
+    # DoraValueAgent = 模型 logits + 宝牌/赤牌保留惩罚，alpha=保留强度
+    try:
+        from dora_agent import make_dora_agent
+        P.append(make_dora_agent("eff_wuke_d2_dora(宝牌保留)", os.path.join(CKPT, "teacher47_eff_wuke_d2.pt"), lam=1.0))
+        print("[load] eff_wuke_d2_dora(宝牌保留) <- teacher47_eff_wuke_d2.pt + dora加权", flush=True)
+    except Exception as e:
+        print(f"[skip] eff_wuke_d2_dora 加载失败: {e}", flush=True)
     # 可选：外部传入的额外 ckpt（如 PPO 在训 checkpoint），用于排位追踪
     for p in extra_ckpts or []:
         p = p.strip()
