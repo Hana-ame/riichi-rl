@@ -99,6 +99,26 @@ function freshState(){return JSON.parse(JSON.stringify(D.players0));}
 
 function windLabel(w){return{27:"东",28:"南",29:"西",30:"北"}[w]||w;}
 
+// 增量重放：从 players0 出发，重放 events[0..i] 得到该时刻的四家状态。
+// events[k].seat 是玩家索引 0-3，players0[i].idx === i、.wind 是 27-30 风位码。
+function stateAt(i){
+  const st = D.players0.map(p=>JSON.parse(JSON.stringify(p)));
+  for(let k=0;k<=i;k++){
+    const e=D.events[k]; if(!e) continue;
+    const p=st[e.seat]; if(!p) continue;
+    if(e.kind==="DISCARD" && e.tile){
+      const j=p.hand.indexOf(e.tile); if(j>=0) p.hand.splice(j,1);
+      p.river.push(e.tile);
+    } else if(e.kind==="RIICHI"){
+      p.riichi=true;
+      if(e.tile){const j=p.hand.indexOf(e.tile); if(j>=0) p.hand.splice(j,1); p.river.push(e.tile);}
+    } else if(CALLS.includes(e.kind) && e.tile){
+      p.melds.push(e.tile);   // 副露：简化为单张表示，够展示用
+    }
+  }
+  return st;
+}
+
 function describe(e){const p=D.players0[e.seat];
   const s=windLabel(p?p.wind:e.seat);
   switch(e.kind){
@@ -113,15 +133,8 @@ function describe(e){const p=D.players0[e.seat];
     case"RYUUKYOKU":return`流局`;
     default:return`${s}家 ${e.kind}`;}}
 
-// 帧序列：frames[k] = 第 k 个事件结束后的真实快照（由 render_game_html.py 预生成）
-// frames[0] 是初始状态，frames[k+1] 对应 events[k] 之后。
-function frameAt(i){
-  // 第 i 个事件（0-based）之后的状态
-  return D.frames[Math.min(i+1, D.frames.length-1)];
-}
-
 function render(){
-  const st=frameAt(cur);
+  const st=stateAt(cur);
   const ev=D.events[cur];
   document.getElementById("stepno").textContent=`第 ${cur+1} / ${D.events.length} 步`;
   document.getElementById("range").value=cur;
