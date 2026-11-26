@@ -264,6 +264,23 @@ def build_participants(extra_ckpts=None):
 
 # ---------- 对局与 Elo ----------
 
+def tenhou_pt(scores):
+    """天凤标准最终 pt：顺位 pt + 点数项。
+
+    scores[pos] = 该座位本局最终点数（绝对值，起始 25000）。
+    按点数从高到低排名次 -> 顺位 pt：1位+30 / 2位+10 / 3位-10 / 4位-30。
+    点数项 = (最终点数 - 25000) / 1000（+40000 -> +40，-30000 -> -30）。
+    两者相加即天凤 pt（同分按座位序打破，罕见）。
+    """
+    START = 25000
+    PLACE_PT = [30.0, 10.0, -10.0, -30.0]
+    order = sorted(range(4), key=lambda pos: -scores[pos])
+    pt = [0.0] * 4
+    for rank, pos in enumerate(order):
+        pt[pos] = PLACE_PT[rank] + (scores[pos] - START) / 1000.0
+    return pt
+
+
 def play_one(agents, seed, env_cls=HanchanState, east_only=False):
     h = env_cls(dealer=seed % 4, east_only=east_only)
     env = h.new_env(seed=seed)
@@ -291,6 +308,11 @@ def play_one(agents, seed, env_cls=HanchanState, east_only=False):
     # 排名的点数必须用 result.scores（绝对点数）：points_delta 只是本局
     # 转账流水，不含立直时直接扣走的 1000 点供托。
     delta = E.net_points(r, env.initial_points)
+    # 最终绝对点数（用于天凤 pt：顺位 pt + (点数-25000)/1000）
+    scores = getattr(r, "scores", None)
+    if scores is None:
+        scores = [env.players[i].points + delta[i] for i in range(4)]
+    tenhou = tenhou_pt(scores)
     winner = -1
     if r.result_type != "ryuukyoku" and r.winner is not None and r.winner >= 0:
         winner = r.winner
@@ -302,7 +324,7 @@ def play_one(agents, seed, env_cls=HanchanState, east_only=False):
         aux_bonus.append(bonus)
     deal_in = [r.result_type == "ron" and r.from_player == pos
                for pos in range(4)]
-    return delta, winner, aux_bonus, aux_done, deal_in
+    return delta, winner, aux_bonus, aux_done, deal_in, tenhou, scores
 
 
 def elo_update(ratings, sel, deltas, K=24.0):
@@ -325,10 +347,11 @@ def elo_update(ratings, sel, deltas, K=24.0):
             ratings[b] += K * ((1.0 - sa) - (1.0 - ea))
 
 
-def render_markdown(rows, n_games, aux_weight=1.0, selection_note=""):
+def render_markdown(rows, n_games, aux_weight=1.0, selection_note="", use_tenhou=False):
     """把排名字典列表渲染成 ELO.md（纯函数，便于从 ELO.json 重新生成）。
 
     rows 若带 avg_bonus（额外任务奖励），表里多一列并附任务完成率汇总。
+    use_tenhou=True 时按天凤最终 pt 排位，并额外列平均/累计最终 pt。
     """
     games = [r["games"] for r in rows if r.get("games")]
     gmin, gmax = (min(games), max(games)) if games else (0, 0)
@@ -353,11 +376,13 @@ def render_markdown(rows, n_games, aux_weight=1.0, selection_note=""):
               f"**相邻名次差 <{band:.0f} 不能当结论**（K=24 收敛慢，"
               "至少 `--games 600` 再说）。", ""]
     has_dealin = any("deal_in_rate" in r for r in rows)
+    has_tenhou = use_tenhou or any("avg_tenhou" in r for r in rows)
     head = ("| 排名 | 参赛者 | 类型 | Elo | 局数 | 和牌率 | "
             + ("放铳率 | " if has_dealin else "")
-            + "平均点数 |" + (" 任务奖励/局 |" if has_aux else ""))
-    sep = "|---" * (8 if has_dealin and has_aux else
-                    (7 if has_dealin or has_aux else 6)) + "|"
+            + "平均点数 |" + (" 任务奖励/局 |" if has_aux else "")
+            + (" 天凤pt/局 | 累计天凤pt |" if has_tenhou else ""))
+    ncols = 7 + (1 if has_dealin else 0) + (1 if has_aux else 0) + (2 if has_tenhou else 0)
+    sep = "|---" * ncols + "|"
     lines += [head, sep]
     for k, r in enumerate(rows, 1):
         line = (f"| {k} | {r['name']} | {r['kind']} | **{r['elo']}** | "
@@ -367,6 +392,8 @@ def render_markdown(rows, n_games, aux_weight=1.0, selection_note=""):
         line += f" {r['avg_pt']:+.0f} |"
         if has_aux:
             line += f" {r.get('avg_bonus', 0):+.0f} |"
+        if has_tenhou:
+            line += f" {r.get('avg_tenhou', 0):+.1f} | {r.get('total_tenhou', 0):+.0f} |"
         lines.append(line)
 
     if has_aux and rows and rows[0].get("aux_tasks"):
@@ -389,6 +416,8 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--extra-ckpt", default="",
                     help="额外参赛 ckpt（如 PPO 在训 checkpoint 的绝对路径），逗号分隔")
+    ap.add_argument("--tenhou", action="store_true",
+                    help="用天凤最终 pt = 顺位pt(30/10/-10/-30)+(点数-25000)/1000 做排名/Elo")
     ap.add_argument("--out", default=os.path.join(ROOT, "rules", "ELO.md"))
     ap.add_argument("--aux-weight", type=float, default=1.0,
                     help="额外任务奖励计入排名/Elo 的权重（0=不计）")
@@ -410,6 +439,7 @@ def main():
     ratings = {i: 1500.0 for i in range(len(agents))}
     games_played = {i: 0 for i in range(len(agents))}
     wins = {i: 0 for i in range(len(agents))}
+    tenhou_sum = {i: 0.0 for i in range(len(agents))}
     pt_sum = {i: 0.0 for i in range(len(agents))}
     aux_sum = {i: 0.0 for i in range(len(agents))}
     aux_count = {i: {name: 0 for name in AUX.TASKS} for i in range(len(agents))}
@@ -443,14 +473,20 @@ def main():
                        east_only=(args.mode == "east"))
         if out is None:
             continue
-        delta, winner, aux_bonus, aux_done, dealin = out
-        # 额外任务奖励计入排名/Elo（用户要求：完成也有奖励）
-        ranked = [delta[pos] + args.aux_weight * aux_bonus[pos]
-                  for pos in range(4)]
+        delta, winner, aux_bonus, aux_done, dealin, tenhou, scores = out
+        # 排名/Elo 用哪个口径：
+        #   --tenhou：天凤最终 pt = 顺位pt(30/10/-10/-30) + (最终点数-25000)/1000
+        #   默认：原始点数 + 额外任务奖励（旧行为）
+        if args.tenhou:
+            ranked = [tenhou[pos] for pos in range(4)]
+        else:
+            ranked = [delta[pos] + args.aux_weight * aux_bonus[pos]
+                      for pos in range(4)]
         elo_update(ratings, sel, ranked)
         for pos, i in enumerate(sel):
             games_played[i] += 1
             pt_sum[i] += delta[pos]
+            tenhou_sum[i] += tenhou[pos]
             aux_sum[i] += aux_bonus[pos]
             for name, ok in aux_done[pos].items():
                 if ok:
@@ -472,6 +508,8 @@ def main():
             "games": games_played[i],
             "win_rate": round(wins[i] / max(1, games_played[i]) * 100, 1),
             "avg_pt": round(pt_sum[i] / max(1, games_played[i]), 1),
+            "avg_tenhou": round(tenhou_sum[i] / max(1, games_played[i]), 1),
+            "total_tenhou": round(tenhou_sum[i], 1),
             "avg_bonus": round(aux_sum[i] / max(1, games_played[i]), 1),
             "deal_in_rate": round(deal_in_cnt[i]
                                   / max(1, games_played[i]) * 100, 1),
@@ -480,7 +518,7 @@ def main():
     rows.sort(key=lambda r: -r["elo"])
 
     text = render_markdown(rows, args.games, args.aux_weight,
-                           selection_note)
+                           selection_note, use_tenhou=args.tenhou)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as f:
         f.write(text + "\n")
