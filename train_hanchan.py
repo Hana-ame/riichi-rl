@@ -411,6 +411,15 @@ def main():
             aux_dim=aux_dim, max_event_len=event_len,
         ).to(device)
     else:
+        # legacy ckpt: 从 head_fc.0.weight shape 反推 scalar_dim，
+        # 使 load_state_dict 不因 366 vs 372 不匹配而崩溃
+        scalar_dim = None
+        if ck is not None and "state_dict" in ck:
+            hf = ck["state_dict"].get("head_fc.0.weight")
+            if hf is not None:
+                in_scalar = hf.shape[1] - channels * 5
+                scalar_dim = in_scalar - 8 - 12   # touch8 + sit12
+                scalar_dim = max(scalar_dim, 0)
         model = MahjongNet(
             channels=channels, n_blocks=blocks,
             n_actions=N_ACTIONS,
@@ -419,6 +428,7 @@ def main():
             in_planes=in_planes,
             aux_dim=aux_dim,
             per_tile_head=per_tile_head,
+            scalar_dim=scalar_dim,
         ).to(device)
 
     ref_model = None
