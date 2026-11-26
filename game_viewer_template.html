@@ -118,7 +118,7 @@ function stateAt(i){
   const st=freshState();
   for(let k=0;k<=i;k++){
     const e=D.events[k];if(!e)continue;
-    const p=st.find(x=>x.seat===e.seat);if(!p)continue;
+    const p=st.find(x=>x.idx===e.seat);if(!p)continue;
     if(e.kind==="DISCARD"&&e.tile){
       const j=p.hand.indexOf(e.tile);
       if(j>=0)p.hand.splice(j,1);
@@ -142,19 +142,19 @@ function render(){
   document.getElementById("center").innerHTML=
     `<span class="kv">牌墙 <b>${D.wall0}</b></span>`+
     `<span class="kv">宝牌 <span>${(D.dora0||[]).map(t=>tileH(t)).join("")||"—"}</span></span>`;
-  document.getElementById("seats").innerHTML=ORD.map(s=>{
-    const p=st.find(x=>x.seat===s);
+  document.getElementById("seats").innerHTML=st.map(p=>{
+    const i=p.idx;                       // = 事件 seat
     const evNow=D.events[cur];
-    const isDraw=evNow&&evNow.seat===s&&!CALLS.includes(evNow.kind)&&evNow.kind!=="DISCARD";
-    const hand=p.hand.map((t,i)=>tileH(t,(isDraw&&i===p.hand.length-1)?"draw":"")).join("");
-    const lastDiscard=(evNow&&evNow.seat===s&&evNow.kind==="DISCARD")?evNow.tile:null;
+    const isDraw=evNow&&evNow.seat===i&&!CALLS.includes(evNow.kind)&&evNow.kind!=="DISCARD";
+    const hand=p.hand.map((t,k)=>tileH(t,(isDraw&&k===p.hand.length-1)?"draw":"")).join("");
+    const lastDiscard=(evNow&&evNow.seat===i&&evNow.kind==="DISCARD")?evNow.tile:null;
     const river=p.river.map(t=>tileH(t,t===lastDiscard?"latest":"")).join("");
     const melds=(p.melds||[]).map(t=>`<span class="meld">${tileH(t)}</span>`).join("");
-    return`<div class="panel"><h2><span><span class="seat">${SL[s]}家</span>
+    return`<div class="panel"><h2><span><span class="seat">${windLabel(p.wind)}家</span>
       ${p.dealer?'<span class="dealer">庄</span>':""}
       ${p.riichi?'<span class="riichi-tag">立直</span>':""}</span>
       <span class="pts">${p.points.toLocaleString()}</span></h2>
-      <div class="sublabel">手牌 ${p.hand.length}</div>
+      <div class="sublabel">手牌（近似）</div>
       <div class="hand">${hand||"—"}</div>
       ${melds?`<div class="sublabel">副露</div><div class="melds">${melds}</div>`:""}
       <div class="sublabel">牌河 ${p.river.length}</div>
@@ -171,7 +171,8 @@ function init(){
   document.getElementById("meta").textContent=`模型 ${m.ckpt} · seed ${m.seed}`;
   document.getElementById("fmodel").textContent=m.ckpt;
   const r=D.result||{},el=document.getElementById("result");
-  if(r.type){const w=SL[r.winner]||r.winner;
+  if(r.type){const wp=D.players0[r.winner];
+    const w=wp?windLabel(wp.wind):r.winner;
     el.textContent=`${r.type==="ron"?"荣和":r.type==="tsumo"?"自摸":"流局"} · ${w}家`+
       (r.han?` · ${r.han}番`:"")+((r.yaku||[]).length?` · ${r.yaku.join("、")}`:"");}
   else el.textContent="流局";
