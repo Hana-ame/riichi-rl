@@ -229,7 +229,8 @@ def build_participants(extra_ckpts=None):
         P.append(RuleAgent(n, label))
 
     def add(cls, name, fname, **kw):
-        path = os.path.join(CKPT, fname)
+        # 绝对路径直接用；相对名才拼 CKPT 目录（否则绝对路径会被双重前缀）
+        path = fname if os.path.isabs(fname) else os.path.join(CKPT, fname)
         if not os.path.exists(path):
             print(f"[skip] {fname} 不存在", flush=True)
             return
@@ -425,6 +426,8 @@ def main():
                     help="额外参赛 ckpt（如 PPO 在训 checkpoint 的绝对路径），逗号分隔")
     ap.add_argument("--tenhou", action="store_true",
                     help="用天凤最终 pt = 顺位pt(30/10/-10/-30)+(点数-25000)/1000 做排名/Elo")
+    ap.add_argument("--pin-extra", action="store_true",
+                    help="--extra-ckpt 的模型强制常驻对局（不被选员淘汰），用于量可靠排位趋势")
     ap.add_argument("--out", default=os.path.join(ROOT, "rules", "ELO.md"))
     ap.add_argument("--aux-weight", type=float, default=1.0,
                     help="额外任务奖励计入排名/Elo 的权重（0=不计）")
@@ -440,7 +443,8 @@ def main():
     from cpu_only import set_inference_threads
     set_inference_threads(2)
     rng = random.Random(args.seed)
-    extra = [p.strip() for p in args.extra_ckpt.split(",") if p.strip()]
+    # extra ckpt 路径转绝对：相对名按 cwd 解析（避免与 CKPT 双重前缀）
+    extra = [os.path.abspath(p.strip()) for p in args.extra_ckpt.split(",") if p.strip()]
     agents = build_participants(extra_ckpts=extra)
     names = [a.name for a in agents]
     ratings = {i: 1500.0 for i in range(len(agents))}
@@ -455,14 +459,30 @@ def main():
     selection_note = ""
     t0 = time.time()
 
+    # 记录 pinned 索引（--pin-extra 时 --extra-ckpt 的模型强制常驻，不被选员淘汰）
+    pinned = set()
+    if args.pin_extra and extra:
+        extra_basenames = {os.path.basename(p).replace(".pt", "") for p in extra}
+        for i, a in enumerate(agents):
+            if a.name.split("(")[0] in extra_basenames:
+                pinned.add(i)
+        if pinned:
+            print(f"[arena] --pin-extra: {len(pinned)} 个 extra 模型强制常驻 "
+                  f"（不参与选员淘汰，保证足够对局数）", flush=True)
+
     def reselect():
-        """选员：Elo 前一半 + 从落选者里随机替换几个。"""
+        """选员：Elo 前一半 + 从落选者里随机替换几个。
+
+        --pin-extra 时，--extra-ckpt 的模型强制保留（不受选员淘汰），
+        保证它能获得足够对局数以量出可靠 Elo 趋势（否则随机淘汰会让
+        PPO 对局数在 0~N 间波动，Elo 数据不可信）。
+        """
         order = sorted(range(len(agents)), key=lambda i: -ratings[i])
         keep_n = max(4, len(agents) // 2)
-        keep = order[:keep_n]
-        rest = order[keep_n:]
+        keep = [i for i in order[:keep_n] if i not in pinned]
+        rest = [i for i in order[keep_n:] if i not in pinned]
         fill = rng.sample(rest, min(args.random_fill, len(rest))) if rest else []
-        chosen = keep + fill
+        chosen = list(pinned) + keep + fill
         names = ", ".join(agents[i].name for i in sorted(chosen))
         return chosen, f"{time.time() - t0:.0f}s 选员：保留 Elo 前 {keep_n} 名 + 随机 {len(fill)} 个替换 -> {names}"
 
