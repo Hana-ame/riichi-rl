@@ -3,7 +3,7 @@
 # 用法: setsid nohup bash rank_watch.sh > /tmp/rank_watch.log 2>&1 &
 PY=/home/lumin/miniconda3/bin/python
 CKDIR=/mnt/e/riichi-rl/checkpoints
-PATTERN="ppo_rank_v2_it*.pt"
+PATTERN="ppo_rank_v3_defense_it*.pt"
 LAST=""
 while true; do
   NEW=$(ls -t $CKDIR/$PATTERN 2>/dev/null | grep -E "it[0-9]+\.pt$" | head -1)
