@@ -52,3 +52,7 @@ data/teacher*.npz
 
 # --- 外部模型/权重（2026-11-05，下载自第三方，不入库）---
 external/
+
+# arena/gate 运行时副产物（可再生，不入库）
+rules/ELO.json
+rules/SELFPLAY_GATE_*.json
