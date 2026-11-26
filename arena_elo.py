@@ -207,6 +207,12 @@ class BCAgent(Agent):
 
 def build_participants(extra_ckpts=None):
     P = []
+    # 非 ML 规则策略 dest_prob_v3（进张概率+听牌易出度+有役副露+满贯默听）
+    try:
+        import dest_prob_v3 as _DP
+        _DP.register_policy("dest_prob_v3")
+    except Exception as e:
+        print(f"[skip] dest_prob_v3 注册失败: {e}", flush=True)
     # 立直策略族：全部在同一批对局里比点数（用户要求「不同立直策略/默听策略，
     # 要求分最大」——由 Elo 和平均点数直接判谁点最多）。
     rule_agents = [
@@ -217,6 +223,7 @@ def build_participants(extra_ckpts=None):
         ("riichi_ev", "riichi_ev(按点数期望)"),
         ("call_first", None),
         ("yaochu_first", None),
+        ("dest_prob_v3", "dest_prob_v3(非ML进张概率)"),
     ]
     for n, label in rule_agents:
         P.append(RuleAgent(n, label))

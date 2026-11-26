@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>通用麻将牌谱查看器 · 实体牌面版</title>
+<style>
+:root{
+  --bg:#0d1412;
+  --felt:#13241e;
+  --felt-border:#234036;
+  --panel:#141e1b;
+  --panel2:#1b2924;
+  --line:#273b34;
+  --tx:#edf2ef;
+  --tx2:#94aca3;
+  --acc:#4ec994;
+  --gold:#e8c166;
+  --red:#e05252;
+  --riichi:#c98cff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:radial-gradient(circle at 50% 0%,#162c24 0%,var(--bg) 72%);
+  color:var(--tx);
+  font:14px/1.5 "Segoe UI",system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;
+}
+body.dragover::after{
+  content:"松开鼠标以加载 JSON 牌谱";
+  position:fixed;inset:14px;z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(13,20,18,.88);border:2px dashed var(--acc);border-radius:16px;
+  color:#9bf2ca;font-size:20px;font-weight:700;pointer-events:none;
+}
+.wrap{max-width:1220px;margin:0 auto;padding:18px 16px 28px}
+header{
+  display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+  justify-content:space-between;margin-bottom:12px;
+}
+.head-left{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.head-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.02em;color:#f5faf7}
+.meta{color:var(--tx2);font-size:13px}
+.badge{
+  padding:4px 12px;border-radius:999px;
+  background:rgba(78,201,148,.14);border:1px solid rgba(78,201,148,.42);
+  color:#8ff0c2;font-size:12.5px;font-weight:600;
+}
+.mode-tag{
+  padding:2px 8px;border-radius:6px;font-size:11.5px;
+  background:rgba(232,193,102,.12);border:1px solid rgba(232,193,102,.35);
+  color:var(--gold);
+}
+.topbar{
+  display:grid;grid-template-columns:auto 1fr;gap:12px;margin-bottom:12px;
+}
+@media(max-width:760px){.topbar{grid-template-columns:1fr}}
+.center,.eventbar{
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;
+}
+.kv{display:inline-flex;align-items:center;gap:8px;color:var(--tx2);font-size:13px}
+.kv b{color:var(--tx);font-weight:600;font-variant-numeric:tabular-nums}
+.dora-group{display:inline-flex;align-items:center;gap:6px}
+.dora-arrow{color:var(--gold);font-size:12px;opacity:.85}
+.eventbar{min-height:54px;gap:10px}
+.eventbar .lbl{
+  color:var(--tx2);font-size:12px;padding:2px 8px;border-radius:6px;
+  background:var(--panel2);border:1px solid var(--line);white-space:nowrap;
+}
+#event{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--tx)}
+
+nav{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;margin-bottom:14px;
+}
+button, .btn-label{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--panel2);color:var(--tx);border:1px solid var(--line);
+  border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;
+  font-weight:500;transition:border-color .15s,color .15s,background .15s;
+}
+button:hover:not(:disabled), .btn-label:hover{border-color:var(--acc);color:var(--acc);background:#20342d}
+button:disabled{opacity:.38;cursor:not-allowed}
+button.active{background:rgba(78,201,148,.18);border-color:var(--acc);color:#9bf2ca}
+.btn-label input{display:none}
+#stepno{
+  color:var(--tx2);font-size:13px;min-width:104px;text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.slider{flex:1;min-width:160px;display:flex;align-items:center}
+input[type=range]{width:100%;accent-color:var(--acc);cursor:pointer}
+.toggle-wrap{
+  display:inline-flex;align-items:center;gap:6px;font-size:12.5px;
+  color:var(--tx2);cursor:pointer;user-select:none;padding:0 4px;
+}
+.toggle-wrap input{accent-color:var(--acc);cursor:pointer}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{
+  background:linear-gradient(180deg,#162922 0%,#12201b 100%);
+  border:1px solid var(--felt-border);border-radius:12px;padding:13px 14px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.panel.acting{
+  border-color:rgba(78,201,148,.65);
+  box-shadow:0 0 0 1px rgba(78,201,148,.22),0 8px 22px rgba(0,0,0,.28);
+}
+.panel.winner{
+  border-color:rgba(232,193,102,.85);
+  box-shadow:0 0 0 1px rgba(232,193,102,.32),0 8px 24px rgba(0,0,0,.35);
+}
+.panel h2{
+  margin:0 0 10px;font-size:14px;color:var(--tx2);font-weight:600;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.seat-head{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.seat{font-weight:700;color:#eef7f3;font-size:15px}
+.pname{font-size:12px;color:var(--tx2);font-weight:400}
+.wind-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:6px;font-size:13px;font-weight:700;
+  background:#1f3830;border:1px solid #355c4e;color:#b8e6d3;
+}
+.dealer{
+  font-size:11px;background:#3b2f12;color:#f5ce70;border:1px solid #6b541e;
+  padding:1px 7px;border-radius:999px;font-weight:600;
+}
+.riichi-tag{
+  font-size:11px;background:#2f1d45;color:#dbb0ff;border:1px solid #5a3880;
+  padding:1px 7px;border-radius:999px;font-weight:600;
+}
+.win-tag{
+  font-size:11px;background:#442614;color:#ffbe76;border:1px solid #8a4f25;
+  padding:1px 8px;border-radius:999px;font-weight:700;
+}
+.pts{
+  color:#f2f7f4;font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;
+  background:rgba(0,0,0,.24);padding:2px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.06);
+}
+.sublabel{
+  font-size:11px;color:var(--tx2);margin:9px 0 5px;
+  display:flex;justify-content:space-between;align-items:center;
+  letter-spacing:.03em;
+}
+.hand{
+  display:flex;flex-wrap:wrap;gap:2px;align-items:flex-end;
+  min-height:56px;padding:6px 8px;border-radius:8px;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.05);
+}
+.hand-sep{
+  display:inline-flex;align-items:center;gap:5px;margin-left:5px;
+  padding-left:5px;border-left:1px dashed rgba(78,201,148,.45);
+}
+.hand-sep.win-sep{border-left-color:rgba(232,193,102,.65)}
+.river{
+  display:flex;flex-direction:column;gap:5px;
+  min-height:48px;padding:7px 8px;border-radius:8px;
+  background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.04);
+}
+.river-row{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.melds{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.meld{
+  display:inline-flex;gap:2px;padding:3px 5px;border:1px dashed #6b5a2a;
+  border-radius:6px;background:rgba(30,27,18,.7);
+}
+.empty-note{color:var(--tx2);font-size:12px;opacity:.7;align-self:center}
+
+/* Realistic 3D Mahjong Tile Styling */
+.mtile{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:33px;height:46px;border-radius:5px;flex-shrink:0;
+  background:linear-gradient(180deg,#fffef9 0%,#f5f0e2 100%);
+  border:1px solid #d5ccb8;
+  box-shadow:0 3px 0 #1e7351,0 4px 6px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.95);
+  user-select:none;vertical-align:middle;
+  transition:transform .14s ease,box-shadow .14s ease;
+}
+.mtile svg{width:100%;height:100%;display:block}
+.mtile.river-tile{
+  width:31px;height:43px;border-radius:4px;
+  box-shadow:0 2.5px 0 #1e7351,0 3px 5px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.95);
+}
+.mtile.dora-tile{width:32px;height:44px}
+.mtile.mini-tile{
+  width:22px;height:30px;border-radius:3px;
+  box-shadow:0 1.5px 0 #1e7351,0 2px 3px rgba(0,0,0,.35);
+}
+.mtile.back{
+  background:linear-gradient(180deg,#268a63 0%,#1a6b4b 100%);
+  border-color:#34a678;
+  box-shadow:0 3px 0 #124d36,0 4px 6px rgba(0,0,0,.42);
+}
+.mtile.draw{
+  transform:translateY(-4px);
+  box-shadow:0 3px 0 #1e7351,0 0 0 2px var(--acc),0 6px 12px rgba(78,201,148,.35);
+}
+.mtile.latest{
+  box-shadow:0 2.5px 0 #1e7351,0 0 0 2px #ff914d,0 4px 10px rgba(255,145,77,.42);
+}
+.mtile.ron-tile{
+  transform:translateY(-4px);
+  box-shadow:0 3px 0 #1e7351,0 0 0 2px var(--gold),0 6px 14px rgba(232,193,102,.45);
+}
+.riichi-slot{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:43px;height:43px;vertical-align:middle;
+}
+.riichi-slot .mtile{transform:rotate(90deg)}
+
+.logwrap{
+  max-height:300px;overflow:auto;border:1px solid var(--line);
+  border-radius:12px;background:var(--panel);margin-top:14px;
+}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:var(--tx2)}
+th{
+  position:sticky;top:0;background:#16241f;font-weight:600;color:var(--tx);
+  z-index:2;border-bottom:1px solid var(--line);
+}
+td.step-col{width:64px;font-variant-numeric:tabular-nums;color:var(--tx2)}
+tr{cursor:pointer;transition:background .1s}
+tr:hover{background:rgba(78,201,148,.07)}
+tr.cur{background:rgba(78,201,148,.18)}
+tr.cur td{color:#f4faf7}
+tr.is-pass td{opacity:.55}
+.log-cell{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(6,10,9,.75);z-index:900;
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal-backdrop.open{display:flex}
+.modal{
+  width:min(760px,100%);max-height:86vh;overflow:auto;
+  background:#13201c;border:1px solid var(--felt-border);border-radius:14px;
+  padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.55);
+}
+.modal h3{margin:0 0 10px;font-size:17px;color:#f4faf7;display:flex;justify-content:space-between;align-items:center}
+.modal pre{
+  background:#0b1311;border:1px solid var(--line);border-radius:8px;
+  padding:12px;overflow:auto;font-size:12px;line-height:1.55;color:#cfe7dc;
+}
+.modal textarea{
+  width:100%;height:260px;background:#0b1311;color:#e6f2ec;
+  border:1px solid var(--line);border-radius:8px;padding:10px;
+  font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical;
+}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.toast{
+  position:fixed;bottom:20px;right:20px;z-index:950;
+  background:#1b332a;border:1px solid var(--acc);color:#c7f7e0;
+  padding:8px 14px;border-radius:8px;font-size:13px;display:none;
+}
+.toast.show{display:block}
+footer{color:var(--tx2);font-size:12px;margin-top:16px;text-align:center;opacity:.85}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="head-left">
+      <h1 id="title">麻将牌谱</h1>
+      <span class="meta" id="meta"></span>
+      <span class="mode-tag" id="modeTag">精确手牌</span>
+    </div>
+    <div class="head-actions">
+      <label class="btn-label" title="从本地选择牌谱 JSON 文件">
+        📂 加载 JSON
+        <input type="file" id="fileInput" accept=".json,application/json">
+      </label>
+      <button id="btnPaste" type="button">📋 粘贴 JSON</button>
+      <button id="btnSchema" type="button">📖 格式说明</button>
+      <button id="btnExample" type="button">🎲 重置示例</button>
+      <span class="badge" id="result"></span>
+    </div>
+  </header>
+
+  <div class="topbar">
+    <div class="center" id="center"></div>
+    <div class="eventbar">
+      <span class="lbl">本步动作</span>
+      <span id="event">—</span>
+    </div>
+  </div>
+
+  <nav>
+    <button id="prev" type="button">◀ 上一步</button>
+    <button id="next" type="button">下一步 ▶</button>
+    <span id="stepno"></span>
+    <span class="slider"><input type="range" id="range" min="0" max="0" value="0" aria-label="牌谱步数"></span>
+    <label class="toggle-wrap" title="跳过无人鸣牌的 pass 步骤">
+      <input type="checkbox" id="skipPass" checked>
+      <span>跳过 pass</span>
+    </label>
+    <button id="auto" type="button">▶ 自动播放</button>
+  </nav>
+
+  <div class="grid" id="seats"></div>
+
+  <div class="logwrap" id="logwrap">
+    <table>
+      <thead><tr><th>步</th><th>动作</th></tr></thead>
+      <tbody id="log"></tbody>
+    </table>
+  </div>
+
+  <footer>通用麻将牌谱查看器 · 支持拖拽/导入 JSON · 方向键 ←/→ 翻步 · 空格自动播放</footer>
+</div>
+
+<!-- 粘贴 JSON 弹窗 -->
+<div class="modal-backdrop" id="pasteModal">
+  <div class="modal">
+    <h3><span>粘贴牌谱 JSON</span><button type="button" id="closePaste">✕</button></h3>
+    <textarea id="pasteArea" placeholder='粘贴符合格式的 JSON 牌谱对象，例如 {"meta": {...}, "players0": [...], "events": [...]}'></textarea>
+    <div class="modal-foot">
+      <button type="button" id="cancelPaste">取消</button>
+      <button type="button" id="applyPaste" class="active">加载牌谱</button>
+    </div>
+  </div>
+</div>
+
+<!-- JSON 格式说明弹窗 -->
+<div class="modal-backdrop" id="schemaModal">
+  <div class="modal">
+    <h3><span>牌谱 JSON 编写规范</span><button type="button" id="closeSchema">✕</button></h3>
+    <pre id="schemaDoc"></pre>
+    <div class="modal-foot">
+      <button type="button" id="copySchema">复制模板</button>
+      <button type="button" id="okSchema" class="active">知道了</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================================
+ * 通用麻将牌谱 JSON 格式说明（可直接作为 render_game_html.py / make_game_log.py 的输出规范）
+ * ============================================================================
+ * 1. 牌面字符串编码（tile）：
+ *    - 万子: "1m" ~ "9m"（赤五万用 "0m"）
+ *    - 筒子: "1p" ~ "9p"（赤五筒用 "0p"）
+ *    - 索子: "1s" ~ "9s"（赤五索用 "0s"）
+ *    - 风牌: "E"(东), "S"(南), "W"(西), "N"(北)
+ *    - 三元: "P"(白), "F"(发), "C"(中)
+ *
+ * 2. 顶层 JSON 结构：
+ * {
+ *   "meta": {
+ *     "title": "东一局 示例对局",      // 可选：页面标题
+ *     "ckpt": "dest_prob_v3",         // 可选：模型/策略名
+ *     "seed": 106,                    // 可选：牌山随机种子
+ *     "round_wind": "E",              // 可选：场风 ("E"|"S"|"W"|"N")
+ *     "kyoku": 1,                     // 可选：局数 (1..4)
+ *     "honba": 0                      // 可选：本场数
+ *   },
+ *   "dora0": ["5p"],                  // 开局宝牌指示牌列表（页面自动推算对应宝牌）
+ *   "wall0": 70,                      // 开局牌山剩余枚数（4人发完52张+14王牌后通常为70）
+ *   "players0": [                     // 必须按座位索引 0..3 排列，记录「发完起手13张、未摸第14张前」的状态
+ *     {
+ *       "idx": 0,                     // 座位号 0..3（与 events[k].seat 严格对应）
+ *       "name": "v3(完整版)",          // 可选：玩家/策略显示名
+ *       "wind": 27,                   // 自风：27=东, 28=南, 29=西, 30=北（也支持 "E"/"S"/"W"/"N"）
+ *       "hand": ["1m","2m",...],      // 起手 13 张暗牌
+ *       "river": [],                  // 初始牌河（通常 []）
+ *       "melds": [],                  // 初始副露（通常 []）
+ *       "points": 25000,              // 初始点数
+ *       "riichi": false,              // 初始是否立直
+ *       "dealer": true                // 是否庄家
+ *     }
+ *   ],
+ *   "events": [                       // 按时间顺序排列的动作流
+ *     {"seat": 0, "kind": "DRAW",    "tile": "3s"},   // 强烈建议记录 DRAW，手牌将 100% 精确还原；若省略则退化为近似模式
+ *     {"seat": 0, "kind": "DISCARD", "tile": "9m"},   // 切牌
+ *     {"seat": 1, "kind": "PASS",    "tile": null},   // 无人鸣牌时的 pass（可省略，前端支持一键跳过）
+ *     {"seat": 2, "kind": "PON",     "tile": "E",  "meld": ["E","E","E"]},      // 碰（建议带 meld 数组）
+ *     {"seat": 3, "kind": "CHI",     "tile": "4p", "meld": ["3p","4p","5p"]},   // 吃（建议带 meld 数组）
+ *     {"seat": 1, "kind": "RIICHI",  "tile": "7m"},   // 立直宣言牌（牌河中自动横置并扣 1000 点）
+ *     {"seat": 0, "kind": "TSUMO",   "tile": "6s"},   // 自摸和了
+ *     {"seat": 3, "kind": "RON",     "tile": "3s"}    // 荣和（也可为 RYUUKYOKU 流局）
+ *   ],
+ *   "result": {                       // 终局结算信息
+ *     "type": "tsumo",                // "ron" | "tsumo" | "ryuukyoku"
+ *     "winner": 0,                    // 胜者座位号 0..3（流局为 null）
+ *     "from": 0,                      // 放铳者座位号（自摸与 winner 相同，流局为 null）
+ *     "han": 5,                       // 番数
+ *     "fu": 30,                       // 可选：符数
+ *     "yaku": ["立直","门前清自摸和"], // 役种列表
+ *     "dora_count": 1,                // 可选：宝牌数
+ *     "aka": 1,                       // 可选：赤宝牌数
+ *     "ura": 1,                       // 可选：里宝牌数
+ *     "points_delta": [12000,-4000,-4000,-4000] // 可选：四家点数变化
+ *   }
+ * }
+ * ============================================================================ */
+
+const SCHEMA_TEMPLATE = `{
+  "meta": { "title": "东一局 示例", "ckpt": "dest_prob_v3", "seed": 106, "round_wind": "E", "kyoku": 1, "honba": 0 },
+  "dora0": ["5p"],
+  "wall0": 70,
+  "players0": [
+    { "idx": 0, "name": "东家AI", "wind": 27, "hand": ["1m","2m","3m","4p","5p","6p","2s","3s","4s","7s","8s","E","E"], "river": [], "melds": [], "points": 25000, "riichi": false, "dealer": true },
+    { "idx": 1, "name": "南家AI", "wind": 28, "hand": ["1p","2p","3p","5m","6m","7m","1s","2s","3s","8p","9p","P","P"], "river": [], "melds": [], "points": 25000, "riichi": false, "dealer": false },
+    { "idx": 2, "name": "西家AI", "wind": 29, "hand": ["2m","3m","4m","6p","7p","8p","5s","6s","7s","9m","9m","F","W"], "river": [], "melds": [], "points": 25000, "riichi": false, "dealer": false },
+    { "idx": 3, "name": "北家AI", "wind": 30, "hand": ["1m","9m","1p","9p","1s","9s","E","S","W","N","P","F","C"], "river": [], "melds": [], "points": 25000, "riichi": false, "dealer": false }
+  ],
+  "events": [
+    { "seat": 0, "kind": "DRAW",    "tile": "6s" },
+    { "seat": 0, "kind": "RIICHI",  "tile": "7s" },
+    { "seat": 1, "kind": "DRAW",    "tile": "9s" },
+    { "seat": 1, "kind": "DISCARD", "tile": "9s" },
+    { "seat": 0, "kind": "RON",     "tile": "9s" }
+  ],
+  "result": { "type": "ron", "winner": 0, "from": 1, "han": 2, "fu": 40, "yaku": ["立直", "宝牌"] }
+}
+
+字段说明：
+• 牌面编码：1m-9m(万)、1p-9p(筒)、1s-9s(索)、0m/0p/0s(赤五)、E/S/W/N(东南西北)、P/F/C(白发中)。
+• players0：必须记录开局发完 13 张、未摸第一张牌之前的四家状态。
+• events.kind：支持 DRAW(摸牌) / DISCARD(切牌) / RIICHI(立直) / CHI(吃) / PON(碰) / ANKAN / MINKAN / ADD_KAN / RON / TSUMO / RYUUKYOKU / PASS。
+• 建议记录 DRAW 事件：页面会精确还原每一步 13/14 张手牌并高亮刚摸进的牌；若不含 DRAW，则自动兼容为「近似手牌」模式。`;
+
+// 内置真实对局示例（由 riichi-rl 的 MahjongEnv 实跑四版本对战导出，含完整 DRAW 事件）
+const EXAMPLE_REPLAY = {"meta":{"title":"非 ML 四版本对战示例（v3 vs v2 vs v1 vs v0）","ckpt":"dest_prob_v3_vs_v2_v1_v0","seed":106,"round_wind":"E","kyoku":1,"honba":0},"result":{"type":"tsumo","winner":0,"from":null,"han":5,"fu":40,"yaku":["立直","门前清"],"dora_count":0,"aka":3,"ura":0,"points_delta":[27000,-8000,-8000,-8000]},"dora0":["1p"],"wall0":70,"players0":[{"idx":0,"name":"v3(完整版)","wind":27,"hand":["1m","2m","6m","8m","5p","7p","8p","8p","3s","4s","8s","W","N"],"river":[],"melds":[],"points":25000,"riichi":false,"dealer":true},{"idx":1,"name":"v2(三家推测)","wind":28,"hand":["6m","1p","4p","4p","5p","8p","4s","4s","5s","7s","8s","9s","W"],"river":[],"melds":[],"points":25000,"riichi":false,"dealer":false},{"idx":2,"name":"v1(两轮迭代)","wind":29,"hand":["1m","1m","2m","4m","7m","2p","2s","2s","7s","9s","E","S","C"],"river":[],"melds":[],"points":25000,"riichi":false,"dealer":false},{"idx":3,"name":"v0(1轮基线)","wind":30,"hand":["1m","2m","3m","1p","6p","9p","7s","8s","8s","9s","E","S","F"],"river":[],"melds":[],"points":25000,"riichi":false,"dealer":false}],"events":[{"seat":0,"kind":"DRAW","tile":"N"},{"seat":0,"kind":"DISCARD","tile":"8s"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"W"},{"seat":1,"kind":"DISCARD","tile":"1p"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"9s"},{"seat":2,"kind":"DISCARD","tile":"2m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"F"},{"seat":3,"kind":"DISCARD","tile":"9p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"1s"},{"seat":0,"kind":"DISCARD","tile":"1s"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"P"},{"seat":1,"kind":"DISCARD","tile":"P"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"9m"},{"seat":2,"kind":"DISCARD","tile":"4m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"9p"},{"seat":3,"kind":"DISCARD","tile":"9p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"4m"},{"seat":0,"kind":"DISCARD","tile":"1m"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"2s"},{"seat":1,"kind":"DISCARD","tile":"8p"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"1s"},{"seat":2,"kind":"DISCARD","tile":"1s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"9p"},{"seat":3,"kind":"DISCARD","tile":"9p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"4p"},{"seat":0,"kind":"DISCARD","tile":"W"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"4s"},{"seat":1,"kind":"DISCARD","tile":"2s"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"3p"},{"seat":2,"kind":"DISCARD","tile":"E"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"1s"},{"seat":3,"kind":"DISCARD","tile":"E"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"9m"},{"seat":0,"kind":"DISCARD","tile":"9m"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"2p"},{"seat":1,"kind":"DISCARD","tile":"6m"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"F"},{"seat":2,"kind":"DISCARD","tile":"S"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"7m"},{"seat":3,"kind":"DISCARD","tile":"S"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"5s"},{"seat":0,"kind":"DISCARD","tile":"7p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"1s"},{"seat":1,"kind":"DISCARD","tile":"1s"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"7s"},{"seat":2,"kind":"DISCARD","tile":"9m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"7m"},{"seat":3,"kind":"DISCARD","tile":"1s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"8m"},{"seat":0,"kind":"DISCARD","tile":"8p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"3s"},{"seat":1,"kind":"DISCARD","tile":"W"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"7m"},{"seat":2,"kind":"DISCARD","tile":"3p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"E"},{"seat":3,"kind":"DISCARD","tile":"E"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"5m"},{"seat":0,"kind":"DISCARD","tile":"8p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"5m"},{"seat":1,"kind":"DISCARD","tile":"W"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"8m"},{"seat":2,"kind":"DISCARD","tile":"8m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"5p"},{"seat":3,"kind":"DISCARD","tile":"1p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"P"},{"seat":0,"kind":"DISCARD","tile":"P"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"7p"},{"seat":1,"kind":"DISCARD","tile":"5m"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"9m"},{"seat":2,"kind":"DISCARD","tile":"9m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"2s"},{"seat":3,"kind":"DISCARD","tile":"2s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"1p"},{"seat":0,"kind":"DISCARD","tile":"1p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"9p"},{"seat":1,"kind":"DISCARD","tile":"9p"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"C"},{"seat":2,"kind":"RIICHI","tile":"2p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"6p"},{"seat":3,"kind":"DISCARD","tile":"8s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"3p"},{"seat":0,"kind":"RIICHI","tile":"2m"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"S"},{"seat":1,"kind":"DISCARD","tile":"S"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"6s"},{"seat":2,"kind":"DISCARD","tile":"6s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"4m"},{"seat":3,"kind":"DISCARD","tile":"1m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"2p"},{"seat":0,"kind":"DISCARD","tile":"2p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"P"},{"seat":1,"kind":"DISCARD","tile":"P"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"3m"},{"seat":2,"kind":"DISCARD","tile":"3m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"C"},{"seat":3,"kind":"DISCARD","tile":"C"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"3m"},{"seat":0,"kind":"DISCARD","tile":"3m"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"F"},{"seat":1,"kind":"DISCARD","tile":"2p"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"S"},{"seat":2,"kind":"DISCARD","tile":"S"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"6m"},{"seat":3,"kind":"DISCARD","tile":"7m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"2p"},{"seat":0,"kind":"DISCARD","tile":"2p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"E"},{"seat":1,"kind":"DISCARD","tile":"E"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"C"},{"seat":2,"kind":"DISCARD","tile":"C"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"3m"},{"seat":3,"kind":"DISCARD","tile":"3m"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"3p"},{"seat":0,"kind":"DISCARD","tile":"3p"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"7p"},{"seat":1,"kind":"DISCARD","tile":"3s"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"3p"},{"seat":2,"kind":"DISCARD","tile":"3p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"W"},{"seat":3,"kind":"DISCARD","tile":"W"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"6m"},{"seat":0,"kind":"DISCARD","tile":"6m"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"5m"},{"seat":1,"kind":"DISCARD","tile":"8s"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"3s"},{"seat":2,"kind":"DISCARD","tile":"3s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"7p"},{"seat":3,"kind":"RIICHI","tile":"6p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"5s"},{"seat":0,"kind":"DISCARD","tile":"5s"},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":1,"kind":"DRAW","tile":"9m"},{"seat":1,"kind":"DISCARD","tile":"9m"},{"seat":0,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":2,"kind":"DRAW","tile":"6p"},{"seat":2,"kind":"DISCARD","tile":"6p"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":3,"kind":"PASS","tile":null},{"seat":3,"kind":"DRAW","tile":"6s"},{"seat":3,"kind":"DISCARD","tile":"6s"},{"seat":0,"kind":"PASS","tile":null},{"seat":1,"kind":"PASS","tile":null},{"seat":2,"kind":"PASS","tile":null},{"seat":0,"kind":"DRAW","tile":"8m"},{"seat":0,"kind":"TSUMO","tile":null}]};
+
+const CALLS = ["CHI", "PON", "ANKAN", "MINKAN", "ADD_KAN"];
+const NUM_CN = ["赤五", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+const HONOR_NAME = {E:"东", S:"南", W:"西", N:"北", P:"白", F:"发", C:"中"};
+const HONOR_GLYPH = {E:"東", S:"南", W:"西", N:"北", P:"白", F:"發", C:"中"};
+const HONOR_ORD = {E:41, S:42, W:43, N:44, P:45, F:46, C:47};
+const SVG_CACHE = Object.create(null);
+
+let D = EXAMPLE_REPLAY;
+let hasDrawEvents = false;
+let cur = 0, timer = null;
+
+function windLabel(w) {
+  return {27:"东", 28:"南", 29:"西", 30:"北", E:"东", S:"南", W:"西", N:"北"}[w] || String(w);
+}
+function tileOrder(code) {
+  if (!code) return 999;
+  if (HONOR_ORD[code]) return HONOR_ORD[code];
+  const n = +code[0], s = code[1];
+  return ({m:10, p:20, s:30}[s] || 90) + (n === 0 ? 5.5 : n);
+}
+function tileName(code) {
+  if (!code) return "暗牌";
+  if (HONOR_NAME[code]) return HONOR_NAME[code];
+  const n = +code[0], s = code[1];
+  return (NUM_CN[n] || code[0]) + ({m:"万", p:"筒", s:"索"}[s] || "");
+}
+function nextDora(ind) {
+  if (!ind) return null;
+  const winds = ["E","S","W","N"], dragons = ["P","F","C"];
+  if (winds.includes(ind)) return winds[(winds.indexOf(ind) + 1) % 4];
+  if (dragons.includes(ind)) return dragons[(dragons.indexOf(ind) + 1) % 3];
+  const n = +ind[0], s = ind[1];
+  return `${n === 0 ? 6 : (n % 9) + 1}${s}`;
+}
+
+// ---------- SVG 实体麻将牌渲染器 ----------
+const C_INK="#181b20", C_RED="#c62228", C_GRN="#157a44", C_BLU="#1a4088";
+
+function pinDot(cx, cy, r, col) {
+  const r2 = (r * 0.58).toFixed(2), r3 = (r * 0.26).toFixed(2);
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}"/>` +
+         `<circle cx="${cx}" cy="${cy}" r="${r2}" fill="none" stroke="#fffef8" stroke-width="${Math.max(1.1, r * 0.18).toFixed(2)}" stroke-dasharray="${(r * 0.55).toFixed(2)} ${(r * 0.28).toFixed(2)}"/>` +
+         `<circle cx="${cx}" cy="${cy}" r="${r3}" fill="#fffef8"/>`;
+}
+function bamboo(cx, y, h, col) {
+  const w = 5.6, x = (cx - w / 2).toFixed(2), mid = (y + h / 2).toFixed(2);
+  return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2.6" fill="${col}"/>` +
+         `<rect x="${(cx - 0.85).toFixed(2)}" y="${(y + 2.2).toFixed(2)}" width="1.7" height="${(h - 4.4).toFixed(2)}" rx="0.8" fill="#fffef8" opacity=".82"/>` +
+         `<line x1="${(cx - w / 2 - 0.4).toFixed(2)}" y1="${mid}" x2="${(cx + w / 2 + 0.4).toFixed(2)}" y2="${mid}" stroke="#f7f2e6" stroke-width="1.4"/>` +
+         `<circle cx="${cx}" cy="${(y + 2.2).toFixed(2)}" r="1.4" fill="${col}"/>` +
+         `<circle cx="${cx}" cy="${(y + h - 2.2).toFixed(2)}" r="1.4" fill="${col}"/></g>`;
+}
+function tileSVG(code) {
+  if (SVG_CACHE[code]) return SVG_CACHE[code];
+  let inner = "";
+  if (!code) {
+    inner = `<rect x="6" y="7" width="32" height="46" rx="4" fill="none" stroke="#63d1a4" stroke-width="1.5" opacity=".45"/>`;
+  } else if (code.endsWith("m")) {
+    const n = +code[0], isRed = (n === 0);
+    inner = `<text x="22" y="25" text-anchor="middle" font-family="'Songti SC','Noto Serif SC','STSong','SimSun',serif" font-size="21" font-weight="800" fill="${isRed ? C_RED : C_INK}">${isRed ? "五" : NUM_CN[n]}</text>` +
+            `<text x="22" y="51" text-anchor="middle" font-family="'Songti SC','Noto Serif SC','STSong','SimSun',serif" font-size="23" font-weight="800" fill="${C_RED}">萬</text>` +
+            (isRed ? `<circle cx="35" cy="11" r="2.6" fill="${C_RED}"/>` : "");
+  } else if (code.endsWith("p")) {
+    const n = +code[0], isRed = (n === 0), col = c => isRed ? C_RED : c;
+    if (n === 1) {
+      inner = `<circle cx="22" cy="30" r="15.5" fill="${C_BLU}"/><circle cx="22" cy="30" r="12.5" fill="#fffef8"/>` +
+              `<circle cx="22" cy="30" r="10.8" fill="none" stroke="${C_GRN}" stroke-width="2.4" stroke-dasharray="3.2 2.2"/>` +
+              `<circle cx="22" cy="30" r="6.8" fill="${C_RED}"/><circle cx="22" cy="30" r="2.6" fill="#fffef8"/>`;
+    } else if (n === 2) { inner = pinDot(22,16.5,9.5,C_BLU) + pinDot(22,43.5,9.5,C_GRN); }
+    else if (n === 3) { inner = pinDot(12.5,13.5,7.4,C_BLU) + pinDot(22,30,7.4,C_RED) + pinDot(31.5,46.5,7.4,C_GRN); }
+    else if (n === 4) { inner = pinDot(13,16,8,C_BLU) + pinDot(31,16,8,C_GRN) + pinDot(13,44,8,C_GRN) + pinDot(31,44,8,C_BLU); }
+    else if (n === 5 || isRed) { inner = pinDot(12,14,6.9,col(C_BLU)) + pinDot(32,14,6.9,col(C_GRN)) + pinDot(22,30,6.9,C_RED) + pinDot(12,46,6.9,col(C_GRN)) + pinDot(32,46,6.9,col(C_BLU)); }
+    else if (n === 6) { inner = pinDot(13,13,6.8,C_GRN) + pinDot(31,13,6.8,C_GRN) + pinDot(13,34,6.8,C_RED) + pinDot(31,34,6.8,C_RED) + pinDot(13,49,6.8,C_RED) + pinDot(31,49,6.8,C_RED); }
+    else if (n === 7) { inner = pinDot(11,11.5,5.9,C_GRN) + pinDot(22,16.5,5.9,C_GRN) + pinDot(33,21.5,5.9,C_GRN) + pinDot(13,35.5,6.3,C_RED) + pinDot(31,35.5,6.3,C_RED) + pinDot(13,49.5,6.3,C_RED) + pinDot(31,49.5,6.3,C_RED); }
+    else if (n === 8) { [11,23.6,36.4,49].forEach(y => { inner += pinDot(13,y,5.6,C_BLU) + pinDot(31,y,5.6,C_BLU); }); }
+    else if (n === 9) { [12,30,48].forEach((y, ri) => { const c = [C_GRN,C_RED,C_BLU][ri]; [10.5,22,33.5].forEach(x => { inner += pinDot(x,y,5.4,c); }); }); }
+  } else if (code.endsWith("s")) {
+    const n = +code[0], isRed = (n === 0), col = c => isRed ? C_RED : c;
+    if (n === 1) {
+      inner = `<g><path d="M22 10 C27 10 29 14 27 18 C25 21 21 21 19 18 C17 15 18 10 22 10 Z" fill="${C_GRN}"/>` +
+              `<circle cx="24" cy="14" r="1.4" fill="#fffef8"/><path d="M27 13 L32 14.5 L27 16 Z" fill="${C_RED}"/>` +
+              `<path d="M18 19 C13 24 12 34 17 41 C21 46 27 46 30 40 C33 34 31 24 25 19 Z" fill="${C_GRN}"/>` +
+              `<path d="M16 25 C20 28 24 28 28 24 C29 30 27 36 22 39 C17 36 15 31 16 25 Z" fill="${C_RED}"/>` +
+              `<path d="M15 41 L10 51 M22 43 L22 53 M29 41 L34 51" stroke="${C_GRN}" stroke-width="2.6" stroke-linecap="round"/>` +
+              `<circle cx="10" cy="51" r="2.2" fill="${C_RED}"/><circle cx="22" cy="53" r="2.4" fill="${C_BLU}"/><circle cx="34" cy="51" r="2.2" fill="${C_RED}"/></g>`;
+    } else if (n === 2) { inner = bamboo(22,8,19,C_GRN) + bamboo(22,33,19,C_GRN); }
+    else if (n === 3) { inner = bamboo(22,8,19,C_GRN) + bamboo(13,33,19,C_GRN) + bamboo(31,33,19,C_GRN); }
+    else if (n === 4) { inner = bamboo(13,8,19,C_GRN) + bamboo(31,8,19,C_GRN) + bamboo(13,33,19,C_GRN) + bamboo(31,33,19,C_GRN); }
+    else if (n === 5 || isRed) { inner = bamboo(11.5,8,19,col(C_GRN)) + bamboo(32.5,8,19,col(C_GRN)) + bamboo(22,20.5,19,C_RED) + bamboo(11.5,33,19,col(C_GRN)) + bamboo(32.5,33,19,col(C_GRN)); }
+    else if (n === 6) { [11,22,33].forEach(x => { inner += bamboo(x,8,19,C_GRN) + bamboo(x,33,19,C_GRN); }); }
+    else if (n === 7) { inner = bamboo(22,5.5,14,C_RED); [11,22,33].forEach(x => { inner += bamboo(x,22.5,14.5,C_GRN) + bamboo(x,40.5,14.5,C_GRN); }); }
+    else if (n === 8) {
+      [11,22,33].forEach(x => { inner += bamboo(x,6,14,C_GRN) + bamboo(x,40,14,C_GRN); });
+      inner += `<g transform="rotate(-32 16 30)">${bamboo(16,22.5,15,C_GRN)}</g><g transform="rotate(32 28 30)">${bamboo(28,22.5,15,C_GRN)}</g>`;
+    } else if (n === 9) { [6,23,40].forEach(y => { inner += bamboo(11,y,14,C_GRN) + bamboo(22,y,14,C_RED) + bamboo(33,y,14,C_GRN); }); }
+  } else if (code === "P") {
+    inner = `<rect x="7" y="8" width="30" height="44" rx="3" fill="none" stroke="#c7d0dd" stroke-width="1.8"/>` +
+            `<rect x="10.5" y="11.5" width="23" height="37" rx="1.5" fill="none" stroke="#dce3ec" stroke-width="1"/>`;
+  } else if (HONOR_GLYPH[code]) {
+    const col = code === "F" ? C_GRN : (code === "C" ? C_RED : C_INK);
+    inner = `<text x="22" y="41" text-anchor="middle" font-family="'Songti SC','Noto Serif SC','STSong','SimSun',serif" font-size="31" font-weight="800" fill="${col}">${HONOR_GLYPH[code]}</text>`;
+  } else {
+    inner = `<text x="22" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="${C_INK}">${code}</text>`;
+  }
+  const svg = `<svg viewBox="0 0 44 60" aria-hidden="true">${inner}</svg>`;
+  SVG_CACHE[code] = svg;
+  return svg;
+}
+function tileH(code, cls) {
+  const label = tileName(code), extra = cls || "";
+  if (!code) return `<span class="mtile back ${extra}" title="${label}">${tileSVG("")}</span>`;
+  return `<span class="mtile ${extra}" title="${label} (${code})">${tileSVG(code)}</span>`;
+}
+
+// ---------- 状态重放引擎（支持精确 DRAW 与完整副露）----------
+function stateAt(i) {
+  const st = (D.players0 || []).map(p => ({
+    idx: p.idx,
+    name: p.name || "",
+    wind: p.wind,
+    hand: [...(p.hand || [])].sort((a, b) => tileOrder(a) - tileOrder(b)),
+    river: [...(p.river || [])],
+    melds: (p.melds || []).map(m => Array.isArray(m) ? [...m] : [m]),
+    points: p.points ?? 25000,
+    riichi: Boolean(p.riichi),
+    riichiIdx: -1,
+    dealer: Boolean(p.dealer),
+    drawnTile: null,
+    winTile: null,
+    winKind: null
+  }));
+
+  let wallUsed = 0;
+  for (let k = 0; k <= i; k++) {
+    const e = D.events[k];
+    if (!e) continue;
+    const p = st[e.seat];
+    if (!p) continue;
+    // 清除上一轮临时摸牌高亮
+    if (k < i) p.drawnTile = null;
+
+    if (e.kind === "DRAW" && e.tile) {
+      p.hand.push(e.tile);
+      p.drawnTile = e.tile;
+      wallUsed++;
+    } else if (e.kind === "DISCARD" && e.tile) {
+      const j = p.hand.indexOf(e.tile);
+      if (j >= 0) p.hand.splice(j, 1);
+      p.hand.sort((a, b) => tileOrder(a) - tileOrder(b));
+      p.drawnTile = null;
+      p.river.push(e.tile);
+      if (!hasDrawEvents) wallUsed++;
+    } else if (e.kind === "RIICHI") {
+      if (!p.riichi) { p.riichi = true; p.points -= 1000; }
+      if (e.tile) {
+        const j = p.hand.indexOf(e.tile);
+        if (j >= 0) p.hand.splice(j, 1);
+        p.hand.sort((a, b) => tileOrder(a) - tileOrder(b));
+        p.drawnTile = null;
+        p.riichiIdx = p.river.length;
+        p.river.push(e.tile);
+        if (!hasDrawEvents) wallUsed++;
+      }
+    } else if (CALLS.includes(e.kind)) {
+      const meldTiles = Array.isArray(e.meld) && e.meld.length
+        ? [...e.meld]
+        : (e.kind === "PON" ? [e.tile, e.tile, e.tile] : (e.tile ? [e.tile] : []));
+      // 从暗牌里扣掉除被鸣那张以外的手牌（暗杠扣 4 张，加杠扣 1 张）
+      if (e.kind === "ANKAN" && e.tile) {
+        for (let n = 0; n < 4; n++) { const j = p.hand.indexOf(e.tile); if (j >= 0) p.hand.splice(j, 1); }
+        p.melds.push(meldTiles);
+      } else if (e.kind === "ADD_KAN" && e.tile) {
+        const j = p.hand.indexOf(e.tile); if (j >= 0) p.hand.splice(j, 1);
+        const existing = p.melds.find(m => m.length === 3 && m[0] === e.tile && m[1] === e.tile);
+        if (existing) existing.push(e.tile); else p.melds.push(meldTiles);
+      } else if (meldTiles.length) {
+        let skippedCalled = false;
+        for (const mt of meldTiles) {
+          if (!skippedCalled && mt === e.tile) { skippedCalled = true; continue; }
+          const j = p.hand.indexOf(mt);
+          if (j >= 0) p.hand.splice(j, 1);
+        }
+        p.melds.push(meldTiles);
+      }
+      p.hand.sort((a, b) => tileOrder(a) - tileOrder(b));
+    } else if (e.kind === "RON" && e.tile) {
+      p.winTile = e.tile;
+      p.winKind = "荣和";
+    } else if (e.kind === "TSUMO") {
+      p.winKind = "自摸";
+      if (e.tile && p.drawnTile !== e.tile) {
+        p.winTile = e.tile;
+      }
+    }
+  }
+  return { players: st, wallLeft: Math.max(0, (D.wall0 || 0) - wallUsed) };
+}
+
+function describe(e, withTile) {
+  const p = (D.players0 || [])[e.seat];
+  const s = windLabel(p ? p.wind : e.seat);
+  const tHtml = (withTile && e.tile) ? tileH(e.tile, "mini-tile") : "";
+  const tName = e.tile ? tileName(e.tile) : "";
+  switch (e.kind) {
+    case "DRAW": return `<span style="color:var(--acc)">${s}家 摸</span> ${tHtml}<span>${tName}</span>`;
+    case "DISCARD": return `${s}家 切 ${tHtml}<span>${tName}</span>`;
+    case "PASS": return `${s}家 pass`;
+    case "RIICHI": return `<b style="color:var(--riichi)">${s}家 立直！</b>${e.tile ? ` 切 ${tHtml}<span>${tName}</span>` : ""}`;
+    case "RON": return `<b style="color:var(--gold)">${s}家 荣和！</b> ${tHtml}<span>${tName}</span>`;
+    case "TSUMO": return `<b style="color:var(--gold)">${s}家 自摸！</b>${tHtml ? ` ${tHtml}<span>${tName}</span>` : ""}`;
+    case "CHI": return `<b style="color:#78d2ff">${s}家 吃</b> ${tHtml}<span>${tName}</span>`;
+    case "PON": return `<b style="color:#78d2ff">${s}家 碰</b> ${tHtml}<span>${tName}</span>`;
+    case "ANKAN": return `<b style="color:#78d2ff">${s}家 暗杠</b> ${tHtml}<span>${tName}</span>`;
+    case "MINKAN": return `<b style="color:#78d2ff">${s}家 明杠</b> ${tHtml}<span>${tName}</span>`;
+    case "ADD_KAN": return `<b style="color:#78d2ff">${s}家 加杠</b> ${tHtml}<span>${tName}</span>`;
+    case "RYUUKYOKU": return `<b>流局</b>`;
+    default: return `${s}家 ${e.kind}`;
+  }
+}
+
+function renderRiver(p, isLatestSeat) {
+  if (!p.river.length) return `<span class="empty-note">暂无舍牌</span>`;
+  const rows = [];
+  for (let r = 0; r < p.river.length; r += 6) {
+    const items = p.river.slice(r, r + 6).map((t, off) => {
+      const idx = r + off;
+      const cls = `river-tile${(isLatestSeat && idx === p.river.length - 1) ? " latest" : ""}`;
+      return idx === p.riichiIdx ? `<span class="riichi-slot" title="立直宣言牌">${tileH(t, cls)}</span>` : tileH(t, cls);
+    }).join("");
+    rows.push(`<div class="river-row">${items}</div>`);
+  }
+  return rows.join("");
+}
+
+function renderHand(p) {
+  const baseHand = [...p.hand];
+  let separatedDraw = null;
+  if (p.drawnTile) {
+    const j = baseHand.lastIndexOf(p.drawnTile);
+    if (j >= 0) { baseHand.splice(j, 1); separatedDraw = p.drawnTile; }
+  }
+  const mainHtml = baseHand.map(t => tileH(t)).join("") || '<span class="empty-note">—</span>';
+  const drawHtml = separatedDraw
+    ? `<span class="hand-sep${p.winKind ? " win-sep" : ""}">${tileH(separatedDraw, p.winKind ? "ron-tile" : "draw")}</span>`
+    : "";
+  const ronHtml = p.winTile
+    ? `<span class="hand-sep win-sep">${tileH(p.winTile, "ron-tile")}</span>`
+    : "";
+  return mainHtml + drawHtml + ronHtml;
+}
+
+function render() {
+  if (!D.events || !D.events.length) return;
+  const { players: st, wallLeft } = stateAt(cur);
+  const ev = D.events[cur];
+  document.getElementById("stepno").textContent = `第 ${cur + 1} / ${D.events.length} 步`;
+  document.getElementById("range").value = cur;
+  document.getElementById("event").innerHTML = ev ? describe(ev, true) : "—";
+
+  const doraHtml = (D.dora0 || []).map(ind => {
+    const real = nextDora(ind);
+    return `<span class="dora-group">${tileH(ind, "dora-tile")}${real ? `<span class="dora-arrow">→ 宝牌</span>${tileH(real, "dora-tile")}` : ""}</span>`;
+  }).join("") || "—";
+
+  const m = D.meta || {};
+  const roundInfo = m.round_wind ? `<span class="kv">场况 <b>${windLabel(m.round_wind)}${m.kyoku || 1}局${m.honba ? ` ${m.honba}本场` : ""}</b></span>` : "";
+  document.getElementById("center").innerHTML =
+    roundInfo +
+    `<span class="kv">牌墙剩余 <b>${wallLeft}</b> <span style="opacity:.6">/ ${D.wall0 ?? "?"}</span></span>` +
+    `<span class="kv">宝牌指示 ${doraHtml}</span>`;
+
+  const handLabel = hasDrawEvents ? "手牌" : "手牌（近似）";
+  document.getElementById("seats").innerHTML = st.map(p => {
+    const isActing = ev && ev.seat === p.idx && ev.kind !== "PASS";
+    const isWin = Boolean(p.winKind);
+    const isLatestDiscard = ev && ev.seat === p.idx && (ev.kind === "DISCARD" || ev.kind === "RIICHI");
+    const meldsHtml = (p.melds || []).map(grp =>
+      `<span class="meld">${grp.map(t => tileH(t, "river-tile")).join("")}</span>`
+    ).join("");
+    return `<div class="panel${isActing ? " acting" : ""}${isWin ? " winner" : ""}">
+      <h2>
+        <span class="seat-head">
+          <span class="wind-badge">${windLabel(p.wind)}</span>
+          <span class="seat">${windLabel(p.wind)}家</span>
+          ${p.name ? `<span class="pname">${p.name}</span>` : ""}
+          ${p.dealer ? '<span class="dealer">庄</span>' : ""}
+          ${p.riichi ? '<span class="riichi-tag">立直</span>' : ""}
+          ${isWin ? `<span class="win-tag">${p.winKind}</span>` : ""}
+        </span>
+        <span class="pts">${p.points.toLocaleString()}</span>
+      </h2>
+      <div class="sublabel"><span>${handLabel}</span><span>${p.hand.length} 张</span></div>
+      <div class="hand">${renderHand(p)}</div>
+      ${meldsHtml ? `<div class="sublabel"><span>副露</span></div><div class="melds">${meldsHtml}</div>` : ""}
+      <div class="sublabel"><span>牌河</span><span>${p.river.length} 巡</span></div>
+      <div class="river">${renderRiver(p, isLatestDiscard)}</div>
+    </div>`;
+  }).join("");
+
+  const rows = document.querySelectorAll("#log tr");
+  rows.forEach(tr => {
+    const active = +tr.dataset.i === cur;
+    tr.classList.toggle("cur", active);
+    if (active) {
+      const wrap = document.getElementById("logwrap");
+      wrap.scrollTo({ top: Math.max(0, tr.offsetTop - wrap.clientHeight / 2 + tr.clientHeight / 2), behavior: "smooth" });
+    }
+  });
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === D.events.length - 1;
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+function loadReplay(data, label) {
+  if (!data || !Array.isArray(data.players0) || !Array.isArray(data.events) || !data.events.length) {
+    showToast("JSON 格式错误：缺少 players0 或 events 数组");
+    return;
+  }
+  stop();
+  D = data;
+  hasDrawEvents = D.events.some(e => e && e.kind === "DRAW");
+  document.getElementById("modeTag").textContent = hasDrawEvents ? "精确手牌 (含 DRAW)" : "近似手牌 (无 DRAW)";
+
+  const m = D.meta || {};
+  document.getElementById("title").textContent = m.title || "麻将牌谱";
+  const metaParts = [];
+  if (m.ckpt) metaParts.push(`策略 ${m.ckpt}`);
+  if (m.seed !== undefined) metaParts.push(`seed ${m.seed}`);
+  document.getElementById("meta").textContent = metaParts.join(" · ");
+
+  const r = D.result || {}, el = document.getElementById("result");
+  if (r.type && r.type !== "ryuukyoku") {
+    const wp = D.players0[r.winner];
+    const w = wp ? windLabel(wp.wind) : r.winner;
+    el.textContent = `${r.type === "ron" ? "荣和" : "自摸"} · ${w}家` +
+      (r.han ? ` · ${r.han}番` : "") + (r.fu ? `${r.fu}符` : "") +
+      ((r.yaku || []).length ? ` · ${r.yaku.join("、")}` : "");
+  } else {
+    el.textContent = "流局";
+  }
+
+  document.getElementById("log").innerHTML = D.events.map((e, i) =>
+    `<tr data-i="${i}" class="${e.kind === "PASS" ? "is-pass" : ""}"><td class="step-col">${i + 1}</td><td><span class="log-cell">${describe(e, true)}</span></td></tr>`
+  ).join("");
+  document.getElementById("range").max = D.events.length - 1;
+  go(0);
+  if (label) showToast(`已加载：${label}`);
+}
+
+function stepBy(dir) {
+  const skip = document.getElementById("skipPass").checked;
+  let next = cur + dir;
+  if (skip) {
+    while (next > 0 && next < D.events.length - 1 && D.events[next].kind === "PASS") next += dir;
+  }
+  go(next);
+}
+function go(i) { cur = Math.max(0, Math.min(D.events.length - 1, i)); render(); }
+function stop() {
+  if (timer) { clearInterval(timer); timer = null; }
+  const btn = document.getElementById("auto");
+  btn.textContent = "▶ 自动播放";
+  btn.classList.remove("active");
+}
+function toggleAuto() {
+  if (timer) { stop(); return; }
+  if (cur >= D.events.length - 1) go(0);
+  const btn = document.getElementById("auto");
+  btn.textContent = "⏸ 暂停";
+  btn.classList.add("active");
+  timer = setInterval(() => { if (cur >= D.events.length - 1) stop(); else stepBy(1); }, 650);
+}
+
+function init() {
+  document.getElementById("schemaDoc").textContent = SCHEMA_TEMPLATE;
+  document.getElementById("log").addEventListener("click", ev => {
+    const tr = ev.target.closest("tr[data-i]");
+    if (!tr) return;
+    stop(); go(+tr.dataset.i);
+  });
+  document.getElementById("range").addEventListener("input", e => { stop(); go(+e.target.value); });
+  document.getElementById("prev").addEventListener("click", () => { stop(); stepBy(-1); });
+  document.getElementById("next").addEventListener("click", () => { stop(); stepBy(1); });
+  document.getElementById("auto").addEventListener("click", toggleAuto);
+  document.getElementById("btnExample").addEventListener("click", () => loadReplay(EXAMPLE_REPLAY, "内置示例牌谱"));
+
+  // 文件导入
+  document.getElementById("fileInput").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try { loadReplay(JSON.parse(reader.result), file.name); }
+      catch (err) { showToast("JSON 解析失败：" + err.message); }
+    };
+    reader.readAsText(file, "utf-8");
+    e.target.value = "";
+  });
+
+  // 拖拽导入
+  document.addEventListener("dragover", e => { e.preventDefault(); document.body.classList.add("dragover"); });
+  document.addEventListener("dragleave", e => { if (!e.relatedTarget) document.body.classList.remove("dragover"); });
+  document.addEventListener("drop", e => {
+    e.preventDefault(); document.body.classList.remove("dragover");
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try { loadReplay(JSON.parse(reader.result), file.name); }
+      catch (err) { showToast("JSON 解析失败：" + err.message); }
+    };
+    reader.readAsText(file, "utf-8");
+  });
+
+  // 弹窗：粘贴 JSON & 格式说明
+  const pasteModal = document.getElementById("pasteModal");
+  const schemaModal = document.getElementById("schemaModal");
+  document.getElementById("btnPaste").addEventListener("click", () => pasteModal.classList.add("open"));
+  document.getElementById("closePaste").addEventListener("click", () => pasteModal.classList.remove("open"));
+  document.getElementById("cancelPaste").addEventListener("click", () => pasteModal.classList.remove("open"));
+  document.getElementById("applyPaste").addEventListener("click", () => {
+    try {
+      const obj = JSON.parse(document.getElementById("pasteArea").value);
+      loadReplay(obj, "粘贴的 JSON 牌谱");
+      pasteModal.classList.remove("open");
+    } catch (err) {
+      showToast("JSON 解析失败：" + err.message);
+    }
+  });
+  document.getElementById("btnSchema").addEventListener("click", () => schemaModal.classList.add("open"));
+  document.getElementById("closeSchema").addEventListener("click", () => schemaModal.classList.remove("open"));
+  document.getElementById("okSchema").addEventListener("click", () => schemaModal.classList.remove("open"));
+  document.getElementById("copySchema").addEventListener("click", () => {
+    const txt = SCHEMA_TEMPLATE.split("\n\n字段说明")[0];
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(() => showToast("已复制 JSON 模板")).catch(() => showToast("复制失败，请手动选取"));
+    } else {
+      const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); showToast("已复制 JSON 模板"); } catch (_) {}
+      document.body.removeChild(ta);
+    }
+  });
+
+  // 键盘快捷键
+  document.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); stop(); stepBy(-1); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); stop(); stepBy(1); }
+    else if (e.key === " ") { e.preventDefault(); toggleAuto(); }
+  });
+
+  loadReplay(EXAMPLE_REPLAY);
+}
+init();
+</script>
+</body>
+</html>

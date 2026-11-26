@@ -1,0 +1,1848 @@
+{
+  "meta": {
+    "title": "非 ML 四版本对战示例（v3 vs v2 vs v1 vs v0）",
+    "ckpt": "dest_prob_v3_vs_v2_v1_v0",
+    "seed": 106,
+    "round_wind": "E",
+    "kyoku": 1,
+    "honba": 0
+  },
+  "result": {
+    "type": "tsumo",
+    "winner": 0,
+    "from": null,
+    "han": 5,
+    "fu": 40,
+    "yaku": [
+      "立直",
+      "门前清"
+    ],
+    "dora_count": 0,
+    "aka": 3,
+    "ura": 0,
+    "points_delta": [
+      27000,
+      -8000,
+      -8000,
+      -8000
+    ]
+  },
+  "dora0": [
+    "1p"
+  ],
+  "wall0": 70,
+  "players0": [
+    {
+      "idx": 0,
+      "name": "v3(完整版)",
+      "wind": 27,
+      "hand": [
+        "1m",
+        "2m",
+        "6m",
+        "8m",
+        "5p",
+        "7p",
+        "8p",
+        "8p",
+        "3s",
+        "4s",
+        "8s",
+        "W",
+        "N"
+      ],
+      "river": [],
+      "melds": [],
+      "points": 25000,
+      "riichi": false,
+      "dealer": true
+    },
+    {
+      "idx": 1,
+      "name": "v2(三家推测)",
+      "wind": 28,
+      "hand": [
+        "6m",
+        "1p",
+        "4p",
+        "4p",
+        "5p",
+        "8p",
+        "4s",
+        "4s",
+        "5s",
+        "7s",
+        "8s",
+        "9s",
+        "W"
+      ],
+      "river": [],
+      "melds": [],
+      "points": 25000,
+      "riichi": false,
+      "dealer": false
+    },
+    {
+      "idx": 2,
+      "name": "v1(两轮迭代)",
+      "wind": 29,
+      "hand": [
+        "1m",
+        "1m",
+        "2m",
+        "4m",
+        "7m",
+        "2p",
+        "2s",
+        "2s",
+        "7s",
+        "9s",
+        "E",
+        "S",
+        "C"
+      ],
+      "river": [],
+      "melds": [],
+      "points": 25000,
+      "riichi": false,
+      "dealer": false
+    },
+    {
+      "idx": 3,
+      "name": "v0(1轮基线)",
+      "wind": 30,
+      "hand": [
+        "1m",
+        "2m",
+        "3m",
+        "1p",
+        "6p",
+        "9p",
+        "7s",
+        "8s",
+        "8s",
+        "9s",
+        "E",
+        "S",
+        "F"
+      ],
+      "river": [],
+      "melds": [],
+      "points": 25000,
+      "riichi": false,
+      "dealer": false
+    }
+  ],
+  "events": [
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "N"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "8s"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "W"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "1p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "9s"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "2m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "F"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "9p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "1s"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "1s"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "P"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "P"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "9m"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "4m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "9p"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "9p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "4m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "1m"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "2s"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "8p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "1s"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "1s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "9p"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "9p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "4p"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "W"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "4s"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "2s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "3p"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "E"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "1s"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "E"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "9m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "9m"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "2p"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "6m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "F"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "S"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "7m"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "S"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "5s"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "7p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "1s"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "1s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "7s"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "9m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "7m"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "1s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "8m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "8p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "3s"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "W"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "7m"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "3p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "E"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "E"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "5m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "8p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "5m"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "W"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "8m"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "8m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "5p"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "1p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "P"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "P"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "7p"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "5m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "9m"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "9m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "2s"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "2s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "1p"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "1p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "9p"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "9p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "C"
+    },
+    {
+      "seat": 2,
+      "kind": "RIICHI",
+      "tile": "2p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "6p"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "8s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "3p"
+    },
+    {
+      "seat": 0,
+      "kind": "RIICHI",
+      "tile": "2m"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "S"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "S"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "6s"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "6s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "4m"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "1m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "2p"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "2p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "P"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "P"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "3m"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "3m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "C"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "C"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "3m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "3m"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "F"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "2p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "S"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "S"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "6m"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "7m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "2p"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "2p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "E"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "E"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "C"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "C"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "3m"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "3m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "3p"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "3p"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "7p"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "3s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "3p"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "3p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "W"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "W"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "6m"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "6m"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "5m"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "8s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "3s"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "3s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "7p"
+    },
+    {
+      "seat": 3,
+      "kind": "RIICHI",
+      "tile": "6p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "5s"
+    },
+    {
+      "seat": 0,
+      "kind": "DISCARD",
+      "tile": "5s"
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "DRAW",
+      "tile": "9m"
+    },
+    {
+      "seat": 1,
+      "kind": "DISCARD",
+      "tile": "9m"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "DRAW",
+      "tile": "6p"
+    },
+    {
+      "seat": 2,
+      "kind": "DISCARD",
+      "tile": "6p"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 3,
+      "kind": "DRAW",
+      "tile": "6s"
+    },
+    {
+      "seat": 3,
+      "kind": "DISCARD",
+      "tile": "6s"
+    },
+    {
+      "seat": 0,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 1,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 2,
+      "kind": "PASS",
+      "tile": null
+    },
+    {
+      "seat": 0,
+      "kind": "DRAW",
+      "tile": "8m"
+    },
+    {
+      "seat": 0,
+      "kind": "TSUMO",
+      "tile": null
+    }
+  ]
+}
