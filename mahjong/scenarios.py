@@ -52,7 +52,7 @@ class ScenarioFlags:
 def reward_for_result(player, result, sit_before, hstate_before=None,
                       give_up_flag=False,
                       w_point=W_POINT, w_shape=0.0,
-                      w_deal=W_DEAL_BASE, w_survive=0.0):
+                      w_deal=W_DEAL_BASE, w_survive=0.0, w_place=0.0):
     """终局奖励：这一局的结果 + 当时的局势。
 
     参数:
@@ -60,9 +60,22 @@ def reward_for_result(player, result, sit_before, hstate_before=None,
         result: GameResult
         sit_before: Situation 替身（只需 riichi_count / is_last_round / point_gap）
         give_up_flag: 该局是否处于弃听场景
+        w_place: 顺位 pt 奖励权重（天凤：1位+30/2位+10/3位-10/4位-30）。
+            >0 时按最终点数排名次加顺位 pt，使 RL 目标对齐天凤排位
+            （名次主导，点数只是修正项），而不是只优化绝对点数。
     """
     delta = result.points_delta[player]
     r_point = w_point * (delta / 10000.0)
+
+    # 1.5 顺位 pt（天凤排位目标）：按最终点数排名次
+    r_place = 0.0
+    if w_place > 0:
+        scores = getattr(result, "scores", None)
+        if scores is None:
+            scores = [result.points_delta[i] for i in range(4)]
+        my = scores[player]
+        rank = sum(1 for s in scores if s > my)  # 0=1位
+        r_place = w_place * (30.0, 10.0, -10.0, -30.0)[min(rank, 3)]
 
     # 2. 放铳惩罚
     r_deal = 0.0
@@ -80,7 +93,7 @@ def reward_for_result(player, result, sit_before, hstate_before=None,
     if w_survive > 0 and give_up_flag and delta >= 0:
             r_surv = w_survive
 
-    return r_point + r_deal + r_surv + w_shape * 0.0
+    return r_point + r_place + r_deal + r_surv + w_shape * 0.0
 
 
 def situation_features(env, hstate, p_idx, my_shanten):

@@ -329,6 +329,9 @@ def main():
                     help="额外放铳惩罚权重（默认 0，r_point 已包含真实失分）")
     ap.add_argument("--survive-weight", type=float, default=0.0,
                     help="弃听保命奖权重（默认 0，避免鼓励消极弃和）")
+    ap.add_argument("--place-weight", type=float, default=0.0,
+                    help="顺位pt奖励权重（天凤 1位+30/2位+10/3位-10/4位-30，"
+                         ">0 使 RL 目标对齐天凤排位而非纯点数最大化）")
     ap.add_argument("--channels", type=int, default=64)
     ap.add_argument("--blocks", type=int, default=4)
     ap.add_argument("--per-tile-head", action="store_true",
@@ -564,7 +567,8 @@ def main():
                         p, result, _sit_stub(lst[-1][6]),
                         hstate, give_up_flag=lst[-1][7],
                         w_deal=args.deal_weight,
-                        w_survive=args.survive_weight)
+                        w_survive=args.survive_weight,
+                        w_place=args.place_weight)
                     # 补齐立直 1000 点真实成本差
                     r_term += (net_deltas[p] - result.points_delta[p]) / 10000.0
                     if args.aux_bonus_weight > 0:
