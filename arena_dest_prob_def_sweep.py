@@ -11,7 +11,7 @@ import dest_prob_v3 as _DP
 from mahjong import policies as POL
 
 _DP.register_policy("dest_prob_v3")
-for w in [1.2, 1.3, 1.5]:
+for w in [1.1, 1.2, 1.3]:
     POL.POLICIES[f"dest_prob_v3_def{int(w*10)}"] = (
         lambda seed=0, _w=w: _DP.DestProbV3(seed=seed, defense_weight=_w))
 
@@ -23,8 +23,8 @@ def main():
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
-    bots_def = [("dest_prob_v3", None), ("dest_prob_v3_def12", None),
-                ("dest_prob_v3_def13", None), ("dest_prob_v3_def15", None)]
+    bots_def = [("dest_prob_v3", None), ("dest_prob_v3_def11", None),
+                ("dest_prob_v3_def12", None), ("dest_prob_v3_def13", None)]
     agents = []
     for nm, _ in bots_def:
         agents.append(RuleAgent(nm, nm))
