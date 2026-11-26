@@ -91,9 +91,12 @@ const ORD=[27,28,29,30];
 const CALLS=["CHI","PON","ANKAN","MINKAN","ADD_KAN"];
 let cur=0,timer=null,view=null;
 
+const HONOR_CN={E:"東",S:"南",W:"西",N:"北",P:"白",F:"發",C:"中"};
 function tileH(n,cls){if(!n)return'<span class="tile none">?</span>';
-  let c="ji";if(n.endsWith("m"))c="man";else if(n.endsWith("p"))c="pin";else if(n.endsWith("s"))c="sou";
-  return`<span class="tile ${c} ${cls||""}">${n}</span>`;}
+  let c="ji",disp=n;
+  if(n.endsWith("m"))c="man";else if(n.endsWith("p"))c="pin";else if(n.endsWith("s"))c="sou";
+  else disp=HONOR_CN[n]||n;          // E/S/W/N/P/F/C -> 東/南/西/北/白/發/中
+  return`<span class="tile ${c} ${cls||""}">${disp}</span>`;}
 
 function freshState(){return JSON.parse(JSON.stringify(D.players0));}
 

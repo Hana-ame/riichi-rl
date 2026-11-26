@@ -1,7 +1,10 @@
 """把 make_game_log.py 导出的对局 JSON 渲染成自包含 HTML 牌谱游览器。
 
-精简版：不内嵌每步全量快照（那样 54 步就有 ~50KB），而是只存「本步动作事件」，
-由浏览器从初始快照增量重放。HTML 体积从 62K 降到 ~8K。
+精简版：只存「本步动作事件」+ 初始状态，浏览器增量重放。HTML ~20KB。
+
+座位/风位：log["initial"]["players"] 已按玩家索引 0,1,2,3 排列（players[i] 即索引 i），
+每家的 seat_wind（27=东 28=南 29=西 30=北）就在该元素里，庄家标记 dealer 同理。
+events[k].seat 是玩家索引 0-3，与 players[i].idx=i 一一对应。
 
 用法：
     python render_game_html.py --log rules/game_real_7101.json --out rules/game_real_7101.html
@@ -9,36 +12,27 @@
 from __future__ import annotations
 import argparse, json, os
 
-SEAT_ORDER = [27, 28, 29, 30]          # mahjong.tiles: 东27 南28 西29 北30
-ACT = {0:"DISCARD",1:"TSUMO",2:"RIICHI",3:"ANKAN",4:"MINKAN",
-       5:"CHI",6:"PON",7:"ADD_KAN",8:"RON",9:"RYUUKYOKU",11:"PASS"}
-CALL = {"CHI","PON","ANKAN","MINKAN","ADD_KAN"}
+# 牌名 -> 排序键。真值来自 mahjong/tiles.py：
+#   0-8=1m..9m, 9-17=1p..9p, 18-26=1s..9s, 27-33=E S W N P F C
+# 字符串排序是错的（"1m"<"1p"<"1s"<"2m" 会把花色打散），必须按真值索引排。
+_NAME_ORDER = ([f"{i}m" for i in range(1, 10)]
+               + [f"{i}p" for i in range(1, 10)]
+               + [f"{i}s" for i in range(1, 10)]
+               + ["E", "S", "W", "N", "P", "F", "C"])
+NAME_KEY = {n: k for k, n in enumerate(_NAME_ORDER)}
+def hand_key(name):
+    return NAME_KEY.get(name, 99)
 
 
 def compact(log):
-    """只保留渲染必需的字段，把每步压成轻量事件。
-
-    关键映射（bug 修复）：events 里的 seat 是玩家索引 0-3；
-    而 snap 里每家只有 seat_wind（27=东 28=南 29=西 30=北）。
-    env.py: seat_wind = 27 + ((i - dealer) % 4)。按此反推每个玩家索引的风位码。
-    """
+    """只保留渲染必需字段。手牌按花色+点数真值排序，保留玩家索引顺序。"""
     init = log["initial"]
-    by_wind = {p["seat"]: p for p in init["players"]}
-    # 找庄家的玩家索引：dealer=True 的那家
-    dealer_idx = 0
-    for i in range(4):
-        w = 27 + ((i - dealer_idx) % 4)
-        if by_wind.get(w, {}).get("dealer"):
-            dealer_idx = i
-            break
     players0 = []
-    for i in range(4):
-        wind = 27 + ((i - dealer_idx) % 4)
-        p = by_wind.get(wind, {})
+    for i, p in enumerate(init["players"]):   # 数组顺序即玩家索引 0-3
         players0.append({
-            "idx": i,                                   # = 事件里的 seat
-            "wind": wind,                               # 27-30，决定东/南/西/北
-            "hand": sorted(p.get("hand", [])),
+            "idx": i,
+            "wind": p.get("seat"),                # seat_wind 27-30，定东/南/西/北
+            "hand": sorted(p.get("hand", []), key=hand_key),
             "river": [],
             "melds": [],
             "points": p.get("points", 25000),
@@ -48,11 +42,7 @@ def compact(log):
     events = []
     for st in log["steps"]:
         for e in st["events"]:
-            events.append({
-                "seat": e["seat"],                      # 玩家索引 0-3
-                "kind": e["kind"],
-                "tile": e.get("tile"),
-            })
+            events.append({"seat": e["seat"], "kind": e["kind"], "tile": e.get("tile")})
     return {
         "meta": log["meta"],
         "result": log.get("result"),
