@@ -447,7 +447,14 @@ def main():
             p.requires_grad = False
 
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)
-    encoder = O2.ObsEncoder(order=obs_order)
+    # legacy ckpt（in_planes=22）必须用旧 obs2（22平面/26标量）编码，
+    # 否则喂 29 平面会让 forward shape 不匹配（610 vs 366）
+    if in_planes <= 22:
+        from mahjong import obs2_v1 as OENC
+        print(f"[legacy obs] in_planes={in_planes} -> 使用 obs2_v1（22平面/26标量）", flush=True)
+    else:
+        OENC = O2
+    encoder = OENC.ObsEncoder(order=obs_order)
     print(f"device={device} params={count_params(model):,} "
           f"hanchans/iter={args.hanchans} behaviour={BEHAVIOUR} "
           f"critic_warmup={critic_warmup} kl_coef={kl_coef} "

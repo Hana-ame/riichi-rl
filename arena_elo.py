@@ -107,15 +107,28 @@ class HanchanAgent(Agent):
 
     def __init__(self, name, ckpt):
         import train_hanchan as TH
+        from mahjong import obs2_v1 as O2v1
         self.name = name
         self.TH = TH
         ck = torch.load(ckpt, map_location="cpu", weights_only=False)
-        self.model = MahjongNet(channels=ck.get("channels", 64),
-                                n_blocks=ck.get("blocks", 4),
-                                n_actions=47, touch_dim=8, extra_scalar=12)
+        ip = ck.get("in_planes")
+        if ip is None:
+            # 极旧 ckpt 没写 in_planes 字段，从 embed.weight 通道数反推
+            emb = ck["state_dict"].get("embed.weight")
+            ip = int(emb.shape[1]) if emb is not None else 29
+        ch = ck.get("channels", 64); blk = ck.get("blocks", 4)
+        # legacy ckpt: 从 head_fc 反推 scalar_dim（366 = ch*5 + 26 + 8 + 12）
+        sd = None
+        hf = ck["state_dict"].get("head_fc.0.weight")
+        if hf is not None:
+            sd = max(hf.shape[1] - ch * 5 - 8 - 12, 0)
+        self.model = MahjongNet(channels=ch, n_blocks=blk,
+                                n_actions=47, touch_dim=8, extra_scalar=12,
+                                in_planes=ip, scalar_dim=sd)
         self.model.load_state_dict(ck["state_dict"])
         self.model.eval()
-        self.enc = O2.ObsEncoder()
+        # encoder 必须匹配 ckpt 的平面数：22 -> obs2_v1
+        self.enc = O2v1.ObsEncoder() if ip <= 22 else O2.ObsEncoder()
         self.hstate = None
 
     def set_game(self, env, hstate=None):
