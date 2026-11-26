@@ -27,7 +27,10 @@ from version_benchmark import make_agent
 def wilson(k, n, z=1.96):
     if n == 0:
         return (0.0, 0.0)
-    p = k / n; d = 1 + z * z / n
+    p = k / n
+    if p > 1.0:          # 旧「座位·场」口径下 W 可 > N（一场多手），此时 CI 无意义
+        return (100.0, 100.0)
+    d = 1 + z * z / n
     c = p + z * z / (2 * n)
     m = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5)
     return (100 * (c - m) / d, 100 * (c + m) / d)
@@ -105,6 +108,9 @@ def main():
     else:
         raise SystemExit("需要 --ckpt 或 --policy")
     seat_w = [0] * 4; seat_d = [0] * 4; ryu = 0; ten = 0; nten = 0
+    total_hands = 0          # 每手（一次开局=一手）计数，和牌或流局各算一手
+    hand_wins = 0            # 每手口径：和了手数
+    hand_dealins = 0         # 每手口径：放铳手数（ron 且 from_player 非 None）
     act_cnt = {"discard": 0, "riichi": 0, "chi": 0, "pon": 0, "kan": 0,
                "tsumo": 0, "ron": 0, "pass": 0}
     if a.deals < 400:
@@ -151,58 +157,95 @@ def main():
         for ag in ags:
             if hasattr(ag, "set_game"):
                 ag.set_game(env, h)
-        r = env.start_turn(); steps = 0
-        while r is None and steps < 500:
-            steps += 1; acts = {}
-            for p in env.pending_players():
-                legal = env.legal_actions(p)
-                if not legal:
-                    acts[p] = E.PASS_ACTION; continue
-                ag = ags[p]
-                act = ag.choose(env, p, legal) if isinstance(ag, POL.Policy) else ag.act(env, p, legal)
-                if act not in legal:
-                    act = E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
-                _t = act.type
-                if _t == E.ACT_DISCARD: act_cnt["discard"] += 1
-                elif _t == E.ACT_RIICHI: act_cnt["riichi"] += 1
-                elif _t == E.ACT_CHI: act_cnt["chi"] += 1
-                elif _t == E.ACT_PON: act_cnt["pon"] += 1
-                elif _t in (E.ACT_ANKAN, E.ACT_MINKAN, E.ACT_ADD_KAN): act_cnt["kan"] += 1
-                elif _t == E.ACT_TSUMO: act_cnt["tsumo"] += 1
-                elif _t == E.ACT_RON: act_cnt["ron"] += 1
-                elif _t == E.ACT_PASS: act_cnt["pass"] += 1
-                acts[p] = act
-            r = env.step(acts)
-        k = r.result_type if r is not None else "HANG"
-        if k == "ryuukyoku":
-            ryu += 1
-        elif k not in ("HANG",):
-            w = r.winner
-            seat_w[w] += 1
-            if k == "ron" and r.from_player is not None:
-                seat_d[r.from_player] += 1
-        for p in range(4):
-            nten += 1
-            if REF.ref_shanten(env.players[p].full_counts()) == 0 or (
-                    r is not None and k not in ("ryuukyoku", "HANG") and getattr(r, "winner", None) == p):
-                ten += 1
-    N = 4 * a.deals
+        done = False
+        while not done:                     # 一场半庄 = 多手，逐手推进到终局
+            r = env.start_turn(); steps = 0
+            while r is None and steps < 500:
+                steps += 1; acts = {}
+                for p in env.pending_players():
+                    legal = env.legal_actions(p)
+                    if not legal:
+                        acts[p] = E.PASS_ACTION; continue
+                    ag = ags[p]
+                    act = ag.choose(env, p, legal) if isinstance(ag, POL.Policy) else ag.act(env, p, legal)
+                    if act not in legal:
+                        act = E.PASS_ACTION if E.PASS_ACTION in legal else legal[0]
+                    _t = act.type
+                    if _t == E.ACT_DISCARD: act_cnt["discard"] += 1
+                    elif _t == E.ACT_RIICHI: act_cnt["riichi"] += 1
+                    elif _t == E.ACT_CHI: act_cnt["chi"] += 1
+                    elif _t == E.ACT_PON: act_cnt["pon"] += 1
+                    elif _t in (E.ACT_ANKAN, E.ACT_MINKAN, E.ACT_ADD_KAN): act_cnt["kan"] += 1
+                    elif _t == E.ACT_TSUMO: act_cnt["tsumo"] += 1
+                    elif _t == E.ACT_RON: act_cnt["ron"] += 1
+                    elif _t == E.ACT_PASS: act_cnt["pass"] += 1
+                    acts[p] = act
+                r = env.step(acts)
+            k = r.result_type if r is not None else "HANG"
+            # 每手（一次开局）计数：和了或流局各算一手。分母口径 = 每座位·手。
+            if r is not None:
+                total_hands += 1
+                if k == "ryuukyoku":
+                    ryu += 1
+                elif k not in ("HANG",):
+                    w = r.winner
+                    seat_w[w] += 1
+                    hand_wins += 1
+                    if k == "ron" and r.from_player is not None:
+                        seat_d[r.from_player] += 1
+                        hand_dealins += 1
+            for p in range(4):
+                nten += 1
+                if REF.ref_shanten(env.players[p].full_counts()) == 0 or (
+                        r is not None and k not in ("ryuukyoku", "HANG") and getattr(r, "winner", None) == p):
+                    ten += 1
+            if r is None or k == "HANG":
+                break                        # 防挂：单手无结果就退出本场
+            h.advance(r)                     # 推进连庄/轮庄/场次
+            done = h.finished                # advance 之后再判终局（否则末手会多打一手）
+            if not done:
+                env = h.new_env(seed=a.seed0 + g * 100 + h.current_index())
+                for ag in ags:
+                    if hasattr(ag, "set_game"):
+                        ag.set_game(env, h)
+    N_deal = 4 * a.deals            # 原口径分母：座位·场（向后兼容）
+    N = 4 * total_hands             # 新口径分母：座位·手（审阅要求）
     W = sum(seat_w); D = sum(seat_d)
-    wr = 100 * W / N; dr = 100 * D / N
-    wci = wilson(W, N); dci = wilson(D, N)
-    print(f"=== 4 席自对弈硬门槛：{label}  {a.deals} 局 ({N} 座位·局) {time.time()-t0:.0f}s ===")
-    print(f"  每座位和牌 {W}/{N} = {wr:.2f}%  CI[{wci[0]:.1f},{wci[1]:.1f}]  "
+    wr = 100 * W / N_deal; dr = 100 * D / N_deal
+    wci = wilson(W, N_deal); dci = wilson(D, N_deal)
+    # 每手有 4 个座位，故每座位·手分母 = total_hands × 4
+    hwr = 100 * hand_wins / N if N else 0.0    # 每手（每座位·手）和牌率
+    hdr = 100 * hand_dealins / N if N else 0.0  # 每手（每座位·手）放铳率
+    hwci = wilson(hand_wins, total_hands); hdci = wilson(hand_dealins, total_hands)
+    print(f"=== 4 席自对弈硬门槛：{label}  {a.deals} 场半庄 / {total_hands} 手 "
+          f"({N_deal} 座位·场, {N} 座位·手) {time.time()-t0:.0f}s ===")
+    print(f"[口径=每座位·手（审阅要求，分母 {N}）]")
+    print(f"  每手和牌 {hand_wins}/{total_hands} = {hwr:.2f}%  CI[{hwci[0]:.1f},{hwci[1]:.1f}]  "
+          f"门槛 15–25% -> {'PASS' if 15 <= hwr <= 25 else 'FAIL'}")
+    print(f"  每手放铳 {hand_dealins}/{total_hands} = {hdr:.2f}%  CI[{hdci[0]:.1f},{hdci[1]:.1f}]  "
+          f"门槛 9–20%  -> {'PASS' if 9 <= hdr <= 20 else 'FAIL'}")
+    print(f"[口径=每座位·场（向后兼容，分母 {N_deal}）]")
+    print(f"  每座位和牌 {W}/{N_deal} = {wr:.2f}%  CI[{wci[0]:.1f},{wci[1]:.1f}]  "
           f"门槛 15–25% -> {'PASS' if 15 <= wr <= 25 else 'FAIL'}")
-    print(f"  每座位放铳 {D}/{N} = {dr:.2f}%  CI[{dci[0]:.1f},{dci[1]:.1f}]  "
+    print(f"  每座位放铳 {D}/{N_deal} = {dr:.2f}%  CI[{dci[0]:.1f},{dci[1]:.1f}]  "
           f"门槛 9–20%  -> {'PASS' if 9 <= dr <= 20 else 'FAIL'}")
-    print(f"  流局 {ryu}/{a.deals} = {100*ryu/a.deals:.1f}%  终局听牌 {100*ten/nten:.1f}%")
+    print(f"  流局 {ryu}/{total_hands} = {100*ryu/total_hands:.1f}%（手口径）"
+          f"  终局听牌 {100*ten/nten:.1f}%  场均手数 {total_hands/a.deals:.2f}")
     print(f"  分座位和牌 {seat_w}  分座位放铳 {seat_d}")
     print(f"  动作计数 {act_cnt}")
-    out = {"label": label, "deals": a.deals, "seat_deals": N,
+    out = {"label": label, "deals": a.deals, "total_hands": total_hands,
+           "hands_per_deal": (total_hands / a.deals) if a.deals else 0.0,
+           "seat_deals": N_deal,
            "seat_wins": W, "seat_win_rate": wr, "seat_win_ci": wci,
            "seat_dealins": D, "seat_deal_in_rate": dr, "seat_deal_in_ci": dci,
            "win_pass": 15 <= wr <= 25, "deal_in_pass": 9 <= dr <= 20,
-           "ryuukyoku": ryu, "tenpai_at_end": 100 * ten / nten,
+           "hand_denom": N,
+           "hand_wins": hand_wins, "hand_win_rate": hwr, "hand_win_ci": hwci,
+           "hand_dealins": hand_dealins, "hand_deal_in_rate": hdr,
+           "hand_deal_in_ci": hdci,
+           "hand_win_pass": 15 <= hwr <= 25, "hand_deal_in_pass": 9 <= hdr <= 20,
+           "ryuukyoku": ryu, "ryuukyoku_hand_rate": 100 * ryu / total_hands if total_hands else 0.0,
+           "tenpai_at_end": 100 * ten / nten,
            "per_seat_wins": seat_w, "per_seat_dealins": seat_d,
            "action_counts": act_cnt}
     p = f"rules/SELFPLAY_GATE_{label}.json"
