@@ -113,28 +113,15 @@ function describe(e){const p=D.players0[e.seat];
     case"RYUUKYOKU":return`流局`;
     default:return`${s}家 ${e.kind}`;}}
 
-// 重放 events[0..i]，返回该时刻的四家状态
-function stateAt(i){
-  const st=freshState();
-  for(let k=0;k<=i;k++){
-    const e=D.events[k];if(!e)continue;
-    const p=st.find(x=>x.idx===e.seat);if(!p)continue;
-    if(e.kind==="DISCARD"&&e.tile){
-      const j=p.hand.indexOf(e.tile);
-      if(j>=0)p.hand.splice(j,1);
-      p.river.push(e.tile);
-    }else if(e.kind==="RIICHI"){p.riichi=true;
-      if(e.tile){const j=p.hand.indexOf(e.tile);if(j>=0)p.hand.splice(j,1);p.river.push(e.tile);}
-    }else if(CALLS.includes(e.kind)&&e.tile){
-      // 副露：简化表示，不精确追踪来源，够展示用
-      p.melds.push(e.tile);
-    }
-  }
-  return st;
+// 帧序列：frames[k] = 第 k 个事件结束后的真实快照（由 render_game_html.py 预生成）
+// frames[0] 是初始状态，frames[k+1] 对应 events[k] 之后。
+function frameAt(i){
+  // 第 i 个事件（0-based）之后的状态
+  return D.frames[Math.min(i+1, D.frames.length-1)];
 }
 
 function render(){
-  const st=stateAt(cur);
+  const st=frameAt(cur);
   const ev=D.events[cur];
   document.getElementById("stepno").textContent=`第 ${cur+1} / ${D.events.length} 步`;
   document.getElementById("range").value=cur;
