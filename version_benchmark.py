@@ -37,6 +37,7 @@ from arena_elo import (Agent, HanchanAgent, V1Agent, BCAgent, RuleAgent,
                        play_one, CKPT, _rule_override)
 from mahjong.net import MahjongNet
 from mahjong import obs2 as O2
+from mahjong import obs2_v1 as O2V1
 from train_reinforce import slot_of as slot_of54, N_ACTIONS as NA54
 from cpu_only import set_inference_threads
 
@@ -77,26 +78,66 @@ class AutoAgent(Agent):
             raise ValueError(
                 f"{name}: ckpt 无 head_fc 头（{tuple(sd['policy.weight'].shape) if 'policy.weight' in sd else '?'}），"
                 f"请用 version_benchmark.make_agent() 分派到对应 Agent（如 BCAgent）")
-        # 从 head_fc 输入维反推特征模式：26=obs2 标量；46=26+touch8+sit12
+        # 以 ck.get("in_planes") 为权威依据分派 obs2 版本。两个家族的平面数互斥：
+        #   obs2_v1（旧）：22（order=False）/ 46（order=True，22+4*6）
+        #   obs2（当前）：29（order=False）/ 53（order=True）
+        # 否则旧 47 槽 ckpt（in_planes=22/46）会被误用当前 obs2 构造 29*20+32=610
+        # 维 obs 向量，喂给期望 366 维（64*5+46）的 head_fc -> shape mismatch。
+        in_planes = int(ck.get("in_planes", 0) or 0)
+        if not in_planes and "embed.weight" in sd:
+            # 极旧 ckpt 没写 in_planes：embed.weight 形状 (ch, in_planes, 1) 直接给。
+            in_planes = int(sd["embed.weight"].shape[1])
+        obs_order = bool(ck.get("obs_order", False))
+        if not obs_order:
+            # 有些 ckpt 只有 order 版平面数却没写 obs_order：由平面数反推。
+            if in_planes == 46 or in_planes == 53:
+                obs_order = True
+        # 按平面数匹配：优先 obs2_v1，匹配不上（含 in_planes 缺失/是新 29/53）
+        # 则回退当前 obs2。
+        self.OBS = O2
+        if in_planes in (O2V1.N_PLANES, O2V1.ObsEncoder(order=True).n_planes):
+            self.OBS = O2V1
+        legacy = self.OBS is O2V1
+        # 从 head_fc 输入维反推特征模式：26=obs2 标量；46=26+touch8+sit12；
+        # 32=当前 obs2 标量（新 ckpt 无 touch/sit）。
         head_in = int(sd["head_fc.0.weight"].shape[1])
         in_scalar = head_in - ch * 5
-        extra_total = in_scalar - O2.SCALAR_DIM
-        if int(ck.get("touch_dim", 0)) or extra_total > 0:
-            touch = int(ck.get("touch_dim", 8))
-            extra = int(ck.get("extra_scalar", ck.get("sit_dim", 12)))
-            if touch + extra != extra_total:  # ckpt 没写字段时按常见配置推断
-                touch, extra = 8, extra_total - 8
-            self.mode = "hanchan"
+        extra_total = in_scalar - self.OBS.SCALAR_DIM
+        if legacy:
+            # 旧 obs2_v1 时代：47 槽 ckpt 均为 hanchan 模式（26+touch8+sit12=46）。
+            # 用 head_fc 反推出的 in_scalar 为准（=SCALAR_DIM+touch+extra），ckpt
+            # 字段（touch_dim/extra_scalar）只作提示；两者不符时按常见配置
+            # touch=8、其余给 sit 收敛，避免个别旧 ckpt 字段缺写/写 None 导致维错。
+            hint_t = ck.get("touch_dim")
+            hint_e = ck.get("extra_scalar", ck.get("sit_dim"))
+            if extra_total > 0:
+                if hint_t is not None and int(hint_t) + (int(hint_e) if hint_e is not None else 0) == extra_total:
+                    touch, extra = int(hint_t), int(hint_e)
+                elif hint_t is not None and 0 < int(hint_t) <= extra_total:
+                    touch, extra = int(hint_t), extra_total - int(hint_t)
+                else:
+                    touch, extra = 8, extra_total - 8
+            else:
+                touch, extra = 0, 0
+            self.mode = "hanchan" if (touch or extra) else "obs2"
         else:
-            touch, extra = 0, 0
-            self.mode = "obs2"
+            if int(ck.get("touch_dim", 0)) or extra_total > 0:
+                touch = int(ck.get("touch_dim", 8))
+                extra = int(ck.get("extra_scalar", ck.get("sit_dim", 12)))
+                if touch + extra != extra_total:  # ckpt 没写字段时按常见配置推断
+                    touch, extra = 8, extra_total - 8
+                self.mode = "hanchan"
+            else:
+                touch, extra = 0, 0
+                self.mode = "obs2"
         self.model = MahjongNet(channels=ch, n_blocks=nb, n_actions=n_actions,
                                 touch_dim=touch, extra_scalar=extra,
-                                in_planes=int(ck.get("in_planes", O2.N_PLANES)),
-                                aux_dim=int(ck.get("aux_dim", 0)))
+                                in_planes=in_planes or self.OBS.N_PLANES,
+                                aux_dim=int(ck.get("aux_dim", 0)),
+                                scalar_dim=self.OBS.SCALAR_DIM)
         self.model.load_state_dict(sd)
         self.model.eval()
-        self.enc = O2.ObsEncoder(order=bool(ck.get("obs_order", False)))
+        self.enc = self.OBS.ObsEncoder(order=obs_order)
         self.hstate = None
         self.n_actions = n_actions
         self.is47 = n_actions == 47

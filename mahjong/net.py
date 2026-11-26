@@ -72,13 +72,15 @@ class MahjongNet(nn.Module):
 
     def __init__(self, channels=160, n_blocks=6, n_actions=54,
                  touch_dim=0, extra_scalar=0, in_planes=None, aux_dim=0,
-                 per_tile_head=False):
+                 per_tile_head=False, scalar_dim=None):
         super().__init__()
         self.aux_dim = int(aux_dim or 0)
         self.aux_head = nn.Linear(256, self.aux_dim) if self.aux_dim else None
         self.in_planes = int(in_planes) if in_planes else N_PLANES
         self.n_planes = self.in_planes
-        self.scalar_dim = OBS.SCALAR_DIM
+        # scalar_dim 默认取当前 obs2（29 平面版）；legacy ckpt（in_planes=22）由
+        # 调用方显式传入旧 obs2_v1 的 26，使 head_fc 输入维与旧权重对齐。
+        self.scalar_dim = int(scalar_dim) if scalar_dim else OBS.SCALAR_DIM
         self.touch_dim = touch_dim
         self.in_scalar = self.scalar_dim + touch_dim + extra_scalar
         self.n_actions = int(n_actions)
