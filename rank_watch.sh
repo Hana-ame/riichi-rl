@@ -11,7 +11,7 @@ while true; do
     BASE=$(basename "$NEW" .pt)
     echo "=== [$(date +%H:%M:%S)] 新 ckpt: $BASE -> Elo 300局"
     cd /mnt/e/riichi-rl
-    OMP_NUM_THREADS=2 timeout 1500 $PY -u arena_elo.py --games 300 --mode hanchan --tenhou \
+    OMP_NUM_THREADS=2 timeout 3000 $PY -u arena_elo.py --games 600 --mode hanchan --tenhou --pin-extra \
       --extra-ckpt "$NEW" \
       --out /tmp/elo_${BASE}.md > /tmp/elo_${BASE}.log 2>&1
     # 抽取 ppo 自己 + 第1名的 Elo
