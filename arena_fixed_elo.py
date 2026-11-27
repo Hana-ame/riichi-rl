@@ -23,7 +23,7 @@ def build():
     P.append(RuleAgent("damaten", "damaten(默听)"))
     # ML
     for nm, fn in [("eff_wuke_d2(牌效d2)", "teacher47_eff_wuke_d2.pt"),
-                   ("ppo_wuke_d2_it10(PPO)", "ppo_wuke_d2_it10.pt"),
+                   ("kl01_it15(高KL)", "ppo_wuke_d2_kl01_it15.pt"),
                    ("ppo_wuke_d2_it20(PPO)", "ppo_wuke_d2_it20.pt"),
                    ("ppo_wuke_d2_it30(PPO)", "ppo_wuke_d2_it30.pt"),
                    ("teacher47_v3(加权BC)", "teacher47_v3.pt"),
