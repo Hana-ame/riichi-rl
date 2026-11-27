@@ -135,3 +135,12 @@ pure_shanten/dest_prob_v3 同梯队）。但这也受局数(600 vs 300)、seed�
 局数/seed/阵容/规则四处都不一致，**严格说这两份数据不构成有效的 before/after 对照**。
 要做真正的修复效果量化，需在修复后代码上重跑与旧数据完全相同的配置，或对旧代码
 （git checkout e8440ce^）用相同 9 人/300 局/seed 跑一遍作为对照。
+
+## 七、seed 可复现性验证（进行中，2026-11-28）
+
+正在跑 arena_fixed_elo.py --games 300 --seed 22000（9 人固定、修复后代码），
+与已完成的 seed16000 同配置对比，用于回答：
+- seed16000 的排名格局（dest_prob_v3 第1 / pure_shanten+eff_wuke_d2 并列第2/3）
+  在同配置不同 seed 下是否稳定？
+- 若稳定，说明 9 人固定池里 dest_prob_v3 领先、damaten 垫底是配置特性；
+- 若不稳定，说明 300 局 9 人池方差过大，单 seed 结论不可信。
