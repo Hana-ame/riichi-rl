@@ -86,7 +86,7 @@ class Player:
     __slots__ = ("idx", "hand", "melds", "river", "points", "is_dealer",
                  "seat_wind", "riichi", "double_riichi", "ippatsu",
                  "riichi_turn", "furiten", "just_kan", "last_drawn",
-                 "genbutsu")
+                 "genbutsu", "kuikae_forbidden")
 
     def __init__(self, idx, points, seat_wind):
         self.idx = idx
@@ -104,6 +104,7 @@ class Player:
         self.just_kan = False
         self.last_drawn = -1   # 最近一次摸到的牌（自摸和了判定用）
         self.genbutsu = set()  # 现物集合（自家牌河 + 自家立直后全员弃牌）
+        self.kuikae_forbidden = set()  # 吃/碰后当巡禁止打出的食替牌
 
     def is_menzen(self):
         return len(self.melds) == 0
@@ -401,11 +402,17 @@ class MahjongEnv:
             return acts
         acts = []
         seen = set()
+        forb = getattr(p, "kuikae_forbidden", set())
         for t in hand:
             if t in seen:
                 continue
             seen.add(t)
-            acts.append(Action(ACT_DISCARD, t))
+            if t not in forb:
+                acts.append(Action(ACT_DISCARD, t))
+        if not acts:
+            # 极端兜底：全手牌均在禁切集合时允许正常切牌，避免死锁
+            for t in sorted(seen):
+                acts.append(Action(ACT_DISCARD, t))
 
         c = p.counts()
 
@@ -592,7 +599,7 @@ class MahjongEnv:
             tagged, pair_tile, counts, meld_count, is_menzen,
             is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
             p.seat_wind, self.round_wind, False,
-            dora_c, aka_c, ura_c,
+            dora_c, aka_c, ura_c, is_dealer=p.is_dealer,
         )
 
     def _score_chiitoi(self, p_idx, counts, is_tsumo):
@@ -602,7 +609,7 @@ class MahjongEnv:
         return S.evaluate(
             [(H.CHI, 0)], 0, counts, 0, True, is_tsumo, p.riichi,
             p.ippatsu, p.double_riichi, p.seat_wind, self.round_wind, True,
-            0, aka_c, 0,
+            0, aka_c, 0, is_dealer=p.is_dealer,
         )
 
     def _score_kokushi(self, p_idx, counts, meld_count, is_tsumo):
@@ -614,6 +621,7 @@ class MahjongEnv:
             [(H.CHI, 0)], pair if pair is not None else 0, counts, meld_count,
             True, is_tsumo, p.riichi, p.ippatsu, p.double_riichi,
             p.seat_wind, self.round_wind, False, 0, aka_c, 0,
+            is_dealer=p.is_dealer,
         )
 
     # ------------------------------------------------------------------
@@ -703,7 +711,9 @@ class MahjongEnv:
         # 碰：手牌（暗牌）里必须有 2 张——副露里的牌不能用于新碰，
         # 因为碰出的刻子要从暗牌里取。规则上「持 4 副共 16 张」指的是
         # 手上真的有牌，不是副露里已有。
-        if p.hand_count_for_meld(tile) >= 2 and len(p.melds) < 4:
+        # 碰后若手里只剩同种牌将必然触发食替，提前过滤
+        if (p.hand_count_for_meld(tile) >= 2 and len(p.melds) < 4
+                and any(t != tile for t in p.hand)):
             acts.append(Action(ACT_PON, tile))
 
         # 明杠：手牌里必须有 3 张 + 全局杠数 < 4 + 活牌山仍有可摸牌
@@ -850,6 +860,7 @@ class MahjongEnv:
             tile = p.hand[-1]
         p.hand.remove(tile)
         p.hand.sort()
+        p.kuikae_forbidden.clear()
         p.river.append(tile)
         p.genbutsu.add(tile)
         # 立直宣告后全员打出的牌均成为该立直家的现物
@@ -960,6 +971,14 @@ class MahjongEnv:
             p.hand.remove(t)
         p.hand.sort()
         p.melds.append(("chi", start, called_from))
+        # 食替禁令：禁止当巡打出刚吃的同牌及另一端筋牌
+        forb = {tile}
+        r_start = start % 9
+        if tile == start and r_start <= 5:
+            forb.add(start + 3)
+        elif tile == start + 2 and r_start >= 1:
+            forb.add(start - 1)
+        p.kuikae_forbidden = forb
         self.log.append((self.turn, actor, "chi", T.tile_name(tile)))
         self.last_discard_player = actor
         self.turn_player = actor
@@ -979,6 +998,7 @@ class MahjongEnv:
         p.hand.sort()
         if removed == 2:
             p.melds.append(("pon", tile, called_from))
+            p.kuikae_forbidden = {tile}
             self.log.append((self.turn, actor, "pon", T.tile_name(tile)))
         else:
             # 手牌不足（含副露时可能发生）：把弃牌放回原牌河，不成立
@@ -1071,6 +1091,9 @@ class MahjongEnv:
 
     def _finish_tsumo(self, winner):
         p = self.players[winner]
+        # 先翻里宝牌再算分，确保立直自摸把里宝牌计入番数
+        if p.riichi and RS.USE_URA_DORA:
+            self._set_ura_dora()
         c = p.full_counts()
         score = self._best_score(winner, c, len(p.melds), is_tsumo=True,
                                  winning_tile=None, from_player=None)
@@ -1079,28 +1102,22 @@ class MahjongEnv:
             # 无役不能和了（引擎不该走到这里）
             return self._finish_ryuukyoku(reason="no_yaku")
 
-        if p.riichi and RS.USE_URA_DORA:
-            self._set_ura_dora()
-
         total = score.points
-        if score.yakuman_mult:
-            total = RS.limit_points(score.yakuman_mult)
-            if p.is_dealer:
-                total *= 3 if score.yakuman_mult <= 3 else 3
-
-        # 自摸：3 家各付一份。
-        #   庄家和了：每家付「庄家收点数」（表中庄家列）
-        #   子家和了：每家付「子家收点数 / 3」，不足 1 的余数按座次分配
+        honba_each = self.honba * 100
         payers = [i for i in range(N_PLAYERS) if i != winner]
+        # 标准立直麻将自摸分摊（百点向上取整）：
+        #   庄家自摸：三子各付 ceil100(total / 3)（如满贯 12000 -> 4000 ALL）
+        #   子家自摸：庄家付 ceil100(total / 2)，另两子各付 ceil100(total / 4)（如满贯 8000 -> 4000/2000）
         if p.is_dealer:
-            share = total
+            share = ((total + 2) // 3 + 99) // 100 * 100
             for i in payers:
-                delta[i] = -share
+                delta[i] = -(share + honba_each)
         else:
-            per = total // len(payers)
-            rem = total - per * len(payers)
-            for k, i in enumerate(payers):
-                delta[i] = -(per + (1 if k < rem else 0))
+            dealer_pay = ((total + 1) // 2 + 99) // 100 * 100
+            child_pay = ((total + 3) // 4 + 99) // 100 * 100
+            for i in payers:
+                pay = dealer_pay if self.players[i].is_dealer else child_pay
+                delta[i] = -(pay + honba_each)
         delta[winner] = -sum(delta) + self.kyokuten   # 立直棒归和牌者
         self.kyokuten = 0
         return self._settle("tsumo", winner, None, delta, score)
@@ -1111,20 +1128,18 @@ class MahjongEnv:
 
     def _finish_ron(self, winner, from_player, tile):
         p = self.players[winner]
+        # 先翻里宝牌再算分，确保立直荣和把里宝牌计入番数
+        if p.riichi and RS.USE_URA_DORA:
+            self._set_ura_dora()
         c = p.full_counts()
         c[tile] += 1
         score = self._best_score(winner, c, len(p.melds), is_tsumo=False,
                                  winning_tile=tile, from_player=from_player)
         if score is None or not score.is_valid:
             return self._advance()
-        if p.riichi and RS.USE_URA_DORA:
-            self._set_ura_dora()
 
-        total = score.points
-        if score.yakuman_mult:
-            total = RS.limit_points(score.yakuman_mult)
-        if p.is_dealer:
-            total *= 2
+        # score.points 已按 is_dealer=p.is_dealer 结算（庄家 1.5 倍），不可再乘 2
+        total = score.points + self.honba * 300
         delta = [0, 0, 0, 0]
         delta[from_player] = -total
         delta[winner] = total + self.kyokuten   # 立直棒归和牌者

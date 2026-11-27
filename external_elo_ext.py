@@ -1,35 +1,37 @@
-"""外部模型 session 级 Elo（v2，2026-11-28）
+"""外部模型 session 级 Elo（v2.1，2026-11-27 修复版）
 
-审阅要求（全部落实）：
-1. **前一半 + 随机几个替换** 组队：按 Elo 取前一半保留，其余从落选者随机补位（arena_elo.reselect 同口径）
-2. **东风 + 半庄双局式各跑一份**：每配置各跑 N 场，分别出表
-3. **按局统计和牌率/放铳率**：分母 = 每座位每手（与 arena_elo.play_one 一致）
-4. **自研 vs 外部**：自研（eff_wuke_d2 / dest_prob_v3 / teacher47_100h_v2）vs 外部（Suphx / riichippo / mahjonglm100 / greedy_tenpai）
-5. **外部权重不上传**：所有外部模型权重均在本地 external/ 下，.gitignore 已覆盖
-
-用法：
-  python external_elo_ext.py --sessions 8 --seed 2026 \
-    --roster eff_wuke_d2,suphx,riichippo,mahjonglm100,greedy_tenpai \
-    --modes half,east --out-md rules/EXTERNAL_ELO_EXT_2026-11-28.md
+已修复：
+1. 场均净得分改为终局 h.sticks[i] - 25000（含立直供托），分母为各选手实际出场场数 sessions_played[n]。
+2. 补齐按「每一局」统计的和牌率（wins/hands）与放铳率（dealins/hands），精确读取 r.winner / r.from_player。
+3. 修复 reselect 截断 bug：8 人阵容下真正保留前一半中的主力并随机换入落选者组成 4 人桌。
+4. 修复同局复牌 seed 冲突：使用 seed + total_hands，避免连庄/南场重复发牌。
+5. mahjonglm100 / mahjonglm10 改用仓库内 v2 适配器 external_mahjonglm.py，并在每步后调用 observe(env, acts)。
 """
 
 from __future__ import annotations
-import argparse, json, os, sys, time, random
-import numpy as np
+import argparse
+import json
+import os
+import random
+import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import cpu_only
+import cpu_only  # noqa: F401
 from cpu_only import set_inference_threads
 from arena_elo import RuleAgent, CKPT
 from mahjong import env as E
 from mahjong.hanchan import HanchanState
 from version_benchmark import make_agent
 
+EXT_SPECS = {"suphx", "riichippo", "mahjonglm100", "mahjonglm10"}
+START_POINTS = 25000
+
 
 def load(spec: str):
     """按 spec 加载 agent。外部模型直接构造；自研走 make_agent。"""
-    if spec in ("greedy_tenpai", "call_first", "random"):
+    if spec in ("greedy_tenpai", "call_first", "random", "damaten"):
         return RuleAgent(spec)
     if spec == "suphx":
         from external_suphx import SuphxAgent
@@ -38,12 +40,11 @@ def load(spec: str):
         from external_riichippo import RiichippoAgent
         return RiichippoAgent("riichippo", ckpt="external/riichippo/v1.pth")
     if spec == "mahjonglm100":
-        from external_mahjonglm_agent import MahjongLMAgent
-        return MahjongLMAgent("mahjonglm100", ckpt_dir="external/mahjonglm100")
+        from external_mahjonglm import MahjongLMAgent
+        return MahjongLMAgent("external/mahjonglm100", seat_name="mahjonglm100")
     if spec == "mahjonglm10":
-        from external_mahjonglm_agent import MahjongLMAgent
-        return MahjongLMAgent("mahjonglm10", ckpt_dir="external/mahjonglm10")
-    # 自研走 make_agent
+        from external_mahjonglm import MahjongLMAgent
+        return MahjongLMAgent("external/mahjonglm10", seat_name="mahjonglm10")
     return make_agent(spec, os.path.join(CKPT, spec + ".pt"))
 
 
@@ -59,50 +60,61 @@ def elo_update_4p(r, placement, K=24):
 
 
 class SessionStats:
-    """累计每座位每手和牌/放铳次数，按手数做分母。"""
+    """累计每名选手的出场场数、总局数（每座位每局）、和牌次数、放铳次数与净点数。"""
+
     def __init__(self):
-        self.wins = {}       # spec -> 次数
-        self.dealins = {}    # spec -> 次数
-        self.hands = {}      # spec -> 手数
-        self.pts = {}        # spec -> 累计点数
-        self.wins_sessions = {}  # spec -> session 级第一名次数
+        self.sessions_played = {}
+        self.hands = {}
+        self.wins = {}
+        self.dealins = {}
+        self.pts = {}
+        self.top1 = {}
 
-    def track(self, spec):
-        if spec not in self.wins:
-            self.wins[spec] = 0; self.dealins[spec] = 0
-            self.hands[spec] = 0; self.pts[spec] = 0.0
-            self.wins_sessions[spec] = 0
+    def track(self, spec: str):
+        if spec not in self.hands:
+            self.sessions_played[spec] = 0
+            self.hands[spec] = 0
+            self.wins[spec] = 0
+            self.dealins[spec] = 0
+            self.pts[spec] = 0.0
+            self.top1[spec] = 0
 
-    def add(self, names, winner_seat, deal_in_seat, hands_this_kyoku, pts_delta):
+    def record_session(self, names, placement, net_pts, hand_wins, hand_dealins, total_hands):
         for i, n in enumerate(names):
             self.track(n)
-            self.hands[n] += hands_this_kyoku
-            self.pts[n] += pts_delta[i]
-            if winner_seat is not None and winner_seat == i:
-                self.wins[n] += hands_this_kyoku  # 这一手该座位赢了
-        if deal_in_seat is not None:
-            n = names[deal_in_seat]
-            self.dealins[n] += hands_this_kyoku  # 该座位放铳一手
+            self.sessions_played[n] += 1
+            self.hands[n] += total_hands
+            self.pts[n] += net_pts[i]
+            self.wins[n] += hand_wins[i]
+            self.dealins[n] += hand_dealins[i]
+        if placement:
+            self.track(placement[0])
+            self.top1[placement[0]] += 1
 
 
 def run_half_game(names, agent_pool, seed, east_only=False):
-    """打完整半庄/东风 session，返回 (placement, pts_delta_sum, winner_seat_last, deal_in_seat_last, total_hands)。
-    placement = [spec_name 按排名]，pts_delta_sum = [4]，
-    total_hands = 本 session 总手数（每座位每手分母用）。
-    """
-    agent_by_name = {n: agent_pool[n] for n in names}
-    h = HanchanState(dealer=seed % 4, east_only=east_only)
-    env = h.new_env(seed=seed)
-    seats_agents = [agent_by_name[n] for n in names]
-    for a in seats_agents:
-        if hasattr(a, "set_game"):
-            a.set_game(env, h)
+    """打完整半庄/东风 session。
 
-    pts_sum = [0.0] * 4
+    返回:
+        placement: [4 个 spec 名按最终点数排名]
+        net_pts: [4 个座位的终局净点数 h.sticks[i] - 25000]
+        hand_wins: [4 个座位在本场内的和牌局数]
+        hand_dealins: [4 个座位在本场内的放铳局数]
+        total_hands: 本场总局数（kyoku 次数）
+    """
+    h = HanchanState(dealer=seed % 4, start_points=START_POINTS, east_only=east_only)
+    seats_agents = [agent_pool[n] for n in names]
+
+    hand_wins = [0, 0, 0, 0]
+    hand_dealins = [0, 0, 0, 0]
     total_hands = 0
-    winner_last = None; deal_in_last = None
 
     while True:
+        env = h.new_env(seed=seed + total_hands)
+        for a in seats_agents:
+            if hasattr(a, "set_game"):
+                a.set_game(env, h)
+
         r = env.start_turn()
         steps = 0
         while r is None and steps < 600:
@@ -112,51 +124,53 @@ def run_half_game(names, agent_pool, seed, east_only=False):
                 legal = env.legal_actions(p)
                 acts[p] = seats_agents[p].act(env, p, legal) if legal else E.PASS_ACTION
             r = env.step(acts)
+            for a in seats_agents:
+                if hasattr(a, "observe"):
+                    a.observe(env, acts)
+
         if r is None:
             break
-        for i in range(4):
-            pts_sum[i] += r.points_delta[i]
+
         total_hands += 1
         if r.result_type != "ryuukyoku" and r.winner is not None:
-            winner_last = r.winner
-            # 放铳：非立直 ron 时是打牌的人，本引擎简化为 winner != deal_in_seat
-            # 精确放铳由 arena 逻辑处理，此处仅统计 winner
+            hand_wins[r.winner] += 1
+            if r.result_type == "ron" and r.from_player is not None:
+                hand_dealins[r.from_player] += 1
+
         h.advance(r)
         if h.finished:
             break
-        env = h.new_env(seed=seed + h.kyoku)
-        for a in seats_agents:
-            if hasattr(a, "set_game"):
-                a.set_game(env, h)
 
     placement = [names[i] for i in h.final_placement()]
-    return placement, pts_sum, total_hands
+    net_pts = [float(h.sticks[i] - START_POINTS) for i in range(4)]
+    return placement, net_pts, hand_wins, hand_dealins, total_hands
 
 
-def reselect(ratings, pool_names, rng, pin_external=True):
-    """审阅口径：Elo 前一半 + 随机几个替换。
-    pin_external: 外部模型（对局数少时）优先保留以积累数据。
-    """
-    ext_specs = {"suphx", "riichippo", "mahjonglm100", "mahjonglm10"}
+def reselect(ratings, pool_names, rng):
+    """审阅口径：Elo 前一半保留主力 + 从后一半随机替换组成 4 人桌。"""
+    if len(pool_names) <= 4:
+        return list(pool_names)
     sorted_names = sorted(pool_names, key=lambda n: -ratings.get(n, 1500.0))
-    keep_n = max(2, len(pool_names) // 2)
-    keep = [n for n in sorted_names[:keep_n]]
-    rest = [n for n in sorted_names[keep_n:]]
-    # 随机补位 1-2 个
-    n_fill = min(max(1, len(rest) // 3), len(rest))
-    fill = rng.sample(rest, n_fill) if rest else []
-    # 需凑 4 人，不足时按顺序补
+    half = max(2, len(pool_names) // 2)
+    top_half = sorted_names[:half]
+    bottom_half = sorted_names[half:]
+    # 每桌 4 人：从前一半抽 2-3 人 + 从后一半随机替换 1-2 人，避免截断丢弃随机补位
+    n_fill = min(max(1, min(2, len(bottom_half))), 2)
+    n_keep = 4 - n_fill
+    keep = rng.sample(top_half, min(n_keep, len(top_half)))
+    fill = rng.sample(bottom_half, min(n_fill, len(bottom_half)))
     chosen = list(dict.fromkeys(keep + fill))
-    while len(chosen) < 4:
-        for n in sorted_names:
-            if n not in chosen:
-                chosen.append(n); break
+    for n in sorted_names:
+        if len(chosen) >= 4:
+            break
+        if n not in chosen:
+            chosen.append(n)
     return chosen[:4]
 
 
 def run_config(mode: str, roster: list[str], sessions: int, seed: int,
-               reselect_enabled: bool = False, rng: random.Random = None):
-    """跑一个模式（east 或 half），N 场，返回 per-spec 统计。"""
+               reselect_enabled: bool = False, rng: random.Random | None = None):
+    """跑一个模式（east 或 half），N 场，返回按场与按局完整统计。"""
     east_only = (mode == "east")
     rating = {n: 1500.0 for n in roster}
     stats = SessionStats()
@@ -164,40 +178,53 @@ def run_config(mode: str, roster: list[str], sessions: int, seed: int,
         stats.track(n)
     pool_agents = {n: load(n) for n in roster}
 
-    active = roster[:4] if len(roster) >= 4 else roster
+    active = roster[:4] if len(roster) >= 4 else list(roster)
+    hands_per_session = []
     for s in range(sessions):
-        if reselect_enabled and rng is not None and (s == 0 or (s > 0 and s % max(1, sessions // 4) == 0)):
+        if reselect_enabled and rng is not None and (s == 0 or s % max(1, sessions // 4) == 0):
             active = reselect(rating, roster, rng)
-        # 座位轮换
         shift = s % 4
         names = active[shift:] + active[:shift]
         game_seed = seed + s * 977
-        placement, pts_sum, total_hands = run_half_game(
-            names, pool_agents, game_seed, east_only=east_only)
-        # 更新 Elo
+        placement, net_pts, hand_wins, hand_dealins, total_hands = run_half_game(
+            names, pool_agents, game_seed, east_only=east_only
+        )
         elo_update_4p(rating, placement)
-        # 累计统计
-        for i, n in enumerate(names):
-            stats.hands[n] += total_hands
-            stats.pts[n] += pts_sum[i]
-        # 简化：和牌/放铳由 run_half_game 内部跟踪，此处从 pts_sum 估
-        # （精确 win/deal-in 需改 run_half_game 返回，先记录 hand 数，rate 后续从 arena_elo 补）
-        print(f"[{mode}] {s+1}/{sessions}  active={active}", flush=True)
+        stats.record_session(names, placement, net_pts, hand_wins, hand_dealins, total_hands)
+        hands_per_session.append(total_hands)
+        print(f"[{mode}] {s+1}/{sessions}  hands={total_hands}  active={active}", flush=True)
 
-    result = {
+    per_spec = {}
+    for n in roster:
+        sp = stats.sessions_played[n]
+        hd = stats.hands[n]
+        per_spec[n] = {
+            "elo": round(rating[n], 1),
+            "sessions_played": sp,
+            "hands_played": hd,
+            "avg_pts_per_session": round(stats.pts[n] / sp, 1) if sp else 0.0,
+            "win_rate_per_hand": round(stats.wins[n] / hd, 4) if hd else 0.0,
+            "dealin_rate_per_hand": round(stats.dealins[n] / hd, 4) if hd else 0.0,
+            "wins": stats.wins[n],
+            "dealins": stats.dealins[n],
+            "top1": stats.top1[n],
+        }
+
+    return {
         "mode": mode,
-        "elo": {n: round(rating[n], 1) for n in roster},
-        "avg_pts_per_session": {n: round(stats.pts[n] / sessions, 1) for n in roster},
         "sessions": sessions,
+        "avg_hands_per_session": round(sum(hands_per_session) / max(1, len(hands_per_session)), 2),
+        "elo": {n: per_spec[n]["elo"] for n in roster},
+        "avg_pts_per_session": {n: per_spec[n]["avg_pts_per_session"] for n in roster},
+        "per_spec": per_spec,
     }
-    return result
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sessions", type=int, default=8, help="每种模式跑几场")
     ap.add_argument("--seed", type=int, default=2026)
-    ap.add_argument("--roster", default="eff_wuke_d2,suphx,riichippo,mahjonglm100,greedy_tenpai")
+    ap.add_argument("--roster", default="teacher47_eff_wuke_d2,suphx,riichippo,mahjonglm100,greedy_tenpai")
     ap.add_argument("--modes", default="half,east", help="逗号分隔：half,east")
     ap.add_argument("--reselect", action="store_true", help="启用前一半+随机替换")
     ap.add_argument("--out-md", default="rules/EXTERNAL_ELO_EXT_2026-11-28.md")
@@ -205,8 +232,8 @@ def main():
     args = ap.parse_args()
 
     set_inference_threads(2)
-    roster = [s.strip() for s in args.roster.split(",")]
-    modes = [m.strip() for m in args.modes.split(",")]
+    roster = [s.strip() for s in args.roster.split(",") if s.strip()]
+    modes = [m.strip() for m in args.modes.split(",") if m.strip()]
     rng = random.Random(args.seed)
 
     all_results = {}
@@ -217,20 +244,34 @@ def main():
         all_results[mode] = res
         print(f"=== 模式 {mode} 完成，用时 {time.time()-t0:.0f}s ===", flush=True)
 
-    # 输出 Markdown
-    lines = [f"# 外部模型 session 级 Elo（2026-11-28 扩展）", "",
-             f"> 阵容：{', '.join(roster)}",
-             f"> 每模式 {args.sessions} 场，东风+半庄双报；" +
-             ("" if not args.reselect else "启用前一半+随机替换组队；") +
-             "座位每场轮换。", ""]
+    lines = [
+        "# 外部模型 session 级 Elo（修复版）",
+        "",
+        f"> 阵容：{', '.join(roster)}",
+        f"> 每模式 {args.sessions} 场，东风+半庄双报；"
+        + ("启用前一半+随机替换组队；" if args.reselect else "")
+        + "座位每场轮换；场均净点 = 终局点数 - 25000（按实际出场场数平均）；和牌率/放铳率按每座位每局统计。",
+        "> 注：外部模型仅接管其适配器支持的决策（非同构对比，结果仅供横向参考）。",
+        "",
+    ]
     for mode in modes:
         res = all_results[mode]
         mode_zh = "半庄" if mode == "half" else "东风"
-        lines += [f"## {mode_zh}（{res['sessions']} 场）", "",
-                  "| 参赛者 | 类型 | Elo | 场均得分 |", "|---|---|---|---|"]
-        for n in sorted(res["elo"], key=lambda x: -res["elo"][x]):
-            typ = "外部" if n in ("suphx", "riichippo", "mahjonglm100", "mahjonglm10") else "自研"
-            lines.append(f"| {n} | {typ} | **{res['elo'][n]:.1f}** | {res['avg_pts_per_session'][n]:+.1f} |")
+        lines += [
+            f"## {mode_zh}（{res['sessions']} 场，场均 {res['avg_hands_per_session']:.1f} 局）",
+            "",
+            "| 参赛者 | 类型 | 出场场数 | 总局数 | Elo | 场均净点 | 和牌率/局 | 放铳率/局 |",
+            "|---|---|---:|---:|---:|---:|---:|---:|",
+        ]
+        ps = res["per_spec"]
+        for n in sorted(ps, key=lambda x: -ps[x]["elo"]):
+            typ = "外部" if n in EXT_SPECS else "自研"
+            row = ps[n]
+            lines.append(
+                f"| {n} | {typ} | {row['sessions_played']} | {row['hands_played']} "
+                f"| **{row['elo']:.1f}** | {row['avg_pts_per_session']:+.1f} "
+                f"| {row['win_rate_per_hand']*100:.1f}% | {row['dealin_rate_per_hand']*100:.1f}% |"
+            )
         lines.append("")
 
     md_text = "\n".join(lines) + "\n"
@@ -238,7 +279,7 @@ def main():
     with open(args.out_md, "w", encoding="utf-8") as f:
         f.write(md_text)
     with open(args.out_json, "w", encoding="utf-8") as f:
-        json.dump(all_results, f, ensure_ascii=False, indent=1)
+        json.dump(all_results, f, ensure_ascii=False, indent=2)
     print(md_text)
     print(f"总用时 {time.time()-t0:.0f}s，写入 {args.out_md}")
     return 0

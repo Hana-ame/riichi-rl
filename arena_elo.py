@@ -42,12 +42,9 @@ CKPT = os.path.join(ROOT, "checkpoints")
 
 
 def _rule_override(legal):
-    """和牌 > 立直 的统一规则接管。"""
+    """仅保留和牌（自摸/荣和）规则接管；立直与立直宣言牌交由模型策略决定。"""
     for a in legal:
         if a.type in (E.ACT_TSUMO, E.ACT_RON):
-            return a
-    for a in legal:
-        if a.type == E.ACT_RIICHI:
             return a
     return None
 

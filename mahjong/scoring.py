@@ -24,7 +24,7 @@ from .hand import CHI, PONG, KAN
 MENZEN_FU = 20
 MELD_FU = 10
 KAN_FU = 8
-HAKU, NORTH = 31, 30
+HAKU, HATSU, CHUN = 31, 32, 33
 
 
 class ScoreResult:
@@ -97,7 +97,7 @@ def compute_fu(melds, pair_tile, is_menzen, seat_wind, round_wind,
             fu += _pon_kan_fu(t, True, not concealed)
 
     valued = 0
-    if pair_tile == HAKU or pair_tile == NORTH:
+    if pair_tile in (HAKU, HATSU, CHUN):
         valued += 1
     if seat_wind is not None and pair_tile == seat_wind:
         valued += 1
@@ -154,12 +154,12 @@ YAKU_HAN = {
     "役牌:场风": 1,
     "役牌:自风": 1,
     "对对和": 2,
-    "三暗刻": 1,
+    "三暗刻": 2,
     "三色同顺": 2,
     "三色同刻": 2,
     "混全带幺九": 2,
     "纯全带幺九": 3,
-    "二盃口": 2,
+    "二盃口": 3,
     "七对子": 2,
     "混老头": 2,
     "三暗刻单骑": 2,
@@ -346,7 +346,8 @@ def evaluate(melds, pair_tile, counts, meld_count, is_menzen,
     """
     yakuman = yakuman_multiplier(melds, pair_tile, counts, meld_count)
     if yakuman:
-        pts = RS.limit_points(yakuman)
+        base_pts = RS.limit_points(yakuman)
+        pts = (base_pts * 3) // 2 if is_dealer else base_pts
         names = ["役满" if yakuman == YAKUMAN_1 else "双倍役满"]
         return ScoreResult(names, YAKUMAN_HAN.get(yakuman, 13), 0, pts,
                            yakuman, is_menzen)
@@ -380,11 +381,21 @@ def evaluate(melds, pair_tile, counts, meld_count, is_menzen,
     if fu == 25 and han < 2:
         return ScoreResult([], 0, fu, 0, 0, is_menzen)
 
-    han = min(han, 5)   # 5 番封顶查表
-
     if is_chiitoi_shape:
         fu = 25
     key_fu = 25 if is_chiitoi_shape else fu
 
-    pts = RS.han_fu_points(key_fu, han, is_dealer=is_dealer)
+    # 满贯以上按标准立直麻将番数梯度结算（不再 5 番封顶）
+    if han >= 13:
+        pts = 48000 if is_dealer else 32000   # 累计役满
+    elif han >= 11:
+        pts = 36000 if is_dealer else 24000   # 三倍满
+    elif han >= 8:
+        pts = 24000 if is_dealer else 16000   # 倍满
+    elif han >= 6:
+        pts = 18000 if is_dealer else 12000   # 跳满
+    elif han == 5:
+        pts = 12000 if is_dealer else 8000    # 满贯
+    else:
+        pts = RS.han_fu_points(key_fu, han, is_dealer=is_dealer)
     return ScoreResult(yakus, han, key_fu, pts, 0, is_menzen)

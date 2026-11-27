@@ -81,14 +81,14 @@ SLOT_HINT = (
 
 def slot_of(action):
     t = action.type
-    if t == E.ACT_DISCARD and 0 <= action.tile < 34:
+    if t == E.ACT_DISCARD and action.tile is not None and 0 <= action.tile < 34:
         return action.tile
     if t == E.ACT_CHI:
         # 按被吃牌在顺子中的相对位置映射：0=左吃(吃最小张), 1=中吃(嵌张), 2=右吃(吃最大张)
-        if action.arg is not None and action.arg >= 0:
+        if action.arg is not None and action.arg >= 0 and action.tile is not None:
             rel = max(0, min(2, int(action.arg) - int(action.tile)))
         else:
-            rel = int(action.tile) % 3
+            rel = int(action.tile) % 3 if action.tile is not None else 0
         return SLOT_CHI_BASE + rel
     return SLOTS.get(t, SLOT_PASS)
 

@@ -170,6 +170,8 @@ class AutoAgent(Agent):
         mask = np.full(self.n_actions, -1e9, dtype=np.float32)
         mask[slots] = 0.0
         pick = int((lg + mask).argmax())
+        if self.is47:
+            return self.TH.resolve_action_for_slot(legal2, slots, pick, lg)
         return legal2[slots.index(pick)] if pick in slots else legal2[0]
 
 
