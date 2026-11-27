@@ -61,3 +61,18 @@ RuleAgent.act 直接走 pol.choose，**不经过 _rule_override**。
 - 跨版本比较必须固定 局数/seed/阵容/规则版本 四要素，否则无效
 - Elo 排名 ≠ 和牌率 ≠ 打点(pt)：pure_shanten 排名第2但和牌率仅9.1%靠防守生存
 - 一次 arena 的排名变化有大量方差，单 seed 不可当结论
+
+## 补记2：修复包应用后的 Arena 可复现性验证
+
+### seed 可复现性测试
+- seed16000 完成（9人池）：dest_prob_v3 1735.8 第1, pure_shanten 1537.7 第2, eff_wuke_d2 1537.2 第3
+- seed22000 运行中（同 9 人池同代码）
+
+### ckpt 清理的副作用（已确认）
+清理 206 个中间 iter 后，剩余 84 个最终模型。arena_fixed_elo.py 需要 12 个 ckpt，其中 4 个（ppo_wuke_d2_kl01_it15/it30_it15/it20/it30）是**中间 iter**，被本轮清理误删。
+
+arena_fixed_elo.py 用 `if os.path.exists(p)` 跳过缺失 ckpt，所以 seed22000 仍能跑 9 人池（规则模型 + 存活 ML ckpt），但**高 KL 系列（kl01_it15/it30）完全从池中消失**——它们是最强的 ML 模型，缺失影响评估完整度。
+
+### 待办
+- 等 seed22000 完成后，对比 seed16000 与 seed22000 的排名一致性（验证可复现性）
+- 若需要重测缺失的 4 个高 KL ckpt，需从 git/本地备份恢复或重跑 PPO 训练
