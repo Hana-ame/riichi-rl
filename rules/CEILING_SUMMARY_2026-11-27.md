@@ -65,6 +65,10 @@ dest_prob_v3 是纯规则（进张概率+听牌易出度+有役副露+满贯默�
 2. dest_prob_v3 自身做 PPO 基座（可能突破天花板，成本高）
 3. 混合奖励：把 dest_prob_v3 的攻防平衡作为塑形信号
 
+### kl01 续训 it30（已完成训练，待 arena 验证）
+
+`ppo_wuke_d2_kl01_it30_it15.pt`：从 kl01_it15 续训 15 轮。训练 win_rate 84.91%（vs it15 起点 86.32%）——继续训练未提升和牌率。arena 对比 it15 vs it30 见 `rules/ELO_kl01_it30.md`。
+
 ## 相关文件
 
 - `rules/ELO_kl01.md`：高 KL 首次验证（seed9000）
