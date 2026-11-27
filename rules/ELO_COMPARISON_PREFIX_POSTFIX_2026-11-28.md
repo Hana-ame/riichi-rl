@@ -164,3 +164,26 @@ pure_shanten/dest_prob_v3 同梯队）。但这也受局数(600 vs 300)、seed�
 
 **这解释了为什么修复后 riichi_needed↑77/riichi_ev↑5/pure_shanten↑53**：
 它们是受旧 bug 扭曲最深的策略，修复后回归本意打法，相对位次自然上移。
+
+## 九、二次自我纠错：`_rule_override` 只作用于 ML Agent，不作用于规则策略
+
+上一节第八节的"riichi_needed/pure_shanten 被强制立直扭曲"推断**有误**，须更正：
+
+查 `arena_elo.py` 实际调用链：
+- **RuleAgent.act**（line 63-72）= `self.pol.choose(...)`，**不经过 `_rule_override`**
+- `_rule_override` 只在 V1Agent / HanchanAgent / BCAgent（ML Agent）里调用
+
+而 damaten、pure_shanten、dest_prob_v3、greedy_tenpai、riichi_needed、riichi_ev
+**全是规则策略（RuleAgent）**。所以：
+- 修复 `_rule_override` **对它们行为零影响**（它们从来就不受它管）
+- 我之前说"pure_shanten/riichi_ev/riichi_needed 修复后恢复本意打法、
+  因为不再被强制立直而上移"——**这个因果链是错的**
+- 它们位次变化的真实原因只能是：**Elo 零和 + 参赛阵容/局数/seed 不同**
+
+**规则基线之间没有"谁被 bug 扭曲"的差别**，它们一直按本意打牌。
+`_rule_override` 修复真正影响的是 **ML Agent**（eff_wuke_d2、teacher47_100h_v2、
+teacher47_v3、tenhou_bc 这些 Auto/Hanchan/BC Agent）——它们修复前立直被强制接管，
+修复后立直决策才真正交给网络。
+
+**这再次印证第五节：跨版本 Elo 对比在局数/seed/阵容/规则四处不一致时无效，
+不能把排名变化归因于任何单一修复。**
