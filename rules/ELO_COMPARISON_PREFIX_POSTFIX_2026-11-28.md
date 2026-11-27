@@ -144,3 +144,23 @@ pure_shanten/dest_prob_v3 同梯队）。但这也受局数(600 vs 300)、seed�
   在同配置不同 seed 下是否稳定？
 - 若稳定，说明 9 人固定池里 dest_prob_v3 领先、damaten 垫底是配置特性；
 - 若不稳定，说明 300 局 9 人池方差过大，单 seed 结论不可信。
+
+## 八、立直策略模式映射（解释修复后行为差异的关键）
+
+| 策略 | riichi_mode | 修复前 `_rule_override` 效果 | 修复后 |
+|---|---|---|---|
+| greedy_tenpai | always | 强制立直(与自身意愿一致,无影响) | 能立直(不受影响) |
+| damaten | never | 代码 line110 直接跳过立直分支,**`_rule_override` 对它零影响** | 从不立直(不受影响) |
+| riichi_needed | needed | 强制立直(**扭曲**:本该"没役才立直") | 恢复条件立直 |
+| riichi_ev | ev | 强制立直(**扭曲**:本该"按点数期望选") | 恢复 EV 判断 |
+| pure_shanten | 无立直逻辑 | 强制立直(**扭曲**:本该纯向听) | 真正纯向听 |
+
+**关键辨析**：修复前 `_rule_override` 强接管立直，对不同策略影响不同——
+- greedy_tenpai(riichi_mode=always)：本就想立直，强接管=无扭曲
+- damaten(never)：代码层就跳过立直，强接管也**无法让它立直**（`_rule_override` 返回的
+  立直动作只有在 legal 含 RIICHI 且走 choose 前才插入；damaten 的 choose 压根不选它）
+- riichi_needed/ev/pure_shanten：**真正被扭曲**——它们各自的条件立直/纯向听逻辑
+  被"无条件立直"覆盖。修复让这三者恢复了本意打法。
+
+**这解释了为什么修复后 riichi_needed↑77/riichi_ev↑5/pure_shanten↑53**：
+它们是受旧 bug 扭曲最深的策略，修复后回归本意打法，相对位次自然上移。
