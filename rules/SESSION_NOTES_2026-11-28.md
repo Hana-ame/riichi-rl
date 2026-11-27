@@ -36,3 +36,28 @@
 
 ## 待办
 - arena_fixed_elo 后台跑中(~15min), 完成后对比旧基线
+
+## 补记：跨版本 Elo 对比的两大陷阱（2026-11-28 深挖）
+
+### 陷阱一：把不同配置的 arena 当 before/after 对照
+修复前旧数据(ELO_all_with_destprob_600.md) = arena_elo.py / 600局 / 10-11人 / 带选员淘汰
+我跑的修复后数据(ELO_fixed.md) = arena_fixed_elo.py / 300局 / 9人固定 / 无淘汰
+四处不一致(局数/seed/阵容/淘汰机制)，不构成有效 before/after。
+**结论：eff_wuke_d2「1822→1537 退化285分」的说法作废，不可引用。**
+
+### 陷阱二：误以为 _rule_override 影响所有策略
+_rule_override 只在 V1Agent/HanchanAgent/BCAgent(M **L** Agent) 调用；
+RuleAgent.act 直接走 pol.choose，**不经过 _rule_override**。
+- damaten/pure_shanten/dest_prob_v3/greedy_tenpai/riichi_needed/riichi_ev 全是规则策略
+  → 从不受 _rule_override 管 → 修复它对这些策略行为零影响
+- 真正受影响的是 eff_wuke_d2/teacher47_*/tenhou_bc 等 **ML Agent**
+  → 修复后 ML Agent 的立直决策才真正交给网络(不再被强制立直)
+
+**推论**：修复后 pure_shanten 升到第2 / damaten 掉到末位，
+都不能归因于"立直放开"，只能是 Elo 零和 + 阵容/局数/seed 差异 + 策略本性组合。
+规则策略之间没有"谁被 bug 扭曲"的差别。
+
+### 方法论
+- 跨版本比较必须固定 局数/seed/阵容/规则版本 四要素，否则无效
+- Elo 排名 ≠ 和牌率 ≠ 打点(pt)：pure_shanten 排名第2但和牌率仅9.1%靠防守生存
+- 一次 arena 的排名变化有大量方差，单 seed 不可当结论
