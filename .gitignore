@@ -18,8 +18,7 @@ vendor/**/__pycache__
 vendor/**/*.pyc
 
 # --- 模型权重 / checkpoints（不进 git；磁盘保留）---
-# 只允许例外：checkpoints/bc_v1_last.pt（当前最佳 BC 教师 ckpt，
-#   用于复现 train_bc.py 结果；如需换 ckpt，同步修改下面的 ! 行）
+# 2026-11-28 起：禁止上传任何权重，不再保留 ! 例外（历史 bc_v1_last.pt 已移除跟踪）
 checkpoints/*.pt
 checkpoints/*.pth
 checkpoints/*.safetensors
@@ -28,7 +27,6 @@ checkpoints/*.ckpt
 *.pth
 *.safetensors
 *.ckpt
-!checkpoints/bc_v1_last.pt
 
 # --- 大体积可再生数据（不入库，用 data/dl_houou.sh + build_all.sh 重建）---
 # 原始天鳳鳳凰室牌谱 shard（~528M，来源 1nfrared218/tenhou-mjai-riichi-training）
