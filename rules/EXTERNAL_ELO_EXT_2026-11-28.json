@@ -1,50 +1,65 @@
 {
- "half": {
-  "mode": "half",
-  "elo": {
-   "teacher47_eff_wuke_d2": 1583.1,
-   "teacher47_100h_v2": 1458.2,
-   "suphx": 1618.7,
-   "riichippo": 1455.1,
-   "greedy_tenpai": 1483.8,
-   "random": 1440.0,
-   "damaten": 1453.9,
-   "eff_wuke": 1507.1
-  },
-  "avg_pts_per_session": {
-   "teacher47_eff_wuke_d2": 22333.5,
-   "teacher47_100h_v2": -13216.8,
-   "suphx": 38383.4,
-   "riichippo": -13966.6,
-   "greedy_tenpai": 1316.6,
-   "random": -9245.9,
-   "damaten": -42958.5,
-   "eff_wuke": 39104.2
-  },
-  "sessions": 8
- },
- "east": {
-  "mode": "east",
-  "elo": {
-   "teacher47_eff_wuke_d2": 1456.2,
-   "teacher47_100h_v2": 1448.6,
-   "suphx": 1610.3,
-   "riichippo": 1475.3,
-   "greedy_tenpai": 1481.1,
-   "random": 1459.7,
-   "damaten": 1518.0,
-   "eff_wuke": 1550.8
-  },
-  "avg_pts_per_session": {
-   "teacher47_eff_wuke_d2": 19441.8,
-   "teacher47_100h_v2": -10737.5,
-   "suphx": 7987.5,
-   "riichippo": -8437.5,
-   "greedy_tenpai": -420.9,
-   "random": -3170.9,
-   "damaten": -1512.5,
-   "eff_wuke": 3850.0
-  },
-  "sessions": 8
- }
+  "half": {
+    "mode": "half",
+    "sessions": 8,
+    "avg_hands_per_session": 11.5,
+    "elo": {
+      "teacher47_eff_wuke_d2": 1550.6,
+      "teacher47_100h_v2": 1352.6,
+      "teacher47_v3": 1443.0,
+      "bc_dest_prob_v3": 1653.8
+    },
+    "avg_pts_per_session": {
+      "teacher47_eff_wuke_d2": 5725.0,
+      "teacher47_100h_v2": -20125.0,
+      "teacher47_v3": -13437.5,
+      "bc_dest_prob_v3": 26587.5
+    },
+    "per_spec": {
+      "teacher47_eff_wuke_d2": {
+        "elo": 1550.6,
+        "sessions_played": 8,
+        "hands_played": 92,
+        "avg_pts_per_session": 5725.0,
+        "win_rate_per_hand": 0.1957,
+        "dealin_rate_per_hand": 0.087,
+        "wins": 18,
+        "dealins": 8,
+        "top1": 2
+      },
+      "teacher47_100h_v2": {
+        "elo": 1352.6,
+        "sessions_played": 8,
+        "hands_played": 92,
+        "avg_pts_per_session": -20125.0,
+        "win_rate_per_hand": 0.0652,
+        "dealin_rate_per_hand": 0.1957,
+        "wins": 6,
+        "dealins": 18,
+        "top1": 0
+      },
+      "teacher47_v3": {
+        "elo": 1443.0,
+        "sessions_played": 8,
+        "hands_played": 92,
+        "avg_pts_per_session": -13437.5,
+        "win_rate_per_hand": 0.0435,
+        "dealin_rate_per_hand": 0.1522,
+        "wins": 4,
+        "dealins": 14,
+        "top1": 0
+      },
+      "bc_dest_prob_v3": {
+        "elo": 1653.8,
+        "sessions_played": 8,
+        "hands_played": 92,
+        "avg_pts_per_session": 26587.5,
+        "win_rate_per_hand": 0.3478,
+        "dealin_rate_per_hand": 0.0326,
+        "wins": 32,
+        "dealins": 3,
+        "top1": 6
+      }
+    }
+  }
 }
