@@ -1,0 +1,154 @@
+{
+  "half": {
+    "mode": "half",
+    "sessions": 8,
+    "avg_hands_per_session": 12.12,
+    "elo": {
+      "teacher47_eff_wuke_d2": 1558.5,
+      "suphx": 1574.5,
+      "riichippo": 1448.9,
+      "mahjonglm100": 1418.2,
+      "greedy_tenpai": 1500.0
+    },
+    "avg_pts_per_session": {
+      "teacher47_eff_wuke_d2": 4887.5,
+      "suphx": 6962.5,
+      "riichippo": -2612.5,
+      "mahjonglm100": -10112.5,
+      "greedy_tenpai": 0.0
+    },
+    "per_spec": {
+      "teacher47_eff_wuke_d2": {
+        "elo": 1558.5,
+        "sessions_played": 8,
+        "hands_played": 97,
+        "avg_pts_per_session": 4887.5,
+        "win_rate_per_hand": 0.2371,
+        "dealin_rate_per_hand": 0.0825,
+        "wins": 23,
+        "dealins": 8,
+        "top1": 4
+      },
+      "suphx": {
+        "elo": 1574.5,
+        "sessions_played": 8,
+        "hands_played": 97,
+        "avg_pts_per_session": 6962.5,
+        "win_rate_per_hand": 0.1546,
+        "dealin_rate_per_hand": 0.0825,
+        "wins": 15,
+        "dealins": 8,
+        "top1": 4
+      },
+      "riichippo": {
+        "elo": 1448.9,
+        "sessions_played": 8,
+        "hands_played": 97,
+        "avg_pts_per_session": -2612.5,
+        "win_rate_per_hand": 0.0928,
+        "dealin_rate_per_hand": 0.0928,
+        "wins": 9,
+        "dealins": 9,
+        "top1": 0
+      },
+      "mahjonglm100": {
+        "elo": 1418.2,
+        "sessions_played": 8,
+        "hands_played": 97,
+        "avg_pts_per_session": -10112.5,
+        "win_rate_per_hand": 0.134,
+        "dealin_rate_per_hand": 0.1649,
+        "wins": 13,
+        "dealins": 16,
+        "top1": 0
+      },
+      "greedy_tenpai": {
+        "elo": 1500.0,
+        "sessions_played": 0,
+        "hands_played": 0,
+        "avg_pts_per_session": 0.0,
+        "win_rate_per_hand": 0.0,
+        "dealin_rate_per_hand": 0.0,
+        "wins": 0,
+        "dealins": 0,
+        "top1": 0
+      }
+    }
+  },
+  "east": {
+    "mode": "east",
+    "sessions": 8,
+    "avg_hands_per_session": 5.88,
+    "elo": {
+      "teacher47_eff_wuke_d2": 1600.5,
+      "suphx": 1539.0,
+      "riichippo": 1449.8,
+      "mahjonglm100": 1410.7,
+      "greedy_tenpai": 1500.0
+    },
+    "avg_pts_per_session": {
+      "teacher47_eff_wuke_d2": 3175.0,
+      "suphx": 8800.0,
+      "riichippo": -3225.0,
+      "mahjonglm100": -9625.0,
+      "greedy_tenpai": 0.0
+    },
+    "per_spec": {
+      "teacher47_eff_wuke_d2": {
+        "elo": 1600.5,
+        "sessions_played": 8,
+        "hands_played": 47,
+        "avg_pts_per_session": 3175.0,
+        "win_rate_per_hand": 0.2766,
+        "dealin_rate_per_hand": 0.0638,
+        "wins": 13,
+        "dealins": 3,
+        "top1": 4
+      },
+      "suphx": {
+        "elo": 1539.0,
+        "sessions_played": 8,
+        "hands_played": 47,
+        "avg_pts_per_session": 8800.0,
+        "win_rate_per_hand": 0.234,
+        "dealin_rate_per_hand": 0.0,
+        "wins": 11,
+        "dealins": 0,
+        "top1": 4
+      },
+      "riichippo": {
+        "elo": 1449.8,
+        "sessions_played": 8,
+        "hands_played": 47,
+        "avg_pts_per_session": -3225.0,
+        "win_rate_per_hand": 0.0638,
+        "dealin_rate_per_hand": 0.0851,
+        "wins": 3,
+        "dealins": 4,
+        "top1": 0
+      },
+      "mahjonglm100": {
+        "elo": 1410.7,
+        "sessions_played": 8,
+        "hands_played": 47,
+        "avg_pts_per_session": -9625.0,
+        "win_rate_per_hand": 0.0638,
+        "dealin_rate_per_hand": 0.2128,
+        "wins": 3,
+        "dealins": 10,
+        "top1": 0
+      },
+      "greedy_tenpai": {
+        "elo": 1500.0,
+        "sessions_played": 0,
+        "hands_played": 0,
+        "avg_pts_per_session": 0.0,
+        "win_rate_per_hand": 0.0,
+        "dealin_rate_per_hand": 0.0,
+        "wins": 0,
+        "dealins": 0,
+        "top1": 0
+      }
+    }
+  }
+}
