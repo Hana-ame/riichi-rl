@@ -277,7 +277,6 @@ class MahjongEnv:
             p.ippatsu = False
 
         self.turn = 0               # 当前巡目（从 0 开始）
-        self.turn_start = 0         # 本小局起始巡目
         self.turn_player = self.dealer
         self.phase = Phase.DISCARD
         self.last_discard = None
@@ -895,7 +894,7 @@ class MahjongEnv:
         所以单局上限是 MAX_TURNS * N_PLAYERS 次摸牌（默认 18*4 = 72）。
         """
         self.turn += 1
-        if self.turn - self.turn_start >= RS.MAX_TURNS * N_PLAYERS:
+        if self.turn >= RS.MAX_TURNS * N_PLAYERS:
             return self._finish_ryuukyoku(reason="exhaustive")
         if self._drawable_left() <= 0:
             return self._finish_ryuukyoku(reason="exhaustive")
